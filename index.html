@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary: #2563eb;
@@ -34,777 +30,164 @@
             line-height: 1.6;
         }
 
-        /* Header */
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 1rem 2rem;
+            color: white; padding: 1rem 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
 
         .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        .logo { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
         .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+            width: 32px; height: 32px; background: rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         }
 
-        nav {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
+        nav { display: flex; gap: 2rem; align-items: center; }
+        nav a { color: white; text-decoration: none; cursor: pointer; transition: opacity 0.3s; font-size: 0.95rem; }
+        nav a:hover { opacity: 0.8; }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            transition: opacity 0.3s;
-            font-size: 0.95rem;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
+        .auth-buttons { display: flex; gap: 1rem; }
 
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            padding: 0.75rem 1.5rem; border: none; border-radius: var(--radius);
+            cursor: pointer; font-size: 0.95rem; font-weight: 500;
+            transition: all 0.3s; text-decoration: none; display: inline-block;
         }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d97706; }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
+        .section { display: none; padding: 2rem 0; }
+        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
 
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: white;
-        }
+        .grid { display: grid; gap: 2rem; margin-bottom: 2rem; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 
-        .btn-outline {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #d97706;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 6rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 500px;
-            height: 500px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Main Content */
-        main {
-            padding: 3rem 0;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-
-        .grid-4 {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        }
-
-        /* Cards */
         .card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            border: 1px solid var(--border);
+            background: white; border-radius: var(--radius); padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s; border: 1px solid var(--border);
         }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-4px); }
+        .card-title { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+        .card-content { color: var(--text-muted); }
 
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transform: translateY(-4px);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .card-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-
-        .card-content {
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-primary {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .badge-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        /* Rating */
-        .rating {
-            display: flex;
-            gap: 0.25rem;
-            font-size: 1.2rem;
-        }
-
-        .star {
-            cursor: pointer;
-            transition: color 0.2s;
-            color: #d1d5db;
-        }
-
-        .star.filled {
-            color: #fbbf24;
-        }
-
-        .star:hover {
-            color: #fbbf24;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* Stats */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white; padding: 1.5rem; border-radius: var(--radius);
+            border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--text); }
 
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 2rem;
-            gap: 1rem;
-            overflow-x: auto;
-        }
-
-        .tab {
-            padding: 1rem;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            margin-bottom: -2px;
-            white-space: nowrap;
-        }
-
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            z-index: 1000; align-items: center; justify-content: center;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
+        .modal.active { display: flex; }
         .modal-content {
-            background: white;
-            border-radius: var(--radius);
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
-            max-height: 90vh;
-            overflow-y: auto;
-            margin: auto;
+            background: white; border-radius: var(--radius); padding: 2rem;
+            max-width: 500px; width: 90%; box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            max-height: 90vh; overflow-y: auto;
         }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 600; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text); }
+        input, textarea, select {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--border);
+            border-radius: var(--radius); font-family: inherit; font-size: 0.95rem;
         }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+        .alert { padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; display: flex; gap: 1rem; align-items: start; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--success); color: #047857; }
+        .alert-error { background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); color: #991b1b; }
+        .alert-info { background: rgba(37, 99, 235, 0.1); border-left: 4px solid var(--primary); color: #1e40af; }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .close-btn:hover {
-            color: var(--text);
-        }
-
-        /* Alert */
-        .alert {
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            display: flex;
-            gap: 1rem;
-            align-items: start;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--success);
-            color: #047857;
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid var(--danger);
-            color: #991b1b;
-        }
-
-        .alert-info {
-            background: rgba(37, 99, 235, 0.1);
-            border-left: 4px solid var(--primary);
-            color: #1e40af;
-        }
-
-        /* Product Image */
-        .product-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            object-fit: cover;
-            overflow: hidden;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Stock Badge */
-        .stock-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--success);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .stock-badge.low {
-            background: var(--warning);
-        }
-
-        .stock-badge.out {
-            background: var(--danger);
-        }
-
-        /* File Input */
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 0.75rem;
-            background: var(--surface);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .file-input-label:hover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            nav {
-                gap: 1rem;
-            }
-
-            nav a {
-                font-size: 0.85rem;
-            }
-
-            .header-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .grid-2, .grid-3, .grid-4 {
-                grid-template-columns: 1fr;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        /* Utility */
-        .text-center {
-            text-align: center;
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        .mt-1 { margin-top: 0.5rem; }
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.5rem; }
-        .mb-1 { margin-bottom: 0.5rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .mb-3 { margin-bottom: 1.5rem; }
-
-        .flex {
-            display: flex;
-        }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .gap-1 { gap: 0.5rem; }
-        .gap-2 { gap: 1rem; }
-
-        .position-relative {
-            position: relative;
-        }
-
-        .verified-badge {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-        }
-
-        .payment-option {
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 1rem;
-        }
-
-        .payment-option:hover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .payment-option h4 {
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        .payment-option p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .payment-option .btn {
-            width: 100%;
-        }
-
-        .referral-link-box {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
+        .referral-link-box { background: var(--surface); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; }
         .referral-link-input {
-            background: white;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-family: monospace;
-            font-size: 0.9rem;
-            word-break: break-all;
-            margin-bottom: 1rem;
+            background: white; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);
+            font-family: monospace; font-size: 0.9rem; word-break: break-all; margin-bottom: 0.5rem;
         }
-
-        footer {
-            background: var(--text);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            margin-top: 3rem;
-        }
+        .copy-btn { background: var(--primary); color: white; padding: 0.5rem 1rem; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 500; }
+        .copy-btn:hover { background: var(--primary-dark); }
 
         .user-info {
-            background: white;
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            border: 1px solid var(--border);
+            background: white; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;
+            border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
         }
-
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            width: 40px; height: 40px; border-radius: 50%; background: var(--primary);
+            color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .user-details { display: flex; gap: 1rem; align-items: center; flex: 1; }
+        .user-name { font-weight: 600; }
+        .user-email { color: var(--text-muted); font-size: 0.9rem; }
+
+        .referral-tree { margin-top: 2rem; }
+        .tree-item { background: white; border-left: 3px solid var(--primary); padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px; border: 1px solid var(--border); }
+        .tree-item-name { font-weight: 600; color: var(--text); }
+        .tree-item-email { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+
+        .referral-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+
+        /* Admin badge */
+        .admin-badge {
+            background: var(--secondary); color: white; padding: 0.2rem 0.6rem;
+            border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-left: 0.5rem;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+        /* Product cards */
+        .product-card {
+            background: white; border-radius: var(--radius); padding: 1.5rem;
+            border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s;
         }
+        .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .product-price { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0; }
+        .product-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
 
-        .request-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        /* Admin table */
+        .admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; }
+        .admin-table th, .admin-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table th { background: var(--surface); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+        .admin-table tr:hover { background: var(--surface); }
 
-        .request-status.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border); }
+        .tab { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 500; transition: all 0.3s; }
+        .tab.active { border-bottom-color: var(--primary); color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .request-status.approved {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .request-status.rejected {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 1rem; }
+            nav { gap: 1rem; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .stats, .referral-stats { grid-template-columns: 1fr; }
+            .admin-table { font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -818,14 +201,15 @@
             </div>
             <nav>
                 <a onclick="showSection('home')">Главная</a>
-                <a onclick="showSection('verified')">Проверенные товары</a>
-                <a onclick="showSection('catalog')">Каталог</a>
-                <a onclick="showSection('cabinet')">Личный кабинет</a>
-                <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
+                <a onclick="showSection('products')">Товары</a>
+                <a onclick="showSection('cabinet')" id="cabinetLink" style="display: none;">Личный кабинет</a>
+                <a onclick="showSection('referrals')" id="referralsLink" style="display: none;">Рефералы</a>
+                <a onclick="showSection('admin')" id="adminLink" style="display: none;">⚙️ Админ-панель</a>
             </nav>
             <div class="auth-buttons">
-                <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
-                <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
+                <button class="btn btn-secondary btn-small" id="loginBtn" onclick="toggleLoginModal()">Вход</button>
+                <button class="btn btn-primary btn-small" id="registerBtn" onclick="toggleRegisterModal()">Регистрация</button>
+                <button class="btn btn-danger btn-small" id="logoutBtn" onclick="logout()" style="display: none;">Выход</button>
             </div>
         </div>
     </header>
@@ -834,62 +218,18 @@
     <main class="container">
         <!-- Home Section -->
         <section id="home" class="section active">
-            <div class="hero">
-                <div class="hero-content">
-                    <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
-                    <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-secondary" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
-                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог проверенных товаров</button>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top: 3rem;">
-                <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
-                <div class="grid grid-3">
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
-                        <h3 class="card-title">1. Выберите товар</h3>
-                        <p class="card-content">Просмотрите каталог товаров и выберите интересующий вас продукт для тестирования.</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📦</div>
-                        <h3 class="card-title">2. Получите товар</h3>
-                        <p class="card-content">Мы отправим вам товар на тестирование совершенно бесплатно.</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
-                        <h3 class="card-title">3. Оставьте отзыв</h3>
-                        <p class="card-content">Поделитесь своим честным мнением и помогите другим выбрать качественные товары.</p>
-                    </div>
-                </div>
-            </div>
+            <h1 style="margin-bottom: 2rem;">⭐ Станьте экспертом по выбору лучших товаров!</h1>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Участвуйте в отборе товаров, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
         </section>
 
-        <!-- Verified Products Section -->
-        <section id="verified" class="section">
-            <h1 style="margin-bottom: 2rem;">✅ Проверенные товары для покупки</h1>
-            
-            <div style="margin-bottom: 2rem;">
-                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
-            </div>
-
-            <div class="grid grid-3" id="verifiedProductGrid">
-                <!-- Verified products will be inserted here -->
-            </div>
-        </section>
-
-        <!-- Catalog Section -->
-        <section id="catalog" class="section">
-            <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
-            
-            <div style="margin-bottom: 2rem;">
-                <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
-            </div>
-
-            <div class="grid grid-3" id="productGrid">
-                <!-- Products will be inserted here -->
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <h1 style="margin-bottom: 2rem;">🛍️ Наши товары</h1>
+            <div id="productsContainer" class="grid grid-3">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <p>Загрузка товаров...</p>
+                </div>
             </div>
         </section>
 
@@ -902,186 +242,123 @@
             </div>
 
             <div id="cabinetContent" style="display: none;">
-                <div class="user-info flex-between">
-                    <div class="flex gap-2">
+                <div class="user-info">
+                    <div class="user-details">
                         <div class="user-avatar" id="userAvatar">У</div>
                         <div>
-                            <div style="font-weight: 600;" id="userName">Пользователь</div>
-                            <div class="text-muted" style="font-size: 0.9rem;" id="userEmail">email@example.com</div>
+                            <div class="user-name" id="userName">Пользователь</div>
+                            <div class="user-email" id="userEmail">email@example.com</div>
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-small" onclick="logout()">Выход</button>
                 </div>
 
-                <div class="stats">
+                <div class="referral-stats">
                     <div class="stat-card">
-                        <div class="stat-label">Получено товаров</div>
-                        <div class="stat-value" id="productsCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Отзывов написано</div>
-                        <div class="stat-value" id="reviewsCount">0</div>
+                        <div class="stat-label">👥 Приглашено друзей</div>
+                        <div class="stat-value" id="referralCount">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Средний рейтинг</div>
-                        <div class="stat-value" id="avgRating">0★</div>
+                        <div class="stat-label">🎁 Заработано баллов</div>
+                        <div class="stat-value" id="referralPoints">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Баллов</div>
-                        <div class="stat-value" id="pointsCount">0</div>
+                        <div class="stat-label">📊 Конверсия</div>
+                        <div class="stat-value" id="conversionRate">0%</div>
                     </div>
                 </div>
 
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('referral')">Реферральная программа</button>
-                    <button class="tab" onclick="switchTab('reviews')">Мои отзывы</button>
-                    <button class="tab" onclick="switchTab('requests')">Мои запросы</button>
-                    <button class="tab" onclick="switchTab('commissions')">Комиссии</button>
+                <div class="referral-link-box">
+                    <h3 style="margin-bottom: 1rem;">Ваша реферальная ссылка</h3>
+                    <div class="referral-link-input" id="referralLink">https://example.com/?ref=loading</div>
+                    <button class="copy-btn" onclick="copyReferralLink()">📋 Скопировать ссылку</button>
                 </div>
 
-                <!-- Referral Tab -->
-                <div id="referral" class="tab-content active">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Ваша реферральная ссылка</h3>
-                        <p class="text-muted mb-2">Поделитесь этой ссылкой с друзьями. Они автоматически зарегистрируются как ваши рефералы и вы получите 5% комиссию с их покупок!</p>
-                        <div class="referral-link-box">
-                            <div class="referral-link-input" id="referralLink">https://example.com/?ref=REF123456</div>
-                            <button class="btn btn-primary btn-small" onclick="copyReferralLink()" style="width: 100%;">📋 Копировать ссылку</button>
-                        </div>
-                    </div>
-
-                    <div class="card mt-3">
-                        <h3 class="card-title mb-2">Приглашённые пользователи</h3>
-                        <div id="referralsList">
-                            <p class="text-muted">Вы ещё никого не пригласили</p>
-                        </div>
+                <div class="referral-tree">
+                    <h3 style="margin-bottom: 1rem;">Дерево рефералов</h3>
+                    <div id="referralTreeContainer" class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>Ваши приглашенные друзья будут отображаться здесь</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Пока у вас нет активных рефералов</p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Reviews Tab -->
-                <div id="reviews" class="tab-content">
-                    <div id="reviewsList">
-                        <p class="text-muted">Вы ещё не оставляли отзывов</p>
-                    </div>
+        <!-- Referrals Section -->
+        <section id="referrals" class="section">
+            <h1 style="margin-bottom: 2rem;">🎁 Реферальная программа</h1>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Приглашайте друзей и зарабатывайте награды за каждого, кто присоединится</p>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+                    <h3 class="card-title">Как это работает?</h3>
+                    <p class="card-content">Поделитесь своей реферальной ссылкой с друзьями. Когда они зарегистрируются, вы оба получите бонусы!</p>
                 </div>
-
-                <!-- Requests Tab -->
-                <div id="requests" class="tab-content">
-                    <div id="requestsList">
-                        <p class="text-muted">Вы ещё не запрашивали товары</p>
-                    </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎁</div>
+                    <h3 class="card-title">Награды</h3>
+                    <p class="card-content">За каждого приглашенного друга вы получите 50 баллов и доступ к эксклюзивным товарам.</p>
                 </div>
-
-                <!-- Commissions Tab -->
-                <div id="commissions" class="tab-content">
-                    <div class="grid grid-3">
-                        <div class="stat-card">
-                            <div class="stat-label">Всего заработано</div>
-                            <div class="stat-value" id="totalCommission">$0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Выплачено</div>
-                            <div class="stat-value" id="paidCommission">$0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">К выплате</div>
-                            <div class="stat-value" id="unpaidCommission">$0</div>
-                        </div>
-                    </div>
-                    <div class="card mt-3">
-                        <h3 class="card-title mb-2">История комиссий</h3>
-                        <div id="commissionsList">
-                            <p class="text-muted">Комиссии отсутствуют</p>
-                        </div>
-                    </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
+                    <h3 class="card-title">Преимущества</h3>
+                    <p class="card-content">Накапливайте баллы, получайте товары на тестирование и помогайте другим выбирать лучшее!</p>
                 </div>
             </div>
         </section>
 
         <!-- Admin Section -->
         <section id="admin" class="section">
-            <h1 style="margin-bottom: 2rem;">⚙️ Админ панель</h1>
-            
-            <div id="adminNotification" class="alert alert-info">
-                <span>Только администраторы могут получить доступ к этому разделу</span>
+            <h1 style="margin-bottom: 2rem;">⚙️ Админ-панель</h1>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">👥 Всего пользователей</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📦 Всего товаров</div>
+                    <div class="stat-value" id="totalProducts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🎁 Выдано баллов</div>
+                    <div class="stat-value" id="totalPoints">0</div>
+                </div>
             </div>
 
-            <div id="adminContent" style="display: none;">
-                <div class="tabs">
-                    <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
-                    <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
-                    <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
-                    <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
-                    <button class="tab" onclick="switchAdminTab('reviews')">Отзывы</button>
-                    <button class="tab" onclick="switchAdminTab('commissions')">Комиссии</button>
-                </div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('productsTab')">📦 Товары</div>
+                <div class="tab" onclick="switchTab('usersTab')">👥 Пользователи</div>
+            </div>
 
-                <!-- Users Tab -->
-                <div id="users-admin" class="tab-content active">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Список пользователей</h3>
-                        <div id="usersList">
-                            <p class="text-muted">Нет пользователей</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Products Tab -->
+            <div id="productsTab" class="tab-content active">
+                <button class="btn btn-success" style="margin-bottom: 1.5rem;" onclick="toggleProductModal()">➕ Добавить товар</button>
+                <div id="adminProductsContainer" class="grid grid-3"></div>
+            </div>
 
-                <!-- Requests Tab -->
-                <div id="requests-admin" class="tab-content">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Запросы товаров на тестирование</h3>
-                        <div id="adminRequestsList">
-                            <p class="text-muted">Нет запросов</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Products Tab -->
-                <div id="products-admin" class="tab-content">
-                    <button class="btn btn-primary mb-2" onclick="toggleAddProductModal()">+ Добавить товар</button>
-                    <div class="card">
-                        <h3 class="card-title mb-2">Товары для тестирования</h3>
-                        <div id="adminProductsList">
-                            <p class="text-muted">Нет товаров</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Verified Products Tab -->
-                <div id="verified-admin" class="tab-content">
-                    <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
-                    <div class="card">
-                        <h3 class="card-title mb-2">Проверенные товары</h3>
-                        <div id="adminVerifiedProductsList">
-                            <p class="text-muted">Нет проверенных товаров</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reviews Tab -->
-                <div id="reviews-admin" class="tab-content">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Отзывы на проверку</h3>
-                        <div id="adminReviewsList">
-                            <p class="text-muted">Нет отзывов</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Commissions Tab -->
-                <div id="commissions-admin" class="tab-content">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Управление комиссиями</h3>
-                        <div id="adminCommissionsList">
-                            <p class="text-muted">Нет комиссий</p>
-                        </div>
-                    </div>
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content">
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Имя</th>
+                                <th>Email</th>
+                                <th>Реф. код</th>
+                                <th>Рефералов</th>
+                                <th>Баллов</th>
+                                <th>Роль</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable"></tbody>
+                    </table>
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- Login Modal -->
+        <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1122,286 +399,439 @@
                     <label>Пароль</label>
                     <input type="password" id="registerPassword" required>
                 </div>
+                <div class="form-group">
+                    <label>Реферальный код (опционально)</label>
+                    <input type="text" id="referralCode" placeholder="Введите код реферера">
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
             </form>
         </div>
     </div>
 
-    <!-- Request Product Modal -->
-    <div id="requestProductModal" class="modal">
+    <!-- Product Modal (Add/Edit) -->
+    <div id="productModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Запросить товар на тестирование</h2>
-                <button class="close-btn" onclick="closeRequestProductModal()">×</button>
+                <h2 class="modal-title" id="productModalTitle">Добавить товар</h2>
+                <button class="close-btn" onclick="toggleProductModal()">×</button>
             </div>
-            <div id="requestProductOptions">
-                <!-- Payment options will be inserted here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Product Modal -->
-    <div id="addProductModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Добавить товар для тестирования</h2>
-                <button class="close-btn" onclick="toggleAddProductModal()">×</button>
-            </div>
-            <form onsubmit="handleAddProduct(event)">
+            <form onsubmit="handleSaveProduct(event)">
+                <input type="hidden" id="productId">
                 <div class="form-group">
                     <label>Название товара</label>
                     <input type="text" id="productName" required>
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
-                    <textarea id="productDescription" required></textarea>
+                    <textarea id="productDescription" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Категория</label>
-                    <select id="productCategory" required>
-                        <option value="">Выберите категорию</option>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
+                    <label>Цена (руб.)</label>
+                    <input type="number" id="productPrice" min="0" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="productUrl" required>
+                    <label>URL изображения (опционально)</label>
+                    <input type="url" id="productImage" placeholder="https://...">
                 </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="productStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Изображение товара</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="productImage" accept="image/*">
-                        <label for="productImage" class="file-input-label">
-                            📸 Нажмите для загрузки изображения
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+                <button type="submit" class="btn btn-success" style="width: 100%;">💾 Сохранить</button>
             </form>
         </div>
     </div>
 
-    <!-- Edit Product Modal -->
-    <div id="editProductModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Редактировать товар</h2>
-                <button class="close-btn" onclick="closeEditProductModal()">×</button>
-            </div>
-            <form onsubmit="handleEditProduct(event)">
-                <input type="hidden" id="editProductId">
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="editProductName" required>
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="editProductDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="editProductCategory" required>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="editProductUrl" required>
-                </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="editProductStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Изображение товара</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="editProductImage" accept="image/*">
-                        <label for="editProductImage" class="file-input-label">
-                            📸 Нажмите для загрузки изображения
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
-            </form>
-        </div>
-    </div>
+    <!-- Firebase Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, getDoc, setDoc, doc, addDoc, deleteDoc, onSnapshot, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    <!-- Add Verified Product Modal -->
-    <div id="addVerifiedProductModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Добавить проверенный товар</h2>
-                <button class="close-btn" onclick="toggleAddVerifiedProductModal()">×</button>
-            </div>
-            <form onsubmit="handleAddVerifiedProduct(event)">
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="verifiedProductName" required>
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="verifiedProductDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="verifiedProductCategory" required>
-                        <option value="">Выберите категорию</option>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Цена ($)</label>
-                    <input type="number" id="verifiedProductPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="verifiedProductStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="verifiedProductUrl" required>
-                </div>
-                <div class="form-group">
-                    <label>Изображение товара</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="verifiedProductImage" accept="image/*">
-                        <label for="verifiedProductImage" class="file-input-label">
-                            📸 Нажмите для загрузки изображения
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
-            </form>
-        </div>
-    </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.appspot.com",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0"
+        };
 
-    <!-- Edit Verified Product Modal -->
-    <div id="editVerifiedProductModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Редактировать проверенный товар</h2>
-                <button class="close-btn" onclick="closeEditVerifiedProductModal()">×</button>
-            </div>
-            <form onsubmit="handleEditVerifiedProduct(event)">
-                <input type="hidden" id="editVerifiedProductId">
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="editVerifiedProductName" required>
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="editVerifiedProductDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="editVerifiedProductCategory" required>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Цена ($)</label>
-                    <input type="number" id="editVerifiedProductPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="editVerifiedProductStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="editVerifiedProductUrl" required>
-                </div>
-                <div class="form-group">
-                    <label>Изображение товара</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="editVerifiedProductImage" accept="image/*">
-                        <label for="editVerifiedProductImage" class="file-input-label">
-                            📸 Нажмите для загрузки изображения
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
-            </form>
-        </div>
-    </div>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    <!-- Payment Modal -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Выберите способ оплаты</h2>
-                <button class="close-btn" onclick="closePaymentModal()">×</button>
-            </div>
-            <div id="paymentOptions">
-                <!-- Payment options will be inserted here -->
-            </div>
-        </div>
-    </div>
+        // ===== СПИСОК АДМИН-EMAIL =====
+        // Добавьте сюда email'ы, которые должны иметь права администратора
+        const ADMIN_EMAILS = ['marketology2019@mail.ru'];
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
-    </footer>
+        // Export to global scope
+        window.firebase = {
+            auth, db, collection, getDocs, getDoc, setDoc, doc, addDoc, deleteDoc,
+            onSnapshot, query, where, updateDoc,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+        };
+        window.ADMIN_EMAILS = ADMIN_EMAILS;
 
-    <script>
-        // Data Storage
+        // Current user
         let currentUser = null;
-        let users = [
-            { id: 1, name: 'Администратор', email: 'marketology2019@mail.ru', password: 'Moroz1990rus', role: 'admin', referralCode: 'ADMIN123', points: 500, reviews: 15, products: 8 }
-        ];
-        let products = [
-            { id: 1, name: 'Беспроводные наушники', category: 'electronics', description: 'Высокачественные наушники с шумоподавлением', url: 'https://example.com/1', image: null, rating: 4.5, reviews: 12, stock: 10 },
-            { id: 2, name: 'Кофеварка', category: 'home', description: 'Автоматическая кофеварка на 12 чашек', url: 'https://example.com/2', image: null, rating: 4.8, reviews: 8, stock: 5 },
-            { id: 3, name: 'Фитнес трекер', category: 'sports', description: 'Умный браслет для отслеживания активности', url: 'https://example.com/3', image: null, rating: 4.3, reviews: 20, stock: 15 }
-        ];
-        let verifiedProducts = [
-            { id: 101, name: 'iPhone 15 Pro', category: 'electronics', description: 'Флагманский смартфон Apple', price: 999, stock: 15, url: 'https://example.com/iphone', image: null, rating: 4.9, reviews: 150 },
-            { id: 102, name: 'MacBook Pro', category: 'electronics', description: 'Мощный ноутбук для профессионалов', price: 1999, stock: 8, url: 'https://example.com/macbook', image: null, rating: 4.8, reviews: 200 },
-            { id: 103, name: 'Samsung Galaxy S24', category: 'electronics', description: 'Премиум Android смартфон', price: 899, stock: 20, url: 'https://example.com/samsung', image: null, rating: 4.7, reviews: 180 }
-        ];
-        let reviews = [];
-        let commissions = [];
-        let productRequests = [];
+        window.currentUser = null;
+        window.isAdmin = false;
 
-        // Get URL parameters
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                ref: params.get('ref')
-            };
-        }
+        // Listen to auth state changes
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            window.currentUser = user;
+            window.isAdmin = user ? ADMIN_EMAILS.includes(user.email) : false;
+            updateAuthUI();
+            if (user) {
+                await loadUserData();
+            }
+            // Загружаем товары всегда (для всех)
+            loadPublicProducts();
+        });
 
-        // UI Functions
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            
-            if (sectionId === 'catalog') {
-                renderProducts();
-            } else if (sectionId === 'verified') {
-                renderVerifiedProducts();
-            } else if (sectionId === 'cabinet') {
-                updateCabinet();
-            } else if (sectionId === 'admin') {
-                updateAdmin();
+        // Load user data from Firestore
+        async function loadUserData() {
+            if (!currentUser) return;
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userDocRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    window.currentUserData = userData;
+                    updateCabinetUI(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
             }
         }
 
+        // Update cabinet UI
+        function updateCabinetUI(userData) {
+            document.getElementById('userName').textContent = userData.name || 'Пользователь';
+            document.getElementById('userEmail').textContent = userData.email || '';
+            document.getElementById('userAvatar').textContent = (userData.name || 'У')[0].toUpperCase();
+            document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${userData.referralCode}`;
+            document.getElementById('referralCount').textContent = userData.referralCount || 0;
+            document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
+
+            const conversionRate = (userData.referralCount || 0) > 0 ? '100%' : '0%';
+            document.getElementById('conversionRate').textContent = conversionRate;
+
+            loadReferralTree(userData.referralCode);
+        }
+
+        // Load referral tree
+        async function loadReferralTree(referralCode) {
+            try {
+                const referrals = await getDocs(query(collection(db, 'users'), where('referrerCode', '==', referralCode)));
+                const container = document.getElementById('referralTreeContainer');
+
+                if (referrals.empty) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <p>Ваши приглашенные друзья будут отображаться здесь</p>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Пока у вас нет активных рефералов</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = referrals.docs.map(d => {
+                        const data = d.data();
+                        return `
+                            <div class="tree-item">
+                                <div class="tree-item-name">${data.name}</div>
+                                <div class="tree-item-email">${data.email}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading referral tree:', error);
+            }
+        }
+
+        // Update auth UI
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const cabinetLink = document.getElementById('cabinetLink');
+            const referralsLink = document.getElementById('referralsLink');
+            const adminLink = document.getElementById('adminLink');
+            const notLoggedInMessage = document.getElementById('notLoggedInMessage');
+            const cabinetContent = document.getElementById('cabinetContent');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                cabinetLink.style.display = 'block';
+                referralsLink.style.display = 'block';
+                adminLink.style.display = window.isAdmin ? 'block' : 'none';
+                notLoggedInMessage.style.display = 'none';
+                cabinetContent.style.display = 'block';
+                if (window.isAdmin) loadAdminData();
+            } else {
+                loginBtn.style.display = 'block';
+                registerBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                cabinetLink.style.display = 'none';
+                referralsLink.style.display = 'none';
+                adminLink.style.display = 'none';
+                notLoggedInMessage.style.display = 'flex';
+                cabinetContent.style.display = 'none';
+            }
+        }
+
+        // ===== ТОВАРЫ (публичный просмотр) =====
+        window.loadPublicProducts = async function() {
+            try {
+                const snapshot = await getDocs(collection(db, 'products'));
+                const container = document.getElementById('productsContainer');
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <div class="empty-state-icon">📦</div>
+                            <p>Товары пока не добавлены</p>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = snapshot.docs.map(d => {
+                    const p = d.data();
+                    return `
+                        <div class="product-card">
+                            ${p.image ? `<img src="${p.image}" style="width:100%;height:160px;object-fit:cover;border-radius:8px;margin-bottom:1rem;">` : ''}
+                            <h3 class="card-title">${p.name}</h3>
+                            <p class="card-content">${p.description}</p>
+                            <div class="product-price">${p.price} ₽</div>
+                        </div>`;
+                }).join('');
+            } catch (error) {
+                console.error('Ошибка загрузки товаров:', error);
+            }
+        };
+
+        // ===== АДМИН: загрузка данных =====
+        window.loadAdminData = async function() {
+            if (!window.isAdmin) return;
+            try {
+                // Пользователи
+                const usersSnap = await getDocs(collection(db, 'users'));
+                document.getElementById('totalUsers').textContent = usersSnap.size;
+
+                let totalPoints = 0;
+                const usersTable = document.getElementById('adminUsersTable');
+                usersTable.innerHTML = usersSnap.docs.map(d => {
+                    const u = d.data();
+                    totalPoints += (u.referralPoints || 0);
+                    const role = window.ADMIN_EMAILS.includes(u.email) ? '<span class="admin-badge">ADMIN</span>' : 'Пользователь';
+                    return `
+                        <tr>
+                            <td>${u.name || '—'}</td>
+                            <td>${u.email || '—'}</td>
+                            <td><code>${u.referralCode || '—'}</code></td>
+                            <td>${u.referralCount || 0}</td>
+                            <td>${u.referralPoints || 0}</td>
+                            <td>${role}</td>
+                        </tr>`;
+                }).join('');
+                document.getElementById('totalPoints').textContent = totalPoints;
+
+                // Товары
+                const productsSnap = await getDocs(collection(db, 'products'));
+                document.getElementById('totalProducts').textContent = productsSnap.size;
+
+                const adminProducts = document.getElementById('adminProductsContainer');
+                if (productsSnap.empty) {
+                    adminProducts.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-state-icon">📦</div>
+                            <p>Товаров пока нет. Добавьте первый!</p>
+                        </div>`;
+                } else {
+                    adminProducts.innerHTML = productsSnap.docs.map(d => {
+                        const p = d.data();
+                        return `
+                            <div class="product-card">
+                                ${p.image ? `<img src="${p.image}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:1rem;">` : ''}
+                                <h3 class="card-title">${p.name}</h3>
+                                <p class="card-content">${p.description}</p>
+                                <div class="product-price">${p.price} ₽</div>
+                                <div class="product-actions">
+                                    <button class="btn btn-warning btn-small" onclick="editProduct('${d.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️ Изменить</button>
+                                    <button class="btn btn-danger btn-small" onclick="deleteProduct('${d.id}')">🗑️ Удалить</button>
+                                </div>
+                            </div>`;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки админ-данных:', error);
+            }
+        };
+
+        // ===== АДМИН: сохранение товара =====
+        window.handleSaveProduct = async function(event) {
+            event.preventDefault();
+            if (!window.isAdmin) { alert('Нет прав!'); return; }
+
+            const id = document.getElementById('productId').value;
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const image = document.getElementById('productImage').value;
+
+            const productData = { name, description, price, image, updatedAt: new Date() };
+
+            try {
+                if (id) {
+                    await updateDoc(doc(db, 'products', id), productData);
+                    alert('Товар обновлён!');
+                } else {
+                    productData.createdAt = new Date();
+                    await addDoc(collection(db, 'products'), productData);
+                    alert('Товар добавлен!');
+                }
+                toggleProductModal();
+                loadAdminData();
+                loadPublicProducts();
+            } catch (error) {
+                alert('Ошибка сохранения: ' + error.message);
+            }
+        };
+
+        // ===== АДМИН: удаление товара =====
+        window.deleteProduct = async function(id) {
+            if (!window.isAdmin) return;
+            if (!confirm('Удалить этот товар?')) return;
+            try {
+                await deleteDoc(doc(db, 'products', id));
+                alert('Товар удалён!');
+                loadAdminData();
+                loadPublicProducts();
+            } catch (error) {
+                alert('Ошибка удаления: ' + error.message);
+            }
+        };
+
+        // Handle login
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                toggleLoginModal();
+                alert('Успешный вход!');
+            } catch (error) {
+                alert('Ошибка входа: ' + error.message);
+            }
+        };
+
+        // Handle register
+        window.handleRegister = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const referralCode = document.getElementById('referralCode').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    referralCode: newReferralCode,
+                    referrerCode: referralCode || null,
+                    referralCount: 0,
+                    referralPoints: 0,
+                    role: ADMIN_EMAILS.includes(email) ? 'admin' : 'user',
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                });
+
+                if (referralCode) {
+                    const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', referralCode));
+                    const referrerDocs = await getDocs(referrerQuery);
+                    if (!referrerDocs.empty) {
+                        const referrerDoc = referrerDocs.docs[0];
+                        const referrerData = referrerDoc.data();
+                        await updateDoc(doc(db, 'users', referrerDoc.id), {
+                            referralCount: (referrerData.referralCount || 0) + 1,
+                            referralPoints: (referrerData.referralPoints || 0) + 50,
+                            updatedAt: new Date()
+                        });
+                    }
+                }
+
+                toggleRegisterModal();
+                alert('Успешная регистрация!');
+            } catch (error) {
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                currentUser = null;
+                window.currentUser = null;
+                window.isAdmin = false;
+                updateAuthUI();
+                showSection('home');
+                alert('Вы вышли из аккаунта');
+            } catch (error) {
+                alert('Ошибка выхода: ' + error.message);
+            }
+        };
+    </script>
+        <!-- Local Functions -->
+    <script>
+        // Show section
+        function showSection(sectionId) {
+            // Защита приватных разделов
+            if ((sectionId === 'cabinet' || sectionId === 'referrals') && !window.currentUser) {
+                alert('Пожалуйста, авторизуйтесь');
+                return;
+            }
+            // Защита админ-панели
+            if (sectionId === 'admin' && !window.isAdmin) {
+                alert('Доступ запрещён. Только для администраторов.');
+                return;
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.add('active');
+
+            // Подгрузка данных при открытии раздела
+            if (sectionId === 'products' && window.loadPublicProducts) {
+                window.loadPublicProducts();
+            }
+            if (sectionId === 'admin' && window.loadAdminData) {
+                window.loadAdminData();
+            }
+        }
+
+        // Switch admin tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Активируем нужную вкладку по тексту/связи
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (tab.getAttribute('onclick').includes(tabId)) {
+                    tab.classList.add('active');
+                }
+            });
+            const content = document.getElementById(tabId);
+            if (content) content.classList.add('active');
+        }
+
+        // Toggle modals
         function toggleLoginModal() {
             document.getElementById('loginModal').classList.toggle('active');
         }
@@ -1410,815 +840,73 @@
             document.getElementById('registerModal').classList.toggle('active');
         }
 
-        function toggleAddProductModal() {
-            document.getElementById('addProductModal').classList.toggle('active');
-        }
+        // Product modal (открытие для добавления)
+        function toggleProductModal() {
+            const modal = document.getElementById('productModal');
+            const isOpening = !modal.classList.contains('active');
+            modal.classList.toggle('active');
 
-        function toggleAddVerifiedProductModal() {
-            document.getElementById('addVerifiedProductModal').classList.toggle('active');
-        }
-
-        function closeEditProductModal() {
-            document.getElementById('editProductModal').classList.remove('active');
-        }
-
-        function closeEditVerifiedProductModal() {
-            document.getElementById('editVerifiedProductModal').classList.remove('active');
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-        }
-
-        function closeRequestProductModal() {
-            document.getElementById('requestProductModal').classList.remove('active');
-        }
-
-        // Authentication
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = { ...user };
-                toggleLoginModal();
-                updateHeader();
-                showSuccessMessage('Вы успешно вошли!');
-                document.querySelector('#loginModal form').reset();
-            } else {
-                showErrorMessage('Неверный email или пароль');
+            // При открытии для добавления — очищаем форму
+            if (isOpening) {
+                document.getElementById('productId').value = '';
+                document.getElementById('productName').value = '';
+                document.getElementById('productDescription').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productImage').value = '';
+                document.getElementById('productModalTitle').textContent = 'Добавить товар';
             }
         }
 
-        function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            
-            if (users.find(u => u.email === email)) {
-                showErrorMessage('Пользователь с таким email уже существует');
-                return;
-            }
-            
-            const urlParams = getUrlParams();
-            const referrer = urlParams.ref ? users.find(u => u.referralCode === urlParams.ref) : null;
-            
-            const newUser = {
-                id: users.length + 1,
-                name,
-                email,
-                password,
-                role: 'user',
-                referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                points: 0,
-                reviews: 0,
-                products: 0,
-                referrer: referrer ? referrer.id : null
-            };
-            
-            users.push(newUser);
-            
-            if (referrer) {
-                console.log('REFERRAL_EVENT', {
-                    timestamp: new Date().toISOString(),
-                    referrer_id: referrer.id,
-                    referrer_name: referrer.name,
-                    referrer_code: referrer.referralCode,
-                    new_user_id: newUser.id,
-                    new_user_name: newUser.name,
-                    new_user_email: newUser.email
-                });
-                showSuccessMessage(`✅ Вы зарегистрировались по реферальной ссылке от ${referrer.name}!`);
-            }
-            
-            currentUser = { ...newUser };
-            toggleRegisterModal();
-            updateHeader();
-            showSuccessMessage('Вы успешно зарегистрировались!');
-            document.querySelector('#registerModal form').reset();
+        // Редактирование товара (открытие с заполнением)
+        function editProduct(id, product) {
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productImage').value = product.image || '';
+            document.getElementById('productModalTitle').textContent = 'Редактировать товар';
+            document.getElementById('productModal').classList.add('active');
         }
 
-        function logout() {
-            currentUser = null;
-            updateHeader();
-            showSuccessMessage('Вы вышли из аккаунта');
-        }
-
-        function updateHeader() {
-            const authButtons = document.querySelector('.auth-buttons');
-            const adminNavLink = document.getElementById('adminNavLink');
-            
-            if (currentUser) {
-                authButtons.innerHTML = `
-                    <div class="flex gap-2" style="align-items: center;">
-                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">${currentUser.name.charAt(0)}</div>
-                        <span style="color: white;">${currentUser.name}</span>
-                    </div>
-                `;
-                
-                // Показать кнопку админ только для администратора
-                if (currentUser.role === 'admin') {
-                    adminNavLink.style.display = 'block';
-                } else {
-                    adminNavLink.style.display = 'none';
-                }
-            } else {
-                authButtons.innerHTML = `
-                    <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
-                    <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
-                `;
-                adminNavLink.style.display = 'none';
-            }
-        }
-
-        // Cabinet
-        function updateCabinet() {
-            if (!currentUser) {
-                document.getElementById('notLoggedInMessage').style.display = 'block';
-                document.getElementById('cabinetContent').style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('notLoggedInMessage').style.display = 'none';
-            document.getElementById('cabinetContent').style.display = 'block';
-            
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
-            document.getElementById('productsCount').textContent = currentUser.products;
-            document.getElementById('reviewsCount').textContent = currentUser.reviews;
-            document.getElementById('pointsCount').textContent = currentUser.points;
-            
-            const userReviews = reviews.filter(r => r.userId === currentUser.id);
-            const avgRating = userReviews.length > 0 
-                ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1)
-                : 0;
-            document.getElementById('avgRating').textContent = avgRating + '★';
-            
-            // Update referral link
-            const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUser.referralCode}`;
-            document.getElementById('referralLink').textContent = referralLink;
-            
-            // Update reviews list
-            const reviewsList = document.getElementById('reviewsList');
-            if (userReviews.length === 0) {
-                reviewsList.innerHTML = '<p class="text-muted">Вы ещё не оставляли отзывов</p>';
-            } else {
-                reviewsList.innerHTML = userReviews.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name || verifiedProducts.find(p => p.id === r.productId)?.name}</h4>
-                                <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                            </div>
-                        </div>
-                        <p class="text-muted mt-2">${r.text}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Update requests list
-            const userRequests = productRequests.filter(r => r.userId === currentUser.id);
-            const requestsList = document.getElementById('requestsList');
-            if (userRequests.length === 0) {
-                requestsList.innerHTML = '<p class="text-muted">Вы ещё не запрашивали товары</p>';
-            } else {
-                requestsList.innerHTML = userRequests.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name}</h4>
-                                <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Оформить карту' : '⏰ Оплатить через 3 дня'}</p>
-                            </div>
-                            <span class="request-status ${r.status}">${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Update commissions
-            const userCommissions = commissions.filter(c => c.referrerId === currentUser.id);
-            const totalCommission = userCommissions.reduce((sum, c) => sum + c.amount, 0);
-            const paidCommission = userCommissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
-            const unpaidCommission = totalCommission - paidCommission;
-            
-            document.getElementById('totalCommission').textContent = '$' + totalCommission.toFixed(2);
-            document.getElementById('paidCommission').textContent = '$' + paidCommission.toFixed(2);
-            document.getElementById('unpaidCommission').textContent = '$' + unpaidCommission.toFixed(2);
-            
-            const commissionsList = document.getElementById('commissionsList');
-            if (userCommissions.length === 0) {
-                commissionsList.innerHTML = '<p class="text-muted">Комиссии отсутствуют</p>';
-            } else {
-                commissionsList.innerHTML = userCommissions.map(c => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${verifiedProducts.find(p => p.id === c.productId)?.name}</h4>
-                                <p class="text-muted">От: ${users.find(u => u.id === c.referredUserId)?.name}</p>
-                            </div>
-                            <div class="text-right">
-                                <div style="font-weight: bold; font-size: 1.2rem;">$${c.amount.toFixed(2)}</div>
-                                <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">${c.paid ? 'Выплачено' : 'Ожидание'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Admin Panel
-        function updateAdmin() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                document.getElementById('adminNotification').style.display = 'block';
-                document.getElementById('adminContent').style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('adminNotification').style.display = 'none';
-            document.getElementById('adminContent').style.display = 'block';
-            
-            // Users list
-            const usersList = document.getElementById('usersList');
-            usersList.innerHTML = users.map(u => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${u.name}</h4>
-                            <p class="text-muted">${u.email}</p>
-                        </div>
-                        <span class="badge badge-primary">${u.role}</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Requests list
-            const adminRequestsList = document.getElementById('adminRequestsList');
-            if (productRequests.length === 0) {
-                adminRequestsList.innerHTML = '<p class="text-muted">Нет запросов</p>';
-            } else {
-                adminRequestsList.innerHTML = productRequests.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name}</h4>
-                                <p class="text-muted">От: ${users.find(u => u.id === r.userId)?.name}</p>
-                                <p class="text-muted">Способ оплаты: ${r.paymentMethod === 'card' ? '💳 Оформить карту банка' : '⏰ Оплатить через 3 дня'}</p>
-                                <p class="text-muted">Категория: ${r.category}</p>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="btn btn-success btn-small" onclick="approveRequest(${r.id})">✅ Одобрить</button>
-                                <button class="btn btn-danger btn-small" onclick="rejectRequest(${r.id})">❌ Отклонить</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Products list
-            const adminProductsList = document.getElementById('adminProductsList');
-            adminProductsList.innerHTML = products.map(p => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${p.name}</h4>
-                            <p class="text-muted">${p.category}</p>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-warning btn-small" onclick="openEditProductModal(${p.id})">✏️ Редактировать</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteProduct(${p.id})">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Verified Products list
-            const adminVerifiedProductsList = document.getElementById('adminVerifiedProductsList');
-            adminVerifiedProductsList.innerHTML = verifiedProducts.map(p => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${p.name}</h4>
-                            <p class="text-muted">${p.category} - $${p.price} | Остаток: <strong>${p.stock}</strong> шт.</p>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal(${p.id})">✏️ Редактировать</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct(${p.id})">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Reviews list
-            const adminReviewsList = document.getElementById('adminReviewsList');
-            adminReviewsList.innerHTML = reviews.map(r => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${verifiedProducts.find(p => p.id === r.productId)?.name || products.find(p => p.id === r.productId)?.name}</h4>
-                            <p class="text-muted">От: ${users.find(u => u.id === r.userId)?.name}</p>
-                            <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                        </div>
-                        <button class="btn btn-success btn-small" onclick="approveReview(${r.id})">Одобрить</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Commissions list
-            const adminCommissionsList = document.getElementById('adminCommissionsList');
-            adminCommissionsList.innerHTML = commissions.map(c => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${verifiedProducts.find(p => p.id === c.productId)?.name}</h4>
-                            <p class="text-muted">От: ${users.find(u => u.id === c.referrerId)?.name}</p>
-                        </div>
-                        <div class="text-right">
-                            <div style="font-weight: bold; font-size: 1.2rem;">$${c.amount.toFixed(2)}</div>
-                            ${!c.paid ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid(${c.id})">Отметить выплаченной</button>` : '<span class="badge badge-success">Выплачено</span>'}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Products
-        function renderProducts() {
-            const grid = document.getElementById('productGrid');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            
-            grid.innerHTML = filtered.map(p => `
-                <div class="card position-relative">
-                    ${p.stock <= 5 ? `<div class="stock-badge ${p.stock === 0 ? 'out' : 'low'}">Осталось: ${p.stock}</div>` : `<div class="stock-badge">В наличии: ${p.stock}</div>`}
-                    <div class="product-image">
-                        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '📦'}
-                    </div>
-                    <h3 class="card-title">${p.name}</h3>
-                    <p class="card-content">${p.description}</p>
-                    <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                    <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                    <div class="card-footer">
-                        <button class="btn btn-primary btn-small" onclick="showRequestProductOptions(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderVerifiedProducts() {
-            const grid = document.getElementById('verifiedProductGrid');
-            const searchTerm = document.getElementById('verifiedSearchInput').value.toLowerCase();
-            
-            const filtered = verifiedProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            
-            grid.innerHTML = filtered.map(p => `
-                <div class="card position-relative">
-                    <div class="product-image">
-                        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '✅'}
-                    </div>
-                    <h3 class="card-title">${p.name}<span class="verified-badge">Проверено</span></h3>
-                    <p class="card-content">${p.description}</p>
-                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 1rem 0;">$${p.price}</div>
-                    <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                    <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                    <div class="card-footer">
-                        <button class="btn btn-primary btn-small" onclick="showPaymentOptions(${p.id})">Купить</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function showRequestProductOptions(productId) {
-            if (!currentUser) {
-                showErrorMessage('Пожалуйста, авторизуйтесь');
-                toggleLoginModal();
-                return;
-            }
-
-            const product = products.find(p => p.id === productId);
-            const requestOptions = document.getElementById('requestProductOptions');
-            
-            requestOptions.innerHTML = `
-                <div class="payment-option">
-                    <h4>💳 Оформить карту банка</h4>
-                    <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                    <button class="btn btn-primary" onclick="submitProductRequest(${productId}, 'card')">Оформить карту</button>
-                </div>
-                
-                <div class="payment-option">
-                    <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                    <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                    <button class="btn btn-secondary" onclick="submitProductRequest(${productId}, 'later')">Получить товар</button>
-                </div>
-            `;
-            
-            document.getElementById('requestProductModal').classList.add('active');
-        }
-
-        function submitProductRequest(productId, paymentMethod) {
-            const product = products.find(p => p.id === productId);
-            
-            const request = {
-                id: productRequests.length + 1,
-                userId: currentUser.id,
-                productId: productId,
-                paymentMethod: paymentMethod,
-                category: product.category,
-                status: 'pending',
-                date: new Date().toLocaleDateString('ru-RU')
-            };
-            
-            productRequests.push(request);
-            
-            closeRequestProductModal();
-            showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен! Администратор рассмотрит ваш запрос в ближайшее время.`);
-            
-            currentUser.products++;
-        }
-
-        function showPaymentOptions(productId) {
-            if (!currentUser) {
-                showErrorMessage('Пожалуйста, авторизуйтесь');
-                toggleLoginModal();
-                return;
-            }
-
-            const product = verifiedProducts.find(p => p.id === productId);
-            const paymentOptions = document.getElementById('paymentOptions');
-            
-            paymentOptions.innerHTML = `
-                <div class="payment-option">
-                    <h4>💳 Оформить карту банка</h4>
-                    <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                    <button class="btn btn-primary" onclick="processPayment(${productId}, 'card')">Оплатить $${product.price}</button>
-                </div>
-                
-                <div class="payment-option">
-                    <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                    <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                    <button class="btn btn-secondary" onclick="processPayment(${productId}, 'later')">Получить товар</button>
-                </div>
-            `;
-            
-            document.getElementById('paymentModal').classList.add('active');
-        }
-
-        function processPayment(productId, method) {
-            const product = verifiedProducts.find(p => p.id === productId);
-            
-            if (method === 'card') {
-                showSuccessMessage(`✅ Платёж на сумму $${product.price} успешно обработан! Товар будет доставлен в течение 3-5 дней.`);
-            } else {
-                showSuccessMessage(`✅ Товар зарезервирован! Отправьте отзыв и чек, и мы переведём вам $${product.price} через 3 дня.`);
-            }
-            
-            closePaymentModal();
-            currentUser.products++;
-            product.stock--;
-            
-            if (currentUser.referrer) {
-                const commission = {
-                    id: commissions.length + 1,
-                    referrerId: currentUser.referrer,
-                    referredUserId: currentUser.id,
-                    productId: productId,
-                    amount: product.price * 0.05,
-                    paid: false
-                };
-                commissions.push(commission);
-            }
-        }
-
-        function handleAddProduct(e) {
-            e.preventDefault();
-            
-            const imageFile = document.getElementById('productImage').files[0];
-            let imageData = null;
-            
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    imageData = event.target.result;
-                    createProduct(imageData);
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                createProduct(null);
-            }
-            
-            function createProduct(image) {
-                const newProduct = {
-                    id: Math.max(...products.map(p => p.id), 0) + 1,
-                    name: document.getElementById('productName').value,
-                    category: document.getElementById('productCategory').value,
-                    description: document.getElementById('productDescription').value,
-                    url: document.getElementById('productUrl').value,
-                    image: image,
-                    rating: 0,
-                    reviews: 0,
-                    stock: parseInt(document.getElementById('productStock').value)
-                };
-                
-                products.push(newProduct);
-                toggleAddProductModal();
-                showSuccessMessage('Товар успешно добавлен!');
-                document.querySelector('#addProductModal form').reset();
-                updateAdmin();
-            }
-        }
-
-        function handleAddVerifiedProduct(e) {
-            e.preventDefault();
-            
-            const imageFile = document.getElementById('verifiedProductImage').files[0];
-            let imageData = null;
-            
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    imageData = event.target.result;
-                    createProduct(imageData);
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                createProduct(null);
-            }
-            
-            function createProduct(image) {
-                const newProduct = {
-                    id: Math.max(...verifiedProducts.map(p => p.id), 0) + 1,
-                    name: document.getElementById('verifiedProductName').value,
-                    category: document.getElementById('verifiedProductCategory').value,
-                    description: document.getElementById('verifiedProductDescription').value,
-                    price: parseFloat(document.getElementById('verifiedProductPrice').value),
-                    stock: parseInt(document.getElementById('verifiedProductStock').value),
-                    url: document.getElementById('verifiedProductUrl').value,
-                    image: image,
-                    rating: 0,
-                    reviews: 0
-                };
-                
-                verifiedProducts.push(newProduct);
-                toggleAddVerifiedProductModal();
-                showSuccessMessage('Проверенный товар успешно добавлен!');
-                document.querySelector('#addVerifiedProductModal form').reset();
-                updateAdmin();
-            }
-        }
-
-        function openEditProductModal(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            document.getElementById('editProductId').value = product.id;
-            document.getElementById('editProductName').value = product.name;
-            document.getElementById('editProductDescription').value = product.description;
-            document.getElementById('editProductCategory').value = product.category;
-            document.getElementById('editProductUrl').value = product.url;
-            document.getElementById('editProductStock').value = product.stock;
-            
-            document.getElementById('editProductModal').classList.add('active');
-        }
-
-        function openEditVerifiedProductModal(productId) {
-            const product = verifiedProducts.find(p => p.id === productId);
-            if (!product) return;
-            
-            document.getElementById('editVerifiedProductId').value = product.id;
-            document.getElementById('editVerifiedProductName').value = product.name;
-            document.getElementById('editVerifiedProductDescription').value = product.description;
-            document.getElementById('editVerifiedProductCategory').value = product.category;
-            document.getElementById('editVerifiedProductPrice').value = product.price;
-            document.getElementById('editVerifiedProductStock').value = product.stock;
-            document.getElementById('editVerifiedProductUrl').value = product.url;
-            
-            document.getElementById('editVerifiedProductModal').classList.add('active');
-        }
-
-        function handleEditProduct(e) {
-            e.preventDefault();
-            
-            const productId = parseInt(document.getElementById('editProductId').value);
-            const product = products.find(p => p.id === productId);
-            
-            const imageFile = document.getElementById('editProductImage').files[0];
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    product.image = event.target.result;
-                    updateProductData();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                updateProductData();
-            }
-            
-            function updateProductData() {
-                product.name = document.getElementById('editProductName').value;
-                product.description = document.getElementById('editProductDescription').value;
-                product.category = document.getElementById('editProductCategory').value;
-                product.url = document.getElementById('editProductUrl').value;
-                product.stock = parseInt(document.getElementById('editProductStock').value);
-                
-                closeEditProductModal();
-                showSuccessMessage('Товар успешно обновлён!');
-                updateAdmin();
-            }
-        }
-
-        function handleEditVerifiedProduct(e) {
-            e.preventDefault();
-            
-            const productId = parseInt(document.getElementById('editVerifiedProductId').value);
-            const product = verifiedProducts.find(p => p.id === productId);
-            
-            const imageFile = document.getElementById('editVerifiedProductImage').files[0];
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    product.image = event.target.result;
-                    updateProductData();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                updateProductData();
-            }
-            
-            function updateProductData() {
-                product.name = document.getElementById('editVerifiedProductName').value;
-                product.description = document.getElementById('editVerifiedProductDescription').value;
-                product.category = document.getElementById('editVerifiedProductCategory').value;
-                product.price = parseFloat(document.getElementById('editVerifiedProductPrice').value);
-                product.stock = parseInt(document.getElementById('editVerifiedProductStock').value);
-                product.url = document.getElementById('editVerifiedProductUrl').value;
-                
-                closeEditVerifiedProductModal();
-                showSuccessMessage('Товар успешно обновлён!');
-                updateAdmin();
-            }
-        }
-
-        function deleteProduct(productId) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                products = products.filter(p => p.id !== productId);
-                showSuccessMessage('Товар успешно удалён!');
-                updateAdmin();
-            }
-        }
-
-        function deleteVerifiedProduct(productId) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                verifiedProducts = verifiedProducts.filter(p => p.id !== productId);
-                showSuccessMessage('Товар успешно удалён!');
-                updateAdmin();
-            }
-        }
-
-        // Requests
-        function approveRequest(requestId) {
-            const request = productRequests.find(r => r.id === requestId);
-            if (request) {
-                request.status = 'approved';
-                showSuccessMessage('Запрос одобрен!');
-                updateAdmin();
-            }
-        }
-
-        function rejectRequest(requestId) {
-            const request = productRequests.find(r => r.id === requestId);
-            if (request) {
-                request.status = 'rejected';
-                showSuccessMessage('Запрос отклонен!');
-                updateAdmin();
-            }
-        }
-
-        // Reviews
-        function addReview(productId, rating, text) {
-            if (!currentUser) return;
-            
-            const review = {
-                id: reviews.length + 1,
-                userId: currentUser.id,
-                productId,
-                rating,
-                text,
-                date: new Date().toLocaleDateString('ru-RU')
-            };
-            
-            reviews.push(review);
-            currentUser.reviews++;
-            currentUser.points += 10;
-        }
-
-        function approveReview(reviewId) {
-            showSuccessMessage('Отзыв одобрен!');
-        }
-
-        // Commissions
-        function markCommissionAsPaid(commissionId) {
-            const commission = commissions.find(c => c.id === commissionId);
-            if (commission) {
-                commission.paid = true;
-                showSuccessMessage('Комиссия отмечена как выплаченная!');
-                updateAdmin();
-            }
-        }
-
-        // Tabs
-        function switchTab(tabName) {
-            document.querySelectorAll('#cabinet .tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('#cabinet .tab-content').forEach(t => t.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-
-        function switchAdminTab(tabName) {
-            document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('#admin .tab-content').forEach(t => t.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName + '-admin').classList.add('active');
-        }
-
-        // Utilities
+        // Copy referral link
         function copyReferralLink() {
             const link = document.getElementById('referralLink').textContent;
-            navigator.clipboard.writeText(link);
-            showSuccessMessage('Реферральная ссылка скопирована в буфер обмена!');
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована!');
+            }).catch(() => {
+                // Fallback для старых браузеров
+                const tmp = document.createElement('textarea');
+                tmp.value = link;
+                document.body.appendChild(tmp);
+                tmp.select();
+                document.execCommand('copy');
+                document.body.removeChild(tmp);
+                alert('Ссылка скопирована!');
+            });
         }
 
-        function showSuccessMessage(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success';
-            alert.textContent = message;
-            alert.style.position = 'fixed';
-            alert.style.top = '80px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '2000';
-            alert.style.maxWidth = '400px';
-            document.body.appendChild(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        function showErrorMessage(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-error';
-            alert.textContent = message;
-            alert.style.position = 'fixed';
-            alert.style.top = '80px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '2000';
-            alert.style.maxWidth = '400px';
-            document.body.appendChild(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        // Search
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', renderProducts);
-            }
-
-            const verifiedSearchInput = document.getElementById('verifiedSearchInput');
-            if (verifiedSearchInput) {
-                verifiedSearchInput.addEventListener('input', renderVerifiedProducts);
-            }
-            
-            // Demo: Add some test reviews
-            addReview(1, 5, 'Отличные наушники! Звук кристально чистый, батарея держит долго.');
-            addReview(2, 4, 'Хорошая кофеварка, но немного шумная.');
-            addReview(3, 5, 'Идеальный фитнес трекер! Все функции работают отлично.');
-            
-            // Check for referral code in URL
-            const urlParams = getUrlParams();
-            if (urlParams.ref) {
-                const referrer = users.find(u => u.referralCode === urlParams.ref);
-                if (referrer) {
-                    showSuccessMessage(`🎉 Вы пришли по реферальной ссылке от ${referrer.name}!`);
-                }
+        // Автозаполнение реферального кода из URL (?ref=КОД)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('ref');
+            if (ref) {
+                const refInput = document.getElementById('referralCode');
+                if (refInput) refInput.value = ref;
+                // Автоматически открываем окно регистрации
+                setTimeout(() => {
+                    const modal = document.getElementById('registerModal');
+                    if (modal) modal.classList.add('active');
+                }, 500);
             }
         });
 
         // Close modals on background click
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
