@@ -1353,119 +1353,75 @@
         </div>
     </div>
 
-    <!-- Footer -->
+        <!-- Footer -->
     <footer>
         <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
     </footer>
 
     <script>
-        // Data Storage
-        let currentUser = null;
-        let users = [
+        // ===== ХРАНИЛИЩЕ ДАННЫХ (с сохранением) =====
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        let users = JSON.parse(localStorage.getItem('users')) || [
             { id: 1, name: 'Администратор', email: 'marketology2019@mail.ru', password: 'Moroz1990rus', role: 'admin', referralCode: 'ADMIN123', points: 500, reviews: 15, products: 8 }
         ];
-        let products = [
+        let products = JSON.parse(localStorage.getItem('products')) || [
             { id: 1, name: 'Беспроводные наушники', category: 'electronics', description: 'Высокачественные наушники с шумоподавлением', url: 'https://example.com/1', image: null, rating: 4.5, reviews: 12, stock: 10 },
             { id: 2, name: 'Кофеварка', category: 'home', description: 'Автоматическая кофеварка на 12 чашек', url: 'https://example.com/2', image: null, rating: 4.8, reviews: 8, stock: 5 },
             { id: 3, name: 'Фитнес трекер', category: 'sports', description: 'Умный браслет для отслеживания активности', url: 'https://example.com/3', image: null, rating: 4.3, reviews: 20, stock: 15 }
         ];
-        let verifiedProducts = [
+        let verifiedProducts = JSON.parse(localStorage.getItem('verifiedProducts')) || [
             { id: 101, name: 'iPhone 15 Pro', category: 'electronics', description: 'Флагманский смартфон Apple', price: 999, stock: 15, url: 'https://example.com/iphone', image: null, rating: 4.9, reviews: 150 },
             { id: 102, name: 'MacBook Pro', category: 'electronics', description: 'Мощный ноутбук для профессионалов', price: 1999, stock: 8, url: 'https://example.com/macbook', image: null, rating: 4.8, reviews: 200 },
             { id: 103, name: 'Samsung Galaxy S24', category: 'electronics', description: 'Премиум Android смартфон', price: 899, stock: 20, url: 'https://example.com/samsung', image: null, rating: 4.7, reviews: 180 }
         ];
-        let reviews = [];
-        let commissions = [];
-        let productRequests = [];
+        let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+        let commissions = JSON.parse(localStorage.getItem('commissions')) || [];
+        let productRequests = JSON.parse(localStorage.getItem('productRequests')) || [];
 
-        // Get URL parameters
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                ref: params.get('ref')
-            };
+        // Сохраняем всё в localStorage
+        function saveData() {
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('products', JSON.stringify(products));
+            localStorage.setItem('verifiedProducts', JSON.stringify(verifiedProducts));
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            localStorage.setItem('commissions', JSON.stringify(commissions));
+            localStorage.setItem('productRequests', JSON.stringify(productRequests));
         }
 
-        // UI Functions
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return { ref: params.get('ref') };
+        }
+
+        // ===== НАВИГАЦИЯ / МОДАЛКИ =====
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            
-            if (sectionId === 'catalog') {
-                renderProducts();
-            } else if (sectionId === 'verified') {
-                renderVerifiedProducts();
-            } else if (sectionId === 'cabinet') {
-                updateCabinet();
-            } else if (sectionId === 'admin') {
-                updateAdmin();
-            }
+            if (sectionId === 'catalog') renderProducts();
+            else if (sectionId === 'verified') renderVerifiedProducts();
+            else if (sectionId === 'cabinet') updateCabinet();
+            else if (sectionId === 'admin') updateAdmin();
         }
+        function toggleLoginModal() { document.getElementById('loginModal').classList.toggle('active'); }
+        function toggleRegisterModal() { document.getElementById('registerModal').classList.toggle('active'); }
+        function toggleAddProductModal() { document.getElementById('addProductModal').classList.toggle('active'); }
+        function toggleAddVerifiedProductModal() { document.getElementById('addVerifiedProductModal').classList.toggle('active'); }
+        function closeEditProductModal() { document.getElementById('editProductModal').classList.remove('active'); }
+        function closeEditVerifiedProductModal() { document.getElementById('editVerifiedProductModal').classList.remove('active'); }
+        function closePaymentModal() { document.getElementById('paymentModal').classList.remove('active'); }
+        function closeRequestProductModal() { document.getElementById('requestProductModal').classList.remove('active'); }
 
-        function toggleLoginModal() {
-            document.getElementById('loginModal').classList.toggle('active');
-        }
-
-        function toggleRegisterModal() {
-            document.getElementById('registerModal').classList.toggle('active');
-        }
-
-        function toggleAddProductModal() {
-            document.getElementById('addProductModal').classList.toggle('active');
-        }
-
-        function toggleAddVerifiedProductModal() {
-            document.getElementById('addVerifiedProductModal').classList.toggle('active');
-        }
-
-        function closeEditProductModal() {
-            document.getElementById('editProductModal').classList.remove('active');
-        }
-
-        function closeEditVerifiedProductModal() {
-            document.getElementById('editVerifiedProductModal').classList.remove('active');
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-        }
-
-        function closeRequestProductModal() {
-            document.getElementById('requestProductModal').classList.remove('active');
-        }
-
-        // Authentication
+        // ===== АВТОРИЗАЦИЯ =====
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-                        // Проверка локальных аккаунтов (админ) — ДО Firebase
             const localUser = users.find(u => u.email === email && u.password === password);
             if (localUser) {
                 currentUser = { ...localUser };
-                toggleLoginModal();
-                updateHeader();
-                showSuccessMessage('Вы успешно вошли!');
-                document.querySelector('#loginModal form').reset();
-                return;
-            }          
-            if (window.firebaseAuth) {
-                window.fbSignIn(window.firebaseAuth, email, password)
-                    .then((cred) => {
-                        currentUser = { name: email.split('@')[0], email: email, role: 'user', referralCode: 'REF' + Math.random().toString(36).substr(2,9).toUpperCase(), points: 0, reviews: 0, products: 0 };
-                        toggleLoginModal();
-                        updateHeader();
-                        showSuccessMessage('Вы успешно вошли!');
-                        document.querySelector('#loginModal form').reset();
-                    })
-                    .catch((err) => {
-                        showErrorMessage('Ошибка входа: ' + err.message);
-                    });
-                return;
-            }
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = { ...user };
+                saveData();
                 toggleLoginModal();
                 updateHeader();
                 showSuccessMessage('Вы успешно вошли!');
@@ -1480,57 +1436,32 @@
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-                        if (window.firebaseAuth) {
-                window.fbCreateUser(window.firebaseAuth, email, password)
-                    .then((cred) => {
-                        currentUser = { name: name, email: email, role: 'user', referralCode: 'REF' + Math.random().toString(36).substr(2,9).toUpperCase(), points: 0, reviews: 0, products: 0 };
-                        toggleRegisterModal();
-                        updateHeader();
-                        showSuccessMessage('Вы успешно зарегистрировались!');
-                        document.querySelector('#registerModal form').reset();
-                    })
-                    .catch((err) => {
-                        showErrorMessage('Ошибка регистрации: ' + err.message);
-                    });
-                return;
-            }
+
             if (users.find(u => u.email === email)) {
                 showErrorMessage('Пользователь с таким email уже существует');
                 return;
             }
-            
+
             const urlParams = getUrlParams();
             const referrer = urlParams.ref ? users.find(u => u.referralCode === urlParams.ref) : null;
-            
+
             const newUser = {
-                id: users.length + 1,
-                name,
-                email,
-                password,
+                id: Date.now(),
+                name, email, password,
                 role: 'user',
                 referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                points: 0,
-                reviews: 0,
-                products: 0,
+                points: 0, reviews: 0, products: 0,
                 referrer: referrer ? referrer.id : null
             };
-            
+
             users.push(newUser);
-            
-            if (referrer) {
-                console.log('REFERRAL_EVENT', {
-                    timestamp: new Date().toISOString(),
-                    referrer_id: referrer.id,
-                    referrer_name: referrer.name,
-                    referrer_code: referrer.referralCode,
-                    new_user_id: newUser.id,
-                    new_user_name: newUser.name,
-                    new_user_email: newUser.email
-                });
-                showSuccessMessage(`✅ Вы зарегистрировались по реферальной ссылке от ${referrer.name}!`);
-            }
-            
             currentUser = { ...newUser };
+            saveData();
+
+            if (referrer) {
+                showSuccessMessage(`✅ Вы зарегистрировались по ссылке от ${referrer.name}!`);
+            }
+
             toggleRegisterModal();
             updateHeader();
             showSuccessMessage('Вы успешно зарегистрировались!');
@@ -1539,459 +1470,218 @@
 
         function logout() {
             currentUser = null;
+            saveData();
             updateHeader();
+            showSection('home');
             showSuccessMessage('Вы вышли из аккаунта');
         }
 
         function updateHeader() {
             const authButtons = document.querySelector('.auth-buttons');
             const adminNavLink = document.getElementById('adminNavLink');
-            
             if (currentUser) {
                 authButtons.innerHTML = `
                     <div class="flex gap-2" style="align-items: center;">
                         <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">${currentUser.name.charAt(0)}</div>
                         <span style="color: white;">${currentUser.name}</span>
-                    </div>
-                `;
-                
-                // Показать кнопку админ только для администратора
-                if (currentUser.role === 'admin') {
-                    adminNavLink.style.display = 'block';
-                } else {
-                    adminNavLink.style.display = 'none';
-                }
+                        <button class="btn btn-secondary btn-small" onclick="logout()">Выход</button>
+                    </div>`;
+                adminNavLink.style.display = currentUser.role === 'admin' ? 'block' : 'none';
             } else {
                 authButtons.innerHTML = `
                     <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
-                    <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
-                `;
+                    <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>`;
                 adminNavLink.style.display = 'none';
             }
         }
 
-        // Cabinet
+        // ===== ЛИЧНЫЙ КАБИНЕТ =====
         function updateCabinet() {
             if (!currentUser) {
                 document.getElementById('notLoggedInMessage').style.display = 'block';
                 document.getElementById('cabinetContent').style.display = 'none';
                 return;
             }
-            
             document.getElementById('notLoggedInMessage').style.display = 'none';
             document.getElementById('cabinetContent').style.display = 'block';
-            
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('userEmail').textContent = currentUser.email;
             document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
             document.getElementById('productsCount').textContent = currentUser.products;
             document.getElementById('reviewsCount').textContent = currentUser.reviews;
             document.getElementById('pointsCount').textContent = currentUser.points;
-            
+
             const userReviews = reviews.filter(r => r.userId === currentUser.id);
-            const avgRating = userReviews.length > 0 
-                ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1)
-                : 0;
+            const avgRating = userReviews.length > 0 ? (userReviews.reduce((s, r) => s + r.rating, 0) / userReviews.length).toFixed(1) : 0;
             document.getElementById('avgRating').textContent = avgRating + '★';
-            
-            // Update referral link
+
             const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUser.referralCode}`;
             document.getElementById('referralLink').textContent = referralLink;
-            
-            // Update reviews list
-            const reviewsList = document.getElementById('reviewsList');
-            if (userReviews.length === 0) {
-                reviewsList.innerHTML = '<p class="text-muted">Вы ещё не оставляли отзывов</p>';
+
+            // Приглашённые пользователи
+            const myReferrals = users.filter(u => u.referrer === currentUser.id);
+            const referralsList = document.getElementById('referralsList');
+            if (myReferrals.length === 0) {
+                referralsList.innerHTML = '<p class="text-muted">Вы ещё никого не пригласили</p>';
             } else {
-                reviewsList.innerHTML = userReviews.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name || verifiedProducts.find(p => p.id === r.productId)?.name}</h4>
-                                <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                            </div>
-                        </div>
-                        <p class="text-muted mt-2">${r.text}</p>
-                    </div>
-                `).join('');
+                referralsList.innerHTML = myReferrals.map(u => `
+                    <div class="card mb-2"><div class="flex gap-2">
+                        <div class="user-avatar">${u.name.charAt(0)}</div>
+                        <div><div style="font-weight:600;">${u.name}</div>
+                        <div class="text-muted" style="font-size:0.9rem;">${u.email}</div></div>
+                    </div></div>`).join('');
             }
-            
-            // Update requests list
+
+            // Отзывы
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = userReviews.length === 0 ? '<p class="text-muted">Вы ещё не оставляли отзывов</p>' :
+                userReviews.map(r => `<div class="card mb-2"><div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div><p class="text-muted mt-2">${r.text}</p></div>`).join('');
+
+            // Запросы
             const userRequests = productRequests.filter(r => r.userId === currentUser.id);
             const requestsList = document.getElementById('requestsList');
-            if (userRequests.length === 0) {
-                requestsList.innerHTML = '<p class="text-muted">Вы ещё не запрашивали товары</p>';
-            } else {
-                requestsList.innerHTML = userRequests.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name}</h4>
-                                <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Оформить карту' : '⏰ Оплатить через 3 дня'}</p>
-                            </div>
-                            <span class="request-status ${r.status}">${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Update commissions
+            requestsList.innerHTML = userRequests.length === 0 ? '<p class="text-muted">Вы ещё не запрашивали товары</p>' :
+                userRequests.map(r => `<div class="card mb-2"><h4 class="card-title">${products.find(p => p.id === r.productId)?.name || ''}</h4><span class="request-status ${r.status}">${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}</span></div>`).join('');
+
+            // Комиссии
             const userCommissions = commissions.filter(c => c.referrerId === currentUser.id);
-            const totalCommission = userCommissions.reduce((sum, c) => sum + c.amount, 0);
-            const paidCommission = userCommissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
-            const unpaidCommission = totalCommission - paidCommission;
-            
-            document.getElementById('totalCommission').textContent = '$' + totalCommission.toFixed(2);
-            document.getElementById('paidCommission').textContent = '$' + paidCommission.toFixed(2);
-            document.getElementById('unpaidCommission').textContent = '$' + unpaidCommission.toFixed(2);
-            
+            const totalC = userCommissions.reduce((s, c) => s + c.amount, 0);
+            const paidC = userCommissions.filter(c => c.paid).reduce((s, c) => s + c.amount, 0);
+            document.getElementById('totalCommission').textContent = '$' + totalC.toFixed(2);
+            document.getElementById('paidCommission').textContent = '$' + paidC.toFixed(2);
+            document.getElementById('unpaidCommission').textContent = '$' + (totalC - paidC).toFixed(2);
             const commissionsList = document.getElementById('commissionsList');
-            if (userCommissions.length === 0) {
-                commissionsList.innerHTML = '<p class="text-muted">Комиссии отсутствуют</p>';
-            } else {
-                commissionsList.innerHTML = userCommissions.map(c => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${verifiedProducts.find(p => p.id === c.productId)?.name}</h4>
-                                <p class="text-muted">От: ${users.find(u => u.id === c.referredUserId)?.name}</p>
-                            </div>
-                            <div class="text-right">
-                                <div style="font-weight: bold; font-size: 1.2rem;">$${c.amount.toFixed(2)}</div>
-                                <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">${c.paid ? 'Выплачено' : 'Ожидание'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            commissionsList.innerHTML = userCommissions.length === 0 ? '<p class="text-muted">Комиссии отсутствуют</p>' :
+                userCommissions.map(c => `<div class="card mb-2"><div class="flex-between"><span>${verifiedProducts.find(p => p.id === c.productId)?.name || ''}</span><strong>$${c.amount.toFixed(2)}</strong></div></div>`).join('');
         }
 
-        // Admin Panel
+        // ===== АДМИН =====
         function updateAdmin() {
             if (!currentUser || currentUser.role !== 'admin') {
                 document.getElementById('adminNotification').style.display = 'block';
                 document.getElementById('adminContent').style.display = 'none';
                 return;
             }
-            
             document.getElementById('adminNotification').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
-            
-            // Users list
-            const usersList = document.getElementById('usersList');
-            usersList.innerHTML = users.map(u => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${u.name}</h4>
-                            <p class="text-muted">${u.email}</p>
-                        </div>
-                        <span class="badge badge-primary">${u.role}</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Requests list
-            const adminRequestsList = document.getElementById('adminRequestsList');
-            if (productRequests.length === 0) {
-                adminRequestsList.innerHTML = '<p class="text-muted">Нет запросов</p>';
-            } else {
-                adminRequestsList.innerHTML = productRequests.map(r => `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${products.find(p => p.id === r.productId)?.name}</h4>
-                                <p class="text-muted">От: ${users.find(u => u.id === r.userId)?.name}</p>
-                                <p class="text-muted">Способ оплаты: ${r.paymentMethod === 'card' ? '💳 Оформить карту банка' : '⏰ Оплатить через 3 дня'}</p>
-                                <p class="text-muted">Категория: ${r.category}</p>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="btn btn-success btn-small" onclick="approveRequest(${r.id})">✅ Одобрить</button>
-                                <button class="btn btn-danger btn-small" onclick="rejectRequest(${r.id})">❌ Отклонить</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Products list
-            const adminProductsList = document.getElementById('adminProductsList');
-            adminProductsList.innerHTML = products.map(p => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${p.name}</h4>
-                            <p class="text-muted">${p.category}</p>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-warning btn-small" onclick="openEditProductModal(${p.id})">✏️ Редактировать</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteProduct(${p.id})">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Verified Products list
-            const adminVerifiedProductsList = document.getElementById('adminVerifiedProductsList');
-            adminVerifiedProductsList.innerHTML = verifiedProducts.map(p => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${p.name}</h4>
-                            <p class="text-muted">${p.category} - $${p.price} | Остаток: <strong>${p.stock}</strong> шт.</p>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal(${p.id})">✏️ Редактировать</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct(${p.id})">🗑️ Удалить</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Reviews list
-            const adminReviewsList = document.getElementById('adminReviewsList');
-            adminReviewsList.innerHTML = reviews.map(r => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${verifiedProducts.find(p => p.id === r.productId)?.name || products.find(p => p.id === r.productId)?.name}</h4>
-                            <p class="text-muted">От: ${users.find(u => u.id === r.userId)?.name}</p>
-                            <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                        </div>
-                        <button class="btn btn-success btn-small" onclick="approveReview(${r.id})">Одобрить</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Commissions list
-            const adminCommissionsList = document.getElementById('adminCommissionsList');
-            adminCommissionsList.innerHTML = commissions.map(c => `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${verifiedProducts.find(p => p.id === c.productId)?.name}</h4>
-                            <p class="text-muted">От: ${users.find(u => u.id === c.referrerId)?.name}</p>
-                        </div>
-                        <div class="text-right">
-                            <div style="font-weight: bold; font-size: 1.2rem;">$${c.amount.toFixed(2)}</div>
-                            ${!c.paid ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid(${c.id})">Отметить выплаченной</button>` : '<span class="badge badge-success">Выплачено</span>'}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+
+            document.getElementById('usersList').innerHTML = users.map(u => `
+                <div class="card mb-2"><div class="flex-between"><div><h4 class="card-title">${u.name}</h4><p class="text-muted">${u.email}</p></div><span class="badge badge-primary">${u.role}</span></div></div>`).join('');
+
+            const ar = document.getElementById('adminRequestsList');
+            ar.innerHTML = productRequests.length === 0 ? '<p class="text-muted">Нет запросов</p>' :
+                productRequests.map(r => `<div class="card mb-2"><div class="flex-between"><div><h4 class="card-title">${products.find(p => p.id === r.productId)?.name || ''}</h4><p class="text-muted">От: ${users.find(u => u.id === r.userId)?.name || ''}</p></div><div class="action-buttons"><button class="btn btn-success btn-small" onclick="approveRequest(${r.id})">✅</button><button class="btn btn-danger btn-small" onclick="rejectRequest(${r.id})">❌</button></div></div></div>`).join('');
+
+            document.getElementById('adminProductsList').innerHTML = products.map(p => `<div class="card mb-2"><div class="flex-between"><h4 class="card-title">${p.name}</h4><div class="action-buttons"><button class="btn btn-warning btn-small" onclick="openEditProductModal(${p.id})">✏️</button><button class="btn btn-danger btn-small" onclick="deleteProduct(${p.id})">🗑️</button></div></div></div>`).join('');
+
+            document.getElementById('adminVerifiedProductsList').innerHTML = verifiedProducts.map(p => `<div class="card mb-2"><div class="flex-between"><div><h4 class="card-title">${p.name}</h4><p class="text-muted">$${p.price} | Остаток: ${p.stock}</p></div><div class="action-buttons"><button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal(${p.id})">✏️</button><button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct(${p.id})">🗑️</button></div></div></div>`).join('');
+
+            document.getElementById('adminReviewsList').innerHTML = reviews.map(r => `<div class="card mb-2"><div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div></div>`).join('') || '<p class="text-muted">Нет отзывов</p>';
+
+            document.getElementById('adminCommissionsList').innerHTML = commissions.length === 0 ? '<p class="text-muted">Нет комиссий</p>' :
+                commissions.map(c => `<div class="card mb-2"><div class="flex-between"><span>${verifiedProducts.find(p => p.id === c.productId)?.name || ''}</span>${!c.paid ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid(${c.id})">Выплатить</button>` : '<span class="badge badge-success">Выплачено</span>'}</div></div>`).join('');
         }
 
-        // Products
+        // ===== ТОВАРЫ =====
         function renderProducts() {
             const grid = document.getElementById('productGrid');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term));
             grid.innerHTML = filtered.map(p => `
                 <div class="card position-relative">
-                    ${p.stock <= 5 ? `<div class="stock-badge ${p.stock === 0 ? 'out' : 'low'}">Осталось: ${p.stock}</div>` : `<div class="stock-badge">В наличии: ${p.stock}</div>`}
-                    <div class="product-image">
-                        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '📦'}
-                    </div>
+                    <div class="stock-badge ${p.stock === 0 ? 'out' : p.stock <= 5 ? 'low' : ''}">Остаток: ${p.stock}</div>
+                    <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
                     <h3 class="card-title">${p.name}</h3>
                     <p class="card-content">${p.description}</p>
                     <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                    <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                    <div class="card-footer">
-                        <button class="btn btn-primary btn-small" onclick="showRequestProductOptions(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button>
-                    </div>
-                </div>
-            `).join('');
+                    <div class="card-footer"><button class="btn btn-primary btn-small" onclick="showRequestProductOptions(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button></div>
+                </div>`).join('');
         }
 
         function renderVerifiedProducts() {
             const grid = document.getElementById('verifiedProductGrid');
-            const searchTerm = document.getElementById('verifiedSearchInput').value.toLowerCase();
-            
-            const filtered = verifiedProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            
+            const term = document.getElementById('verifiedSearchInput').value.toLowerCase();
+            const filtered = verifiedProducts.filter(p => p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term));
             grid.innerHTML = filtered.map(p => `
                 <div class="card position-relative">
-                    <div class="product-image">
-                        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : '✅'}
-                    </div>
+                    <div class="product-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
                     <h3 class="card-title">${p.name}<span class="verified-badge">Проверено</span></h3>
                     <p class="card-content">${p.description}</p>
-                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 1rem 0;">$${p.price}</div>
-                    <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                    <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                    <div class="card-footer">
-                        <button class="btn btn-primary btn-small" onclick="showPaymentOptions(${p.id})">Купить</button>
-                    </div>
-                </div>
-            `).join('');
+                    <div style="font-size:1.5rem;font-weight:bold;color:var(--primary);margin:1rem 0;">$${p.price}</div>
+                    <div class="card-footer"><button class="btn btn-primary btn-small" onclick="showPaymentOptions(${p.id})">Купить</button></div>
+                </div>`).join('');
         }
 
         function showRequestProductOptions(productId) {
-            if (!currentUser) {
-                showErrorMessage('Пожалуйста, авторизуйтесь');
-                toggleLoginModal();
-                return;
-            }
-
-            const product = products.find(p => p.id === productId);
-            const requestOptions = document.getElementById('requestProductOptions');
-            
-            requestOptions.innerHTML = `
-                <div class="payment-option">
-                    <h4>💳 Оформить карту банка</h4>
-                    <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                    <button class="btn btn-primary" onclick="submitProductRequest(${productId}, 'card')">Оформить карту</button>
-                </div>
-                
-                <div class="payment-option">
-                    <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                    <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                    <button class="btn btn-secondary" onclick="submitProductRequest(${productId}, 'later')">Получить товар</button>
-                </div>
-            `;
-            
+            if (!currentUser) { showErrorMessage('Пожалуйста, авторизуйтесь'); toggleLoginModal(); return; }
+            document.getElementById('requestProductOptions').innerHTML = `
+                <div class="payment-option"><h4>💳 Оформить карту банка</h4><button class="btn btn-primary" onclick="submitProductRequest(${productId}, 'card')">Оформить карту</button></div>
+                <div class="payment-option"><h4>⏰ Оплата через 3 дня</h4><button class="btn btn-secondary" onclick="submitProductRequest(${productId}, 'later')">Получить товар</button></div>`;
             document.getElementById('requestProductModal').classList.add('active');
         }
 
-        function submitProductRequest(productId, paymentMethod) {
+        function submitProductRequest(productId, method) {
             const product = products.find(p => p.id === productId);
-            
-            const request = {
-                id: productRequests.length + 1,
-                userId: currentUser.id,
-                productId: productId,
-                paymentMethod: paymentMethod,
-                category: product.category,
-                status: 'pending',
-                date: new Date().toLocaleDateString('ru-RU')
-            };
-            
-            productRequests.push(request);
-            
-            closeRequestProductModal();
-            showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен! Администратор рассмотрит ваш запрос в ближайшее время.`);
-            
+            productRequests.push({ id: Date.now(), userId: currentUser.id, productId, paymentMethod: method, category: product.category, status: 'pending' });
             currentUser.products++;
+            const u = users.find(x => x.id === currentUser.id); if (u) u.products++;
+            saveData();
+            closeRequestProductModal();
+            showSuccessMessage(`✅ Запрос на "${product.name}" отправлен!`);
         }
 
         function showPaymentOptions(productId) {
-            if (!currentUser) {
-                showErrorMessage('Пожалуйста, авторизуйтесь');
-                toggleLoginModal();
-                return;
-            }
-
+            if (!currentUser) { showErrorMessage('Пожалуйста, авторизуйтесь'); toggleLoginModal(); return; }
             const product = verifiedProducts.find(p => p.id === productId);
-            const paymentOptions = document.getElementById('paymentOptions');
-            
-            paymentOptions.innerHTML = `
-                <div class="payment-option">
-                    <h4>💳 Оформить карту банка</h4>
-                    <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                    <button class="btn btn-primary" onclick="processPayment(${productId}, 'card')">Оплатить $${product.price}</button>
-                </div>
-                
-                <div class="payment-option">
-                    <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                    <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                    <button class="btn btn-secondary" onclick="processPayment(${productId}, 'later')">Получить товар</button>
-                </div>
-            `;
-            
+            document.getElementById('paymentOptions').innerHTML = `
+                <div class="payment-option"><h4>💳 Оформить карту банка</h4><button class="btn btn-primary" onclick="processPayment(${productId}, 'card')">Оплатить $${product.price}</button></div>
+                <div class="payment-option"><h4>⏰ Оплата через 3 дня</h4><button class="btn btn-secondary" onclick="processPayment(${productId}, 'later')">Получить товар</button></div>`;
             document.getElementById('paymentModal').classList.add('active');
         }
 
         function processPayment(productId, method) {
             const product = verifiedProducts.find(p => p.id === productId);
-            
-            if (method === 'card') {
-                showSuccessMessage(`✅ Платёж на сумму $${product.price} успешно обработан! Товар будет доставлен в течение 3-5 дней.`);
-            } else {
-                showSuccessMessage(`✅ Товар зарезервирован! Отправьте отзыв и чек, и мы переведём вам $${product.price} через 3 дня.`);
-            }
-            
-            closePaymentModal();
+            showSuccessMessage(method === 'card' ? `✅ Платёж $${product.price} обработан!` : `✅ Товар зарезервирован!`);
             currentUser.products++;
             product.stock--;
-            
+            const u = users.find(x => x.id === currentUser.id); if (u) u.products++;
             if (currentUser.referrer) {
-                const commission = {
-                    id: commissions.length + 1,
-                    referrerId: currentUser.referrer,
-                    referredUserId: currentUser.id,
-                    productId: productId,
-                    amount: product.price * 0.05,
-                    paid: false
-                };
-                commissions.push(commission);
+                commissions.push({ id: Date.now(), referrerId: currentUser.referrer, referredUserId: currentUser.id,
+                                                      productId: productId, amount: product.price * 0.05, paid: false });
             }
+            saveData();
+            closePaymentModal();
         }
 
+        // ===== ДОБАВЛЕНИЕ ТОВАРОВ =====
         function handleAddProduct(e) {
             e.preventDefault();
-            
-            const imageFile = document.getElementById('productImage').files[0];
-            let imageData = null;
-            
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    imageData = event.target.result;
-                    createProduct(imageData);
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                createProduct(null);
-            }
-            
-            function createProduct(image) {
-                const newProduct = {
+            const file = document.getElementById('productImage').files[0];
+            const create = (img) => {
+                products.push({
                     id: Math.max(...products.map(p => p.id), 0) + 1,
                     name: document.getElementById('productName').value,
                     category: document.getElementById('productCategory').value,
                     description: document.getElementById('productDescription').value,
                     url: document.getElementById('productUrl').value,
-                    image: image,
-                    rating: 0,
-                    reviews: 0,
+                    image: img, rating: 0, reviews: 0,
                     stock: parseInt(document.getElementById('productStock').value)
-                };
-                
-                products.push(newProduct);
+                });
+                saveData();
                 toggleAddProductModal();
-                showSuccessMessage('Товар успешно добавлен!');
+                showSuccessMessage('Товар добавлен!');
                 document.querySelector('#addProductModal form').reset();
                 updateAdmin();
-            }
+            };
+            if (file) { const r = new FileReader(); r.onload = ev => create(ev.target.result); r.readAsDataURL(file); }
+            else create(null);
         }
 
         function handleAddVerifiedProduct(e) {
             e.preventDefault();
-            
-            const imageFile = document.getElementById('verifiedProductImage').files[0];
-            let imageData = null;
-            
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    imageData = event.target.result;
-                    createProduct(imageData);
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                createProduct(null);
-            }
-            
-            function createProduct(image) {
-                const newProduct = {
+            const file = document.getElementById('verifiedProductImage').files[0];
+            const create = (img) => {
+                verifiedProducts.push({
                     id: Math.max(...verifiedProducts.map(p => p.id), 0) + 1,
                     name: document.getElementById('verifiedProductName').value,
                     category: document.getElementById('verifiedProductCategory').value,
@@ -1999,285 +1689,179 @@
                     price: parseFloat(document.getElementById('verifiedProductPrice').value),
                     stock: parseInt(document.getElementById('verifiedProductStock').value),
                     url: document.getElementById('verifiedProductUrl').value,
-                    image: image,
-                    rating: 0,
-                    reviews: 0
-                };
-                
-                verifiedProducts.push(newProduct);
+                    image: img, rating: 0, reviews: 0
+                });
+                saveData();
                 toggleAddVerifiedProductModal();
-                showSuccessMessage('Проверенный товар успешно добавлен!');
+                showSuccessMessage('Проверенный товар добавлен!');
                 document.querySelector('#addVerifiedProductModal form').reset();
                 updateAdmin();
-            }
+            };
+            if (file) { const r = new FileReader(); r.onload = ev => create(ev.target.result); r.readAsDataURL(file); }
+            else create(null);
         }
 
-        function openEditProductModal(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            document.getElementById('editProductId').value = product.id;
-            document.getElementById('editProductName').value = product.name;
-            document.getElementById('editProductDescription').value = product.description;
-            document.getElementById('editProductCategory').value = product.category;
-            document.getElementById('editProductUrl').value = product.url;
-            document.getElementById('editProductStock').value = product.stock;
-            
+        // ===== РЕДАКТИРОВАНИЕ =====
+        function openEditProductModal(id) {
+            const p = products.find(x => x.id === id); if (!p) return;
+            document.getElementById('editProductId').value = p.id;
+            document.getElementById('editProductName').value = p.name;
+            document.getElementById('editProductDescription').value = p.description;
+            document.getElementById('editProductCategory').value = p.category;
+            document.getElementById('editProductUrl').value = p.url;
+            document.getElementById('editProductStock').value = p.stock;
             document.getElementById('editProductModal').classList.add('active');
-        }
-
-        function openEditVerifiedProductModal(productId) {
-            const product = verifiedProducts.find(p => p.id === productId);
-            if (!product) return;
-            
-            document.getElementById('editVerifiedProductId').value = product.id;
-            document.getElementById('editVerifiedProductName').value = product.name;
-            document.getElementById('editVerifiedProductDescription').value = product.description;
-            document.getElementById('editVerifiedProductCategory').value = product.category;
-            document.getElementById('editVerifiedProductPrice').value = product.price;
-            document.getElementById('editVerifiedProductStock').value = product.stock;
-            document.getElementById('editVerifiedProductUrl').value = product.url;
-            
-            document.getElementById('editVerifiedProductModal').classList.add('active');
         }
 
         function handleEditProduct(e) {
             e.preventDefault();
-            
-            const productId = parseInt(document.getElementById('editProductId').value);
-            const product = products.find(p => p.id === productId);
-            
-            const imageFile = document.getElementById('editProductImage').files[0];
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    product.image = event.target.result;
-                    updateProductData();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                updateProductData();
-            }
-            
-            function updateProductData() {
-                product.name = document.getElementById('editProductName').value;
-                product.description = document.getElementById('editProductDescription').value;
-                product.category = document.getElementById('editProductCategory').value;
-                product.url = document.getElementById('editProductUrl').value;
-                product.stock = parseInt(document.getElementById('editProductStock').value);
-                
-                closeEditProductModal();
-                showSuccessMessage('Товар успешно обновлён!');
-                updateAdmin();
-            }
+            const id = parseInt(document.getElementById('editProductId').value);
+            const p = products.find(x => x.id === id);
+            const file = document.getElementById('editProductImage').files[0];
+            const upd = () => {
+                p.name = document.getElementById('editProductName').value;
+                p.description = document.getElementById('editProductDescription').value;
+                p.category = document.getElementById('editProductCategory').value;
+                p.url = document.getElementById('editProductUrl').value;
+                p.stock = parseInt(document.getElementById('editProductStock').value);
+                saveData(); closeEditProductModal(); showSuccessMessage('Товар обновлён!'); updateAdmin();
+            };
+            if (file) { const r = new FileReader(); r.onload = ev => { p.image = ev.target.result; upd(); }; r.readAsDataURL(file); }
+            else upd();
+        }
+
+        function openEditVerifiedProductModal(id) {
+            const p = verifiedProducts.find(x => x.id === id); if (!p) return;
+            document.getElementById('editVerifiedProductId').value = p.id;
+            document.getElementById('editVerifiedProductName').value = p.name;
+            document.getElementById('editVerifiedProductDescription').value = p.description;
+            document.getElementById('editVerifiedProductCategory').value = p.category;
+            document.getElementById('editVerifiedProductPrice').value = p.price;
+            document.getElementById('editVerifiedProductStock').value = p.stock;
+            document.getElementById('editVerifiedProductUrl').value = p.url;
+            document.getElementById('editVerifiedProductModal').classList.add('active');
         }
 
         function handleEditVerifiedProduct(e) {
             e.preventDefault();
-            
-            const productId = parseInt(document.getElementById('editVerifiedProductId').value);
-            const product = verifiedProducts.find(p => p.id === productId);
-            
-            const imageFile = document.getElementById('editVerifiedProductImage').files[0];
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    product.image = event.target.result;
-                    updateProductData();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                updateProductData();
+            const id = parseInt(document.getElementById('editVerifiedProductId').value);
+            const p = verifiedProducts.find(x => x.id === id);
+            const file = document.getElementById('editVerifiedProductImage').files[0];
+            const upd = () => {
+                p.name = document.getElementById('editVerifiedProductName').value;
+                p.description = document.getElementById('editVerifiedProductDescription').value;
+                p.category = document.getElementById('editVerifiedProductCategory').value;
+                p.price = parseFloat(document.getElementById('editVerifiedProductPrice').value);
+                p.stock = parseInt(document.getElementById('editVerifiedProductStock').value);
+                p.url = document.getElementById('editVerifiedProductUrl').value;
+                saveData(); closeEditVerifiedProductModal(); showSuccessMessage('Товар обновлён!'); updateAdmin();
+            };
+            if (file) { const r = new FileReader(); r.onload = ev => { p.image = ev.target.result; upd(); }; r.readAsDataURL(file); }
+            else upd();
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Удалить этот товар?')) {
+                products = products.filter(p => p.id !== id);
+                saveData(); showSuccessMessage('Товар удалён!'); updateAdmin();
             }
-            
-            function updateProductData() {
-                product.name = document.getElementById('editVerifiedProductName').value;
-                product.description = document.getElementById('editVerifiedProductDescription').value;
-                product.category = document.getElementById('editVerifiedProductCategory').value;
-                product.price = parseFloat(document.getElementById('editVerifiedProductPrice').value);
-                product.stock = parseInt(document.getElementById('editVerifiedProductStock').value);
-                product.url = document.getElementById('editVerifiedProductUrl').value;
-                
-                closeEditVerifiedProductModal();
-                showSuccessMessage('Товар успешно обновлён!');
-                updateAdmin();
+        }
+        function deleteVerifiedProduct(id) {
+            if (confirm('Удалить этот товар?')) {
+                verifiedProducts = verifiedProducts.filter(p => p.id !== id);
+                saveData(); showSuccessMessage('Товар удалён!'); updateAdmin();
             }
         }
 
-        function deleteProduct(productId) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                products = products.filter(p => p.id !== productId);
-                showSuccessMessage('Товар успешно удалён!');
-                updateAdmin();
-            }
+        // ===== ЗАПРОСЫ / ОТЗЫВЫ / КОМИССИИ =====
+        function approveRequest(id) {
+            const r = productRequests.find(x => x.id === id);
+            if (r) { r.status = 'approved'; saveData(); showSuccessMessage('Запрос одобрен!'); updateAdmin(); }
         }
-
-        function deleteVerifiedProduct(productId) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                verifiedProducts = verifiedProducts.filter(p => p.id !== productId);
-                showSuccessMessage('Товар успешно удалён!');
-                updateAdmin();
-            }
+        function rejectRequest(id) {
+            const r = productRequests.find(x => x.id === id);
+            if (r) { r.status = 'rejected'; saveData(); showSuccessMessage('Запрос отклонён!'); updateAdmin(); }
         }
-
-        // Requests
-        function approveRequest(requestId) {
-            const request = productRequests.find(r => r.id === requestId);
-            if (request) {
-                request.status = 'approved';
-                showSuccessMessage('Запрос одобрен!');
-                updateAdmin();
-            }
-        }
-
-        function rejectRequest(requestId) {
-            const request = productRequests.find(r => r.id === requestId);
-            if (request) {
-                request.status = 'rejected';
-                showSuccessMessage('Запрос отклонен!');
-                updateAdmin();
-            }
-        }
-
-        // Reviews
         function addReview(productId, rating, text) {
             if (!currentUser) return;
-            
-            const review = {
-                id: reviews.length + 1,
-                userId: currentUser.id,
-                productId,
-                rating,
-                text,
-                date: new Date().toLocaleDateString('ru-RU')
-            };
-            
-            reviews.push(review);
-            currentUser.reviews++;
-            currentUser.points += 10;
+            reviews.push({ id: Date.now() + Math.random(), userId: currentUser.id, productId, rating, text });
+            currentUser.reviews++; currentUser.points += 10;
+            saveData();
+        }
+        function markCommissionAsPaid(id) {
+            const c = commissions.find(x => x.id === id);
+            if (c) { c.paid = true; saveData(); showSuccessMessage('Комиссия выплачена!'); updateAdmin(); }
         }
 
-        function approveReview(reviewId) {
-            showSuccessMessage('Отзыв одобрен!');
-        }
-
-        // Commissions
-        function markCommissionAsPaid(commissionId) {
-            const commission = commissions.find(c => c.id === commissionId);
-            if (commission) {
-                commission.paid = true;
-                showSuccessMessage('Комиссия отмечена как выплаченная!');
-                updateAdmin();
-            }
-        }
-
-        // Tabs
-        function switchTab(tabName) {
+        // ===== ВКЛАДКИ =====
+        function switchTab(name) {
             document.querySelectorAll('#cabinet .tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('#cabinet .tab-content').forEach(t => t.classList.remove('active'));
-            
             event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
+            document.getElementById(name).classList.add('active');
         }
-
-        function switchAdminTab(tabName) {
+        function switchAdminTab(name) {
             document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('#admin .tab-content').forEach(t => t.classList.remove('active'));
-            
             event.target.classList.add('active');
-            document.getElementById(tabName + '-admin').classList.add('active');
+            document.getElementById(name + '-admin').classList.add('active');
         }
 
-        // Utilities
+        // ===== УТИЛИТЫ =====
         function copyReferralLink() {
-            const link = document.getElementById('referralLink').textContent;
-            navigator.clipboard.writeText(link);
-            showSuccessMessage('Реферральная ссылка скопирована в буфер обмена!');
+            navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
+            showSuccessMessage('Ссылка скопирована!');
+        }
+        function showSuccessMessage(msg) { showAlert(msg, 'alert-success'); }
+        function showErrorMessage(msg) { showAlert(msg, 'alert-error'); }
+        function showAlert(msg, cls) {
+            const a = document.createElement('div');
+            a.className = 'alert ' + cls;
+            a.textContent = msg;
+            a.style.cssText = 'position:fixed;top:80px;right:20px;z-index:2000;max-width:400px;';
+            document.body.appendChild(a);
+            setTimeout(() => a.remove(), 3000);
         }
 
-        function showSuccessMessage(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success';
-            alert.textContent = message;
-            alert.style.position = 'fixed';
-            alert.style.top = '80px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '2000';
-            alert.style.maxWidth = '400px';
-            document.body.appendChild(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        function showErrorMessage(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-error';
-            alert.textContent = message;
-            alert.style.position = 'fixed';
-            alert.style.top = '80px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '2000';
-            alert.style.maxWidth = '400px';
-            document.body.appendChild(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        // Search
+        // ===== ЗАПУСК =====
         document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', renderProducts);
-            }
+            const si = document.getElementById('searchInput');
+            if (si) si.addEventListener('input', renderProducts);
+            const vsi = document.getElementById('verifiedSearchInput');
+            if (vsi) vsi.addEventListener('input', renderVerifiedProducts);
 
-            const verifiedSearchInput = document.getElementById('verifiedSearchInput');
-            if (verifiedSearchInput) {
-                verifiedSearchInput.addEventListener('input', renderVerifiedProducts);
-            }
-            
-            // Demo: Add some test reviews
-            addReview(1, 5, 'Отличные наушники! Звук кристально чистый, батарея держит долго.');
-            addReview(2, 4, 'Хорошая кофеварка, но немного шумная.');
-            addReview(3, 5, 'Идеальный фитнес трекер! Все функции работают отлично.');
-            
-            // Check for referral code in URL
+            updateHeader(); // восстанавливаем вход после F5
+
             const urlParams = getUrlParams();
-            if (urlParams.ref) {
+            if (urlParams.ref && !currentUser) {
                 const referrer = users.find(u => u.referralCode === urlParams.ref);
                 if (referrer) {
-                    showSuccessMessage(`🎉 Вы пришли по реферальной ссылке от ${referrer.name}!`);
+                    showSuccessMessage(`🎉 Вы пришли по ссылке от ${referrer.name}! Зарегистрируйтесь.`);
+                    setTimeout(toggleRegisterModal, 500);
                 }
             }
         });
 
-        // Close modals on background click
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
         });
     </script>
-    <!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-  authDomain: "saintmarketology.firebaseapp.com",
-  projectId: "saintmarketology",
-  storageBucket: "saintmarketology.firebasestorage.app",
-  messagingSenderId: "1098681326401",
-  appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
-  measurementId: "G-S52HDR9550"
-};
-
-const app = initializeApp(firebaseConfig);
-window.firebaseAuth = getAuth(app);
-window.fbCreateUser = createUserWithEmailAndPassword;
-window.fbSignIn = signInWithEmailAndPassword;
-window.fbSignOut = signOut;
-</script>
+    <!-- FIREBASE (оставлен, но не используется для логина) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.firebasestorage.app",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
+            measurementId: "G-S52HDR9550"
+        };
+        const app = initializeApp(firebaseConfig);
+        window.firebaseAuth = getAuth(app);
+    </script>
 </body>
 </html>
