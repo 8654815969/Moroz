@@ -1362,9 +1362,8 @@
         // ===== ХРАНИЛИЩЕ ДАННЫХ (с сохранением) =====
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
-        let users = JSON.parse(localStorage.getItem('users')) || [
-            { id: 1, name: 'Администратор', email: 'marketology2019@mail.ru', password: 'Moroz1990rus', role: 'admin', referralCode: 'ADMIN123', points: 500, reviews: 15, products: 8 }
-        ];
+       import { collection, getDocs } from "firebase/firestore";
+const users = await getDocs(collection(db, "users"));
         let products = JSON.parse(localStorage.getItem('products')) || [
             { id: 1, name: 'Беспроводные наушники', category: 'electronics', description: 'Высокачественные наушники с шумоподавлением', url: 'https://example.com/1', image: null, rating: 4.5, reviews: 12, stock: 10 },
             { id: 2, name: 'Кофеварка', category: 'home', description: 'Автоматическая кофеварка на 12 чашек', url: 'https://example.com/2', image: null, rating: 4.8, reviews: 8, stock: 5 },
@@ -1847,21 +1846,43 @@
         });
     </script>
 
-    <!-- FIREBASE (оставлен, но не используется для логина) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-            authDomain: "saintmarketology.firebaseapp.com",
-            projectId: "saintmarketology",
-            storageBucket: "saintmarketology.firebasestorage.app",
-            messagingSenderId: "1098681326401",
-            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
-            measurementId: "G-S52HDR9550"
-        };
-        const app = initializeApp(firebaseConfig);
-        window.firebaseAuth = getAuth(app);
-    </script>
+   <!-- FIREBASE -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+        authDomain: "saintmarketology.firebaseapp.com",
+        projectId: "saintmarketology",
+        storageBucket: "saintmarketology.firebasestorage.app",
+        messagingSenderId: "1098681326401",
+        appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
+        measurementId: "G-S52HDR9550"
+    };
+    
+    // Инициализация Firebase
+    const app = initializeApp(firebaseConfig);
+    window.firebaseAuth = getAuth(app);
+    window.db = getFirestore(app);
+    
+    // Пример использования Firestore
+    async function loadUsers() {
+        try {
+            const querySnapshot = await getDocs(collection(window.db, "users"));
+            querySnapshot.forEach((doc) => {
+                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+            });
+        } catch (error) {
+            console.error("Ошибка загрузки пользователей:", error);
+        }
+    }
+    
+    // Вызываем при загрузке страницы
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUsers();
+    });
+</script>
 </body>
 </html>
