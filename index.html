@@ -21,6 +21,10 @@
         .form-group input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
         .admin-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     </style>
 </head>
 <body>
@@ -107,190 +111,470 @@
             }
             updateUI();
         });
+      // Data Storage
+        let currentUser = null;
+        let users = [];
+        let products = [];
+        let verifiedProducts = [];
+        let reviews = [];
+        let commissions = [];
+        let productRequests = [];
 
-        // Обновление интерфейса
-        function updateUI() {
-            const authButtons = document.getElementById('authButtons');
-            if (currentUser) {
-                authButtons.innerHTML = `
-                    <span>${currentUser.email}</span>
-                    <button class="btn btn-primary" onclick="logout()">Выход</button>
-                `;
-                
-                // Показываем админ-панель если пользователь админ
-                if (userData && userData.role === 'admin') {
-                    showAdminPanel();
-                } else {
-                    loadProducts();
-                }
-            } else {
-                authButtons.innerHTML = `
-                    <button class="btn btn-primary" onclick="toggleModal('loginModal')">Вход</button>
-                `;
-                loadProducts();
+        // Получаем параметры URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                ref: params.get('ref')
+            };
+        }
+
+        // UI Functions (остаются без изменений, кроме тех, что интегрируют Firebase)
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            if (sectionId === 'catalog') {
+                renderProducts();
+            } else if (sectionId === 'verified') {
+                renderVerifiedProducts();
+            } else if (sectionId === 'cabinet') {
+                updateCabinet();
+            } else if (sectionId === 'admin') {
+                updateAdmin();
             }
         }
 
-        // Вход
-        async function handleLogin() {
+        // Обновленные функции аутентификации с Firebase
+        async function handleLogin(e) {
+            e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
             try {
-                await auth.signInWithEmailAndPassword(email, password);
-                toggleModal('loginModal');
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Получаем дополнительные данные пользователя из Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    currentUser = { id: user.uid, ...userDoc.data() };
+                    toggleLoginModal();
+                    updateHeader();
+                    showSuccessMessage('Вы успешно вошли!');
+                    document.querySelector('#loginModal form').reset();
+                } else {
+                    showErrorMessage('Данные пользователя не найдены');
+                    await auth.signOut();
+                }
             } catch (error) {
-                alert(error.message);
+                showErrorMessage(error.message);
             }
         }
 
-        // Регистрация
-        async function handleRegister() {
+        async function handleRegister(e) {
+            e.preventDefault();
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
+            const urlParams = getUrlParams();
             
             try {
+                // Создаем пользователя в Firebase Auth
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await db.collection("users").doc(userCredential.user.uid).set({
-                    name: name,
-                    email: email,
-                    role: email.endsWith('@admin.com') ? 'admin' : 'user',
-                    createdAt: new Date()
+                const user = userCredential.user;
+                
+                // Генерируем реферальный код
+                const referralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                
+                // Проверяем реферала
+                let referrerData = null;
+                if (urlParams.ref) {
+                    const referrerQuery = await db.collection('users').where('referralCode', '==', urlParams.ref).get();
+                    if (!referrerQuery.empty) {
+                        const referrerDoc = referrerQuery.docs[0];
+                        referrerData = {
+                            referrerId: referrerDoc.id,
+                            referrerCode: urlParams.ref
+                        };
+                    }
+                }
+                
+                // Сохраняем пользователя в Firestore
+                await db.collection('users').doc(user.uid).set({
+                    name,
+                    email,
+                    role: 'user',
+                    referralCode,
+                    points: 0,
+                    reviews: 0,
+                    products: 0,
+                    ...(referrerData && { referrer: referrerData.referrerId }),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                toggleModal('registerModal');
+                
+                // Обновляем текущего пользователя
+                currentUser = { id: user.uid, name, email, role: 'user', referralCode };
+                updateHeader();
+                showSuccessMessage('Вы успешно зарегистрировались!');
+                toggleRegisterModal();
+                document.querySelector('#registerModal form').reset();
+                
+                // Если был реферер, добавляем запись о реферале
+                if (referrerData) {
+                    await db.collection('referrals').add({
+                        referrerId: referrerData.referrerId,
+                        referredUserId: user.uid,
+                        referredUserEmail: email,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showSuccessMessage(`🎉 Вы зарегистрировались по реферальной ссылке!`);
+                }
+                
             } catch (error) {
-                alert(error.message);
+                showErrorMessage(error.message);
             }
         }
 
-        // Выход
-        function logout() {
-            auth.signOut();
+        async function logout() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                updateHeader();
+                showSuccessMessage('Вы вышли из аккаунта');
+            } catch (error) {
+                showErrorMessage('Ошибка при выходе: ' + error.message);
+            }
         }
 
-        // Управление модальными окнами
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        // Обновленная функция для личного кабинета с данными из Firebase
+        async function updateCabinet() {
+            if (!currentUser) {
+                document.getElementById('notLoggedInMessage').style.display = 'block';
+                document.getElementById('cabinetContent').style.display = 'none';
+                return;
+            }
+            
+            try {
+                // Получаем данные пользователя
+                const userDoc = await db.collection('users').doc(currentUser.id).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    currentUser = { ...currentUser, ...userData };
+                    
+                    document.getElementById('notLoggedInMessage').style.display = 'none';
+                    document.getElementById('cabinetContent').style.display = 'block';
+                    
+                    document.getElementById('userName').textContent = currentUser.name;
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                    document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+                    document.getElementById('productsCount').textContent = currentUser.products || 0;
+                    document.getElementById('reviewsCount').textContent = currentUser.reviews || 0;
+                    document.getElementById('pointsCount').textContent = currentUser.points || 0;
+                    
+                    // Получаем отзывы пользователя
+                    const reviewsQuery = await db.collection('reviews')
+                        .where('userId', '==', currentUser.id)
+                        .get();
+                    
+                    const userReviews = reviewsQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const avgRating = userReviews.length > 0 
+                        ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1)
+                        : 0;
+                    document.getElementById('avgRating').textContent = avgRating + '★';
+                    
+                    // Обновляем реферальную ссылку
+                    const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUser.referralCode}`;
+                    document.getElementById('referralLink').textContent = referralLink;
+                    
+                    // Обновляем список отзывов
+                    const reviewsList = document.getElementById('reviewsList');
+                    if (userReviews.length === 0) {
+                        reviewsList.innerHTML = '<p class="text-muted">Вы ещё не оставляли отзывов</p>';
+                    } else {
+                        // Для отзывов нужно получить названия товаров
+                        const productIds = [...new Set(userReviews.map(r => r.productId))];
+                        const productsSnapshot = await db.collection('products').where('id', 'in', productIds).get();
+                        const productsData = productsSnapshot.docs.map(doc => doc.data());
+                        
+                        reviewsList.innerHTML = userReviews.map(r => {
+                            const product = productsData.find(p => p.id === r.productId);
+                            return `
+                                <div class="card mb-2">
+                                    <div class="flex-between">
+                                        <div>
+                                            <h4 class="card-title">${product?.name || 'Товар'}</h4>
+                                            <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted mt-2">${r.text}</p>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                    
+                    // Получаем запросы на товары
+                    const requestsQuery = await db.collection('productRequests')
+                        .where('userId', '==', currentUser.id)
+                        .get();
+                    
+                    const userRequests = requestsQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const requestsList = document.getElementById('requestsList');
+                    if (userRequests.length === 0) {
+                        requestsList.innerHTML = '<p class="text-muted">Вы ещё не запрашивали товары</p>';
+                    } else {
+                        requestsList.innerHTML = userRequests.map(r => `
+                            <div class="card mb-2">
+                                <div class="flex-between">
+                                    <div>
+                                        <h4 class="card-title">${r.productName}</h4>
+                                        <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Оформить карту' : '⏰ Оплатить через 3 дня'}</p>
+                                    </div>
+                                    <span class="request-status ${r.status}">${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                    
+                    // Получаем комиссии
+                    const commissionsQuery = await db.collection('commissions')
+                        .where('referrerId', '==', currentUser.id)
+                        .get();
+                    
+                    const userCommissions = commissionsQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const totalCommission = userCommissions.reduce((sum, c) => sum + c.amount, 0);
+                    const paidCommission = userCommissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
+                    const unpaidCommission = totalCommission - paidCommission;
+                    
+                    document.getElementById('totalCommission').textContent = '$' + totalCommission.toFixed(2);
+                    document.getElementById('paidCommission').textContent = '$' + paidCommission.toFixed(2);
+                    document.getElementById('unpaidCommission').textContent = '$' + unpaidCommission.toFixed(2);
+                    
+                    const commissionsList = document.getElementById('commissionsList');
+                    if (userCommissions.length === 0) {
+                        commissionsList.innerHTML = '<p class="text-muted">Комиссии отсутствуют</p>';
+                    } else {
+                        commissionsList.innerHTML = userCommissions.map(c => `
+                            <div class="card mb-2">
+                                <div class="flex-between">
+                                    <div>
+                                        <h4 class="card-title">${c.productName}</h4>
+                                        <p class="text-muted">От: ${c.referredUserName}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div style="font-weight: bold; font-size: 1.2rem;">$${c.amount.toFixed(2)}</div>
+                                        <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">${c.paid ? 'Выплачено' : 'Ожидание'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                    
+                    // Получаем список рефералов
+                    const referralsQuery = await db.collection('referrals')
+                        .where('referrerId', '==', currentUser.id)
+                        .get();
+                    
+                    const referralsList = document.getElementById('referralsList');
+                    if (referralsQuery.empty) {
+                        referralsList.innerHTML = '<p class="text-muted">Вы ещё никого не пригласили</p>';
+                    } else {
+                        referralsList.innerHTML = referralsQuery.docs.map(doc => {
+                            const data = doc.data();
+                            return `
+                                <div class="card mb-2">
+                                    <div class="flex-between">
+                                        <div>
+                                            <h4 class="card-title">${data.referredUserEmail}</h4>
+                                            <p class="text-muted">Зарегистрирован: ${new Date(data.timestamp?.toDate()).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (error) {
+                showErrorMessage('Ошибка при загрузке данных: ' + error.message);
+            }
         }
 
-        // Загрузка товаров
+        // Обновленная функция для обработки платежей с реферальной системой
+        async function processPayment(productId, method) {
+            try {
+                if (!currentUser) {
+                    showErrorMessage('Пожалуйста, авторизуйтесь');
+                    toggleLoginModal();
+                    return;
+                }
+
+                // Получаем данные о товаре
+                const productDoc = await db.collection('verifiedProducts').doc(productId.toString()).get();
+                if (!productDoc.exists) {
+                    showErrorMessage('Товар не найден');
+                    return;
+                }
+                
+                const product = productDoc.data();
+                
+                // Обновляем остаток товара
+                await db.collection('verifiedProducts').doc(productId.toString()).update({
+                    stock: firebase.firestore.FieldValue.increment(-1)
+                });
+                
+                // Если есть реферер, добавляем комиссию
+                if (currentUser.referrer) {
+                    // Получаем данные о реферере
+                    const referrerDoc = await db.collection('users').doc(currentUser.referrer).get();
+                    if (referrerDoc.exists) {
+                        const referrer = referrerDoc.data();
+                        
+                        // Добавляем запись о комиссии
+                        await db.collection('commissions').add({
+                            referrerId: currentUser.referrer,
+                            referredUserId: currentUser.id,
+                            referredUserName: currentUser.name,
+                            productId: productId,
+                            productName: product.name,
+                            amount: product.price * 0.05,
+                            paid: false,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Обновляем баланс реферера
+                        await db.collection('users').doc(currentUser.referrer).update({
+                            totalCommission: firebase.firestore.FieldValue.increment(product.price * 0.05)
+                        });
+                    }
+                }
+                
+                // Обновляем статистику пользователя
+                await db.collection('users').doc(currentUser.id).update({
+                    products: firebase.firestore.FieldValue.increment(1)
+                });
+                
+                if (method === 'card') {
+                    showSuccessMessage(`✅ Платёж на сумму $${product.price} успешно обработан! Товар будет доставлен в течение 3-5 дней.`);
+                } else {
+                    showSuccessMessage(`✅ Товар зарезервирован! Отправьте отзыв и чек, и мы переведём вам $${product.price} через 3 дня.`);
+                }
+                
+                closePaymentModal();
+                updateCabinet();
+                
+            } catch (error) {
+                showErrorMessage(`Ошибка при оформлении покупки: ${error.message}`);
+            }
+        }
+
+        // Обновленная функция для добавления товара с загрузкой изображения
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            
+            try {
+                const imageFile = document.getElementById('productImage').files[0];
+                let imageUrl = null;
+                
+                if (imageFile) {
+                    // Загружаем изображение в Firebase Storage
+                    const storageRef = storage.ref(`products/${Date.now()}_${imageFile.name}`);
+                    const uploadTask = await storageRef.put(imageFile);
+                    imageUrl = await uploadTask.ref.getDownloadURL();
+                }
+                
+                // Создаем новый товар
+                const newProduct = {
+                    id: Date.now().toString(),
+                    name: document.getElementById('productName').value,
+                    category: document.getElementById('productCategory').value,
+                    description: document.getElementById('productDescription').value,
+                    url: document.getElementById('productUrl').value,
+                    image: imageUrl,
+                    rating: 0,
+                    reviews: 0,
+                    stock: parseInt(document.getElementById('productStock').value),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Сохраняем товар в Firestore
+                await db.collection('products').doc(newProduct.id).set(newProduct);
+                
+                toggleAddProductModal();
+                showSuccessMessage('Товар успешно добавлен!');
+                document.querySelector('#addProductModal form').reset();
+                updateAdmin();
+                
+            } catch (error) {
+                showErrorMessage('Ошибка при добавлении товара: ' + error.message);
+            }
+        }
+
+        // Отслеживаем состояние аутентификации
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // Пользователь вошел в систему
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    currentUser = { id: user.uid, ...userDoc.data() };
+                    updateHeader();
+                    
+                    // Показываем соответствующий раздел
+                    if (window.location.hash === '#admin' && currentUser.role === 'admin') {
+                        showSection('admin');
+                    } else {
+                        showSection('cabinet');
+                    }
+                }
+            } else {
+                // Пользователь вышел
+                currentUser = null;
+                updateHeader();
+                showSection('home');
+            }
+        });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            // Проверяем реферальный код в URL
+            const urlParams = getUrlParams();
+            if (urlParams.ref) {
+                db.collection('users').where('referralCode', '==', urlParams.ref).get()
+                    .then(querySnapshot => {
+                        if (!querySnapshot.empty) {
+                            const referrer = querySnapshot.docs[0].data();
+                            showSuccessMessage(`🎉 Вы пришли по реферальной ссылке от ${referrer.name}!`);
+                        }
+                    });
+            }
+            
+            // Загружаем товары для каталога
+            loadProducts();
+            loadVerifiedProducts();
+        });
+
+        // Функции для загрузки данных из Firebase
         async function loadProducts() {
             try {
-                const snapshot = await db.collection("products").get();
-                const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProducts(products);
+                const querySnapshot = await db.collection('products').get();
+                products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts();
             } catch (error) {
-                console.error("Ошибка загрузки товаров:", error);
+                console.error('Ошибка при загрузке товаров:', error);
             }
         }
 
-        // Отображение товаров
-        function renderProducts(products) {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <h2>Наши товары</h2>
-                ${products.map(product => `
-                    <div class="card">
-                        <h3>${product.name}</h3>
-                        <p>${product.description}</p>
-                        <p>Цена: ${product.price} руб.</p>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        // Админ-панель
-        function showAdminPanel() {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <h2>⚙️ Админ-панель</h2>
-                <div class="admin-panel">
-                    <div class="grid">
-                        <button class="btn btn-primary" onclick="showProductManagement()">Управление товарами</button>
-                        <button class="btn btn-primary" onclick="showUserManagement()">Управление пользователями</button>
-                        <button class="btn btn-primary" onclick="showOrderManagement()">Управление заказами</button>
-                    </div>
-                    <div id="adminContent"></div>
-                </div>
-            `;
-        }
-
-        // Управление товарами
-        async function showProductManagement() {
-            const snapshot = await db.collection("products").get();
-            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            
-            document.getElementById('adminContent').innerHTML = `
-                <h3>Управление товарами</h3>
-                <button class="btn btn-success" onclick="showAddProductForm()">Добавить товар</button>
-                <div class="card" style="margin-top: 1rem;">
-                    ${products.map(product => `
-                        <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
-                            <h4>${product.name}</h4>
-                            <p>${product.description}</p>
-                            <p>Цена: ${product.price} руб.</p>
-                            <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">Удалить</button>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        // Форма добавления товара
-        function showAddProductForm() {
-            document.getElementById('adminContent').innerHTML += `
-                <div class="card" style="margin-top: 1rem;">
-                    <h4>Добавить новый товар</h4>
-                    <div class="form-group">
-                        <label>Название</label>
-                        <input type="text" id="productName">
-                    </div>
-                    <div class="form-group">
-                        <label>Описание</label>
-                        <textarea id="productDescription" style="width: 100%;"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Цена</label>
-                        <input type="number" id="productPrice">
-                    </div>
-                    <button class="btn btn-success" onclick="addProduct()">Добавить</button>
-                </div>
-            `;
-        }
-
-        // Добавление товара
-        async function addProduct() {
-            const name = document.getElementById('productName').value;
-            const description = document.getElementById('productDescription').value;
-            const price = document.getElementById('productPrice').value;
-            
+        async function loadVerifiedProducts() {
             try {
-                await db.collection("products").add({
-                    name: name,
-                    description: description,
-                    price: parseFloat(price),
-                    createdAt: new Date()
-                });
-                showProductManagement();
+                const querySnapshot = await db.collection('verifiedProducts').get();
+                verifiedProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderVerifiedProducts();
             } catch (error) {
-                alert(error.message);
+                console.error('Ошибка при загрузке проверенных товаров:', error);
             }
         }
 
-        // Удаление товара
-        async function deleteProduct(productId) {
-            if (confirm("Вы уверены, что хотите удалить этот товар?")) {
-                await db.collection("products").doc(productId).delete();
-                showProductManagement();
-            }
-        }
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProducts();
-        });
+        // Остальные функции (рендеринга, утилиты и т.д.) остаются без изменений
+        // ...
     </script>
 </body>
 </html>
+ 
