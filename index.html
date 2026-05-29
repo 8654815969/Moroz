@@ -29,103 +29,110 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    
     <script>
-    // Конфигурация Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-        authDomain: "saintmarketology.firebaseapp.com",
-        projectId: "saintmarketology",
-        storageBucket: "saintmarketology.appspot.com",
-        messagingSenderId: "1098681326401",
-        appId: "1:1098681326401:web:3a28423a30b92be88d1fc0"
-    };
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.appspot.com",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0"
+        };
 
-    // Инициализация Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-    // Глобальные переменные
-    let currentUser = null;
+        // Глобальные переменные
+        let currentUser = null;
 
-    // Проверка авторизации
-    auth.onAuthStateChanged(user => {
-        currentUser = user;
-        updateUI();
-    });
+        // Проверка авторизации
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            updateUI();
+        });
 
-    // Обновление интерфейса
-    function updateUI() {
-        const authButtons = document.getElementById('authButtons');
-        if (currentUser) {
-            authButtons.innerHTML = `
-                <span>${currentUser.email}</span>
-                <button class="btn btn-primary" onclick="logout()">Выход</button>
-            `;
-        } else {
-            authButtons.innerHTML = `
-                <button class="btn btn-primary" onclick="toggleLoginModal()">Вход</button>
-            `;
+        // Обновление интерфейса
+        function updateUI() {
+            const authButtons = document.getElementById('authButtons');
+            if (currentUser) {
+                authButtons.innerHTML = `
+                    <span>${currentUser.email}</span>
+                    <button class="btn btn-primary" onclick="logout()">Выход</button>
+                `;
+            } else {
+                authButtons.innerHTML = `
+                    <button class="btn btn-primary" onclick="toggleLoginModal()">Вход</button>
+                `;
+            }
         }
-    }
-<script>
-    // Вход
-    async function handleLogin(email, password) {
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-            toggleLoginModal();
-        } catch (error) {
-            alert(error.message);
+
+        // Вход
+        async function handleLogin(email, password) {
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                toggleLoginModal();
+            } catch (error) {
+                alert(error.message);
+            }
         }
-    }
 
-    // Регистрация
-    async function handleRegister(email, password, name) {
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            await db.collection("users").doc(userCredential.user.uid).set({
-                name: name,
-                email: email,
-                createdAt: new Date()
-            });
-            toggleRegisterModal();
-        } catch (error) {
-            alert(error.message);
+        // Регистрация
+        async function handleRegister(email, password, name) {
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection("users").doc(userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: new Date()
+                });
+                toggleRegisterModal();
+            } catch (error) {
+                alert(error.message);
+            }
         }
-    }
 
-    // Выход
-    function logout() {
-        auth.signOut();
-    }
+        // Выход
+        function logout() {
+            auth.signOut();
+        }
 
-    // Модальные окна
-    function toggleLoginModal() {
-        document.getElementById('loginModal').classList.toggle('active');
-    }
-<script>
-    // Загрузка товаров
-    async function loadProducts() {
-        const snapshot = await db.collection("products").get();
-        const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProducts(products);
-    }
+        // Модальные окна
+        function toggleLoginModal() {
+            console.log("Toggle login modal");
+            // Реализуйте логику показа/скрытия модального окна
+        }
+        
+        function toggleRegisterModal() {
+            console.log("Toggle register modal");
+            // Реализуйте логику показа/скрытия модального окна
+        }
 
-    // Отображение товаров
-    function renderProducts(products) {
-        const app = document.getElementById('app');
-        app.innerHTML = products.map(product => `
-            <div class="card">
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-            </div>
-        `).join('');
-    }
+        // Загрузка товаров
+        async function loadProducts() {
+            const snapshot = await db.collection("products").get();
+            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderProducts(products);
+        }
 
-    // Инициализация
-    document.addEventListener('DOMContentLoaded', () => {
-        loadProducts();
-    });
-</script>
+        // Отображение товаров
+        function renderProducts(products) {
+            const app = document.getElementById('app');
+            app.innerHTML = products.map(product => `
+                <div class="card">
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+                </div>
+            `).join('');
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+        });
+    </script>
 </body>
 </html>
