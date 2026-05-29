@@ -1,896 +1,651 @@
-<!-- Firebase SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { 
-        getAuth, 
-        createUserWithEmailAndPassword,
-        signInWithEmailAndPassword,
-        signOut,
-        onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { 
-        getFirestore,
-        doc, 
-        setDoc, 
-        getDoc,
-        getDocs,
-        addDoc,
-        updateDoc,
-        deleteDoc,
-        collection,
-        query,
-        where,
-        onSnapshot
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // ===== Firebase Config =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-        authDomain: "saintmarketology.firebaseapp.com",
-        projectId: "saintmarketology",
-        storageBucket: "saintmarketology.firebasestorage.app",
-        messagingSenderId: "1098681326401",
-        appId: "1:1098681326401:web:3a28423a30b92be88d1fc0"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // ===== Данные =====
-    let currentUser = null;
-    let currentUserData = null;
-
-    let products = [
-        { id: 1, name: 'Беспроводные наушники', category: 'electronics', description: 'Высокачественные наушники с шумоподавлением', url: 'https://example.com/1', image: null, rating: 4.5, reviews: 12, stock: 10 },
-        { id: 2, name: 'Кофеварка', category: 'home', description: 'Автоматическая кофеварка на 12 чашек', url: 'https://example.com/2', image: null, rating: 4.8, reviews: 8, stock: 5 },
-        { id: 3, name: 'Фитнес трекер', category: 'sports', description: 'Умный браслет для отслеживания активности', url: 'https://example.com/3', image: null, rating: 4.3, reviews: 20, stock: 15 }
-    ];
-
-    let verifiedProducts = [
-        { id: 101, name: 'iPhone 15 Pro', category: 'electronics', description: 'Флагманский смартфон Apple', price: 999, stock: 15, url: 'https://example.com/iphone', image: null, rating: 4.9, reviews: 150 },
-        { id: 102, name: 'MacBook Pro', category: 'electronics', description: 'Мощный ноутбук для профессионалов', price: 1999, stock: 8, url: 'https://example.com/macbook', image: null, rating: 4.8, reviews: 200 },
-        { id: 103, name: 'Samsung Galaxy S24', category: 'electronics', description: 'Премиум Android смартфон', price: 899, stock: 20, url: 'https://example.com/samsung', image: null, rating: 4.7, reviews: 180 }
-    ];
-
-    let reviews = [];
-    let commissions = [];
-    let productRequests = [];
-
-    // ===== URL Params =====
-    function getUrlParams() {
-        const params = new URLSearchParams(window.location.search);
-        return { ref: params.get('ref') };
-    }
-
-    // ===== AUTH =====
-
-    // Следим за состоянием входа
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            // Получаем данные пользователя из Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists()) {
-                currentUserData = userDoc.data();
-            }
-            updateHeader();
-        } else {
-            currentUser = null;
-            currentUserData = null;
-            updateHeader();
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketology</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
-    });
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
 
-    // РЕГИСТРАЦИЯ
-    window.handleRegister = async function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('registerName').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-        
-        try {
-            // Создаём пользователя в Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            
-            // Проверяем реферальный код
-            const urlParams = getUrlParams();
-            let referrerId = null;
-            let referrerName = null;
-
-            if (urlParams.ref) {
-                // Ищем реферрера в Firestore
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where('referralCode', '==', urlParams.ref));
-                const querySnapshot = await getDocs(q);
-                
-                if (!querySnapshot.empty) {
-                    const referrerDoc = querySnapshot.docs[0];
-                    referrerId = referrerDoc.id;
-                    referrerName = referrerDoc.data().name;
-                }
-            }
-            
-            // Генерируем реферальный код
-            const referralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            
-            // Определяем роль
-            const isAdmin = email === 'marketology2019@mail.ru';
-            
-            // Сохраняем в Firestore
-            const userData = {
-                name,
-                email,
-                role: isAdmin ? 'admin' : 'user',
-                referralCode,
-                referrerId: referrerId || null,
-                points: 0,
-                reviewsCount: 0,
-                productsCount: 0,
-                createdAt: new Date().toISOString()
-            };
-            
-            await setDoc(doc(db, 'users', user.uid), userData);
-            currentUserData = userData;
-            
-            // Закрываем модал
-            document.getElementById('registerModal').classList.remove('active');
-            document.querySelector('#registerModal form').reset();
-            
-            if (referrerName) {
-                showSuccessMessage(`✅ Вы зарегистрировались по реферальной ссылке от ${referrerName}!`);
-            } else {
-                showSuccessMessage('🎉 Вы успешно зарегистрировались!');
-            }
-
-        } catch (error) {
-            console.error(error);
-            if (error.code === 'auth/email-already-in-use') {
-                showErrorMessage('❌ Пользователь с таким email уже существует');
-            } else if (error.code === 'auth/weak-password') {
-                showErrorMessage('❌ Пароль должен быть не менее 6 символов');
-            } else {
-                showErrorMessage('❌ Ошибка регистрации: ' + error.message);
-            }
+        /* NAVBAR */
+        .navbar {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-    }
+        .navbar-brand { color: white; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
+        .navbar-nav { display: flex; gap: 1rem; list-style: none; }
+        .navbar-nav a { color: rgba(255,255,255,0.85); text-decoration: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.2s; }
+        .navbar-nav a:hover { color: white; background: rgba(255,255,255,0.15); }
+        .auth-buttons { display: flex; gap: 0.5rem; }
 
-    // ВХОД
-    window.handleLogin = async function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            
-            document.getElementById('loginModal').classList.remove('active');
-            document.querySelector('#loginModal form').reset();
-            showSuccessMessage('✅ Вы успешно вошли!');
+        /* BUTTONS */
+        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.3); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        } catch (error) {
-            console.error(error);
-            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                showErrorMessage('❌ Неверный email или пароль');
-            } else {
-                showErrorMessage('❌ Ошибка входа: ' + error.message);
-            }
+        /* SECTIONS */
+        .section { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 3rem;
         }
-    }
+        .hero h1 { font-size: 3rem; font-weight: 900; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; opacity: 0.9; margin-bottom: 2rem; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .hero-btn { padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.3s; }
+        .hero-btn-primary { background: white; color: var(--primary); }
+        .hero-btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .hero-btn-secondary { background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); }
+        .hero-btn-secondary:hover { background: rgba(255,255,255,0.3); transform: translateY(-3px); }
 
-    // ВЫХОД
-    window.logout = async function() {
-        await signOut(auth);
-        showSuccessMessage('👋 Вы вышли из аккаунта');
-        showSection('home');
-    }
+        /* FEATURES */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .feature-card { background: white; padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text); }
+        .feature-card p { color: var(--text-muted); font-size: 0.9rem; }
 
-    // ===== ОБНОВЛЕНИЕ ШАПКИ =====
-    window.updateHeader = function() {
-        const authButtons = document.querySelector('.auth-buttons');
-        const adminNavLink = document.getElementById('adminNavLink');
-        
-        if (currentUser && currentUserData) {
-            authButtons.innerHTML = `
-                <div class="flex gap-2" style="align-items: center;">
-                    <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">
-                        ${currentUserData.name.charAt(0)}
-                    </div>
-                    <span style="color: white;">${currentUserData.name}</span>
-                </div>
-            `;
-            
-            if (currentUserData.role === 'admin') {
-                adminNavLink.style.display = 'block';
-            } else {
-                adminNavLink.style.display = 'none';
-            }
-        } else {
-            authButtons.innerHTML = `
-                <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
-                <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
-            `;
-            adminNavLink.style.display = 'none';
+        /* CARDS */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .card-content { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .card-footer { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .position-relative { position: relative; }
+
+        /* PRODUCT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .product-image { width: 100%; height: 180px; background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden; }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; }
+        .stock-badge { position: absolute; top: 1rem; right: 1rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: #dcfce7; color: #166534; }
+        .stock-badge.low { background: #fef3c7; color: #92400e; }
+        .stock-badge.out { background: #fee2e2; color: #991b1b; }
+        .verified-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; margin-left: 0.5rem; }
+        .rating { color: #f59e0b; font-size: 1.1rem; }
+
+        /* SEARCH */
+        .search-bar { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .search-input { flex: 1; padding: 0.8rem 1.2rem; border: 2px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .search-input:focus { border-color: var(--primary); }
+
+        /* SECTION HEADER */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .section-title { font-size: 2rem; font-weight: 800; }
+        .section-subtitle { color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 2rem; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.4rem; font-weight: 800; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+
+        /* FORMS */
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .form-input { width: 100%; padding: 0.7rem 1rem; border: 2px solid var(--border); border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .form-input:focus { border-color: var(--primary); }
+        select.form-input { cursor: pointer; }
+
+        /* CABINET */
+        .user-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 800; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .stat-card { background: linear-gradient(135deg, #f0f4ff, #e0e7ff); padding: 1.2rem; border-radius: 12px; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .referral-box { background: #f0f4ff; border: 2px dashed var(--primary); border-radius: 12px; padding: 1rem; margin: 1rem 0; }
+        .referral-link { font-size: 0.85rem; color: var(--primary); word-break: break-all; font-weight: 600; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+        .tab { padding: 0.7rem 1.2rem; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; border-radius: 8px 8px 0 0; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0f4ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* BADGE */
+        .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .badge-primary { background: #ddd6fe; color: #6d28d9; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        /* ALERTS */
+        .alert { padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1rem; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* FLEX HELPERS */
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .gap-2 { gap: 0.5rem; }
+        .text-muted { color: var(--text-muted); font-size: 0.9rem; }
+        .action-buttons { display: flex; gap: 0.4rem; }
+
+        /* PAYMENT */
+        .payment-option { background: #f8fafc; border: 2px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
+        .payment-option h4 { margin-bottom: 0.5rem; }
+        .payment-option p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem; }
+
+        /* REQUEST STATUS */
+        .request-status { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .request-status.pending { background: #fef3c7; color: #92400e; }
+        .request-status.approved { background: #dcfce7; color: #166534; }
+        .request-status.rejected { background: #fee2e2; color: #991b1b; }
+
+        /* ADMIN */
+        .admin-notification { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 1.5rem; border-radius: 12px; text-align: center; }
+
+        /* COMMISSION STATS */
+        .commission-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .commission-stat { background: #f0f4ff; padding: 1rem; border-radius: 12px; text-align: center; }
+        .commission-stat .amount { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .commission-stat .label { font-size: 0.75rem; color: var(--text-muted); }
+
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 0.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .section { padding: 1rem; }
+            .commission-stats { grid-template-columns: 1fr; }
         }
-    }
+    </style>
+</head>
+<body>
 
-    // ===== ЛИЧНЫЙ КАБИНЕТ =====
-    window.updateCabinet = async function() {
-        if (!currentUser || !currentUserData) {
-            document.getElementById('notLoggedInMessage').style.display = 'block';
-            document.getElementById('cabinetContent').style.display = 'none';
-            return;
-        }
-        
-        document.getElementById('notLoggedInMessage').style.display = 'none';
-        document.getElementById('cabinetContent').style.display = 'block';
-        
-        // Обновляем данные из Firestore
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-            currentUserData = userDoc.data();
-        }
-        
-        document.getElementById('userName').textContent = currentUserData.name;
-        document.getElementById('userEmail').textContent = currentUserData.email;
-        document.getElementById('userAvatar').textContent = currentUserData.name.charAt(0);
-        document.getElementById('productsCount').textContent = currentUserData.productsCount || 0;
-        document.getElementById('reviewsCount').textContent = currentUserData.reviewsCount || 0;
-        document.getElementById('pointsCount').textContent = currentUserData.points || 0;
-        document.getElementById('avgRating').textContent = '0★';
-        
-        // Реферальная ссылка
-        const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUserData.referralCode}`;
-        document.getElementById('referralLink').textContent = referralLink;
-        
-        // Загружаем рефералов
-        await loadReferrals();
-        
-        // Загружаем запросы
-        await loadUserRequests();
-        
-        // Загружаем комиссии
-        await loadUserCommissions();
-    }
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="navbar-brand" onclick="showSection('home')">🛒 Marketology</div>
+    <ul class="navbar-nav">
+        <li><a onclick="showSection('home')">Главная</a></li>
+        <li><a onclick="showSection('catalog')">Каталог</a></li>
+        <li><a onclick="showSection('verified')">Проверенные</a></li>
+        <li><a onclick="showSection('cabinet')">Кабинет</a></li>
+        <li id="adminNavLink" style="display:none;"><a onclick="showSection('admin')">Админ</a></li>
+    </ul>
+    <div class="auth-buttons">
+        <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
+        <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
+    </div>
+</nav>
 
-    // Загружаем рефералов
-    async function loadReferrals() {
-        try {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('referrerId', '==', currentUser.uid));
-            const snapshot = await getDocs(q);
-            
-            const referralsList = document.getElementById('referralsList');
-            if (snapshot.empty) {
-                referralsList.innerHTML = '<p class="text-muted">Вы ещё никого не пригласили</p>';
-            } else {
-                referralsList.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <h4 class="card-title">${data.name}</h4>
-                                    <p class="text-muted">${data.email}</p>
-                                </div>
-                                <span class="badge badge-success">Реферал</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки рефералов:', error);
-        }
-    }
+<!-- HOME -->
+<div id="home" class="section active">
+    <div class="hero">
+        <h1>🚀 Marketology</h1>
+        <p>Лучшая платформа для покупки и продажи товаров с реферальной системой</p>
+        <div class="hero-buttons">
+            <button class="hero-btn hero-btn-primary" onclick="showSection('catalog')">📦 Смотреть каталог</button>
+            <button class="hero-btn hero-btn-secondary" onclick="showSection('verified')">✅ Проверенные товары</button>
+        </div>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Реферальная система</h3>
+            <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <h3>Проверенные товары</h3>
+            <p>Все товары проходят проверку качества перед публикацией</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Система отзывов</h3>
+            <p>Честные отзывы от реальных покупателей</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Безопасность</h3>
+            <p>Защищённые платежи и надёжная доставка</p>
+        </div>
+    </div>
+</div>
 
-    // Загружаем запросы пользователя
-    async function loadUserRequests() {
-        try {
-            const requestsRef = collection(db, 'requests');
-            const q = query(requestsRef, where('userId', '==', currentUser.uid));
-            const snapshot = await getDocs(q);
-            
-            const requestsList = document.getElementById('requestsList');
-            if (snapshot.empty) {
-                requestsList.innerHTML = '<p class="text-muted">Вы ещё не запрашивали товары</p>';
-            } else {
-                requestsList.innerHTML = snapshot.docs.map(doc => {
-                    const r = doc.data();
-                    const product = products.find(p => p.id === r.productId);
-                    return `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <h4 class="card-title">${product?.name || 'Товар'}</h4>
-                                    <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Карта банка' : '⏰ Через 3 дня'}</p>
-                                </div>
-                                <span class="request-status ${r.status}">
-                                    ${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}
-                                </span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки запросов:', error);
-        }
-    }
+<!-- CATALOG -->
+<div id="catalog" class="section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">📦 Каталог товаров</h2>
+            <p class="section-subtitle">Запросите понравившийся товар</p>
+        </div>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск товаров...">
+    </div>
+    <div id="productGrid" class="product-grid"></div>
+</div>
 
-    // Загружаем комиссии пользователя
-    async function loadUserCommissions() {
-        try {
-            const commissionsRef = collection(db, 'commissions');
-            const q = query(commissionsRef, where('referrerId', '==', currentUser.uid));
-            const snapshot = await getDocs(q);
-            
-            let total = 0, paid = 0;
-            
-            const commissionsList = document.getElementById('commissionsList');
-            if (snapshot.empty) {
-                commissionsList.innerHTML = '<p class="text-muted">Комиссии отсутствуют</p>';
-            } else {
-                const items = [];
-                snapshot.docs.forEach(doc => {
-                    const c = doc.data();
-                    total += c.amount || 0;
-                    if (c.paid) paid += c.amount || 0;
-                    
-                    const product = verifiedProducts.find(p => p.id === c.productId);
-                    items.push(`
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <h4 class="card-title">${product?.name || 'Товар'}</h4>
-                                </div>
-                                <div>
-                                    <div style="font-weight: bold;">$${(c.amount || 0).toFixed(2)}</div>
-                                    <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">
-                                        ${c.paid ? 'Выплачено' : 'Ожидание'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                });
-                commissionsList.innerHTML = items.join('');
-            }
-            
-            document.getElementById('totalCommission').textContent = '$' + total.toFixed(2);
-            document.getElementById('paidCommission').textContent = '$' + paid.toFixed(2);
-            document.getElementById('unpaidCommission').textContent = '$' + (total - paid).toFixed(2);
+<!-- VERIFIED -->
+<div id="verified" class="section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">✅ Проверенные товары</h2>
+            <p class="section-subtitle">Гарантия качества на каждый товар</p>
+        </div>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="verifiedSearchInput" class="search-input" placeholder="🔍 Поиск...">
+    </div>
+    <div id="verifiedProductGrid" class="product-grid"></div>
+</div>
 
-        } catch (error) {
-            console.error('Ошибка загрузки комиссий:', error);
-        }
-    }
+<!-- CABINET -->
+<div id="cabinet" class="section">
+    <h2 class="section-title mb-3">👤 Личный кабинет</h2>
 
-    // ===== ЗАПРОСЫ ТОВАРОВ =====
-    window.submitProductRequest = async function(productId, paymentMethod) {
-        if (!currentUser) return;
-        
-        const product = products.find(p => p.id === productId);
-        
-        try {
-            await addDoc(collection(db, 'requests'), {
-                userId: currentUser.uid,
-                userName: currentUserData.name,
-                productId: productId,
-                productName: product.name,
-                paymentMethod: paymentMethod,
-                category: product.category,
-                status: 'pending',
-                date: new Date().toISOString()
-            });
-            
-            // Увеличиваем счётчик
-            await updateDoc(doc(db, 'users', currentUser.uid), {
-                productsCount: (currentUserData.productsCount || 0) + 1
-            });
-            
-            document.getElementById('requestProductModal').classList.remove('active');
-            showSuccessMessage(`✅ Запрос на товар "${product.name}" отправлен!`);
-            
-        } catch (error) {
-            console.error(error);
-            showErrorMessage('❌ Ошибка при отправке запроса');
-        }
-    }
+    <div id="notLoggedInMessage" class="alert alert-error" style="display:none;">
+        ❌ Войдите в аккаунт чтобы просмотреть кабинет
+        <button class="btn btn-primary btn-small" style="margin-left:1rem;" onclick="toggleLoginModal()">Войти</button>
+    </div>
 
-    // ===== ADMIN =====
-    window.updateAdmin = async function() {
-        if (!currentUser || !currentUserData || currentUserData.role !== 'admin') {
-            document.getElementById('adminNotification').style.display = 'block';
-            document.getElementById('adminContent').style.display = 'none';
-            return;
-        }
-        
-        document.getElementById('adminNotification').style.display = 'none';
-        document.getElementById('adminContent').style.display = 'block';
-        
-        // Загружаем пользователей
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        const usersList = document.getElementById('usersList');
-        usersList.innerHTML = usersSnapshot.docs.map(doc => {
-            const u = doc.data();
-            return `
-                <div class="card mb-2">
-                    <div class="flex-between">
-                        <div>
-                            <h4 class="card-title">${u.name}</h4>
-                            <p class="text-muted">${u.email}</p>
-                            <p class="text-muted" style="font-size:0.8rem;">Реф. код: ${u.referralCode}</p>
-                        </div>
-                        <span class="badge badge-primary">${u.role}</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Загружаем запросы
-        const requestsSnapshot = await getDocs(collection(db, 'requests'));
-        const adminRequestsList = document.getElementById('adminRequestsList');
-        if (requestsSnapshot.empty) {
-            adminRequestsList.innerHTML = '<p class="text-muted">Нет запросов</p>';
-        } else {
-            adminRequestsList.innerHTML = requestsSnapshot.docs.map(docSnap => {
-                const r = docSnap.data();
-                return `
-                    <div class="card mb-2">
-                        <div class="flex-between">
-                            <div>
-                                <h4 class="card-title">${r.productName}</h4>
-                                <p class="text-muted">От: ${r.userName}</p>
-                                <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Через 3 дня'}</p>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="btn btn-success btn-small" onclick="approveRequest('${docSnap.id}')">✅</button>
-                                <button class="btn btn-danger btn-small" onclick="rejectRequest('${docSnap.id}')">❌</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Рендерим товары (локальные)
-        renderAdminProducts();
-        renderAdminVerifiedProducts();
-    }
-
-    // Одобрить/отклонить запрос
-    window.approveRequest = async function(requestId) {
-        await updateDoc(doc(db, 'requests', requestId), { status: 'approved' });
-        showSuccessMessage('✅ Запрос одобрен!');
-        updateAdmin();
-    }
-
-    window.rejectRequest = async function(requestId) {
-        await updateDoc(doc(db, 'requests', requestId), { status: 'rejected' });
-        showSuccessMessage('❌ Запрос отклонён!');
-        updateAdmin();
-    }
-
-    function renderAdminProducts() {
-        const adminProductsList = document.getElementById('adminProductsList');
-        adminProductsList.innerHTML = products.map(p => `
-            <div class="card mb-2">
-                <div class="flex-between">
-                    <div>
-                        <h4 class="card-title">${p.name}</h4>
-                        <p class="text-muted">${p.category} | Остаток: ${p.stock}</p>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-warning btn-small" onclick="openEditProductModal(${p.id})">✏️</button>
-                        <button class="btn btn-danger btn-small" onclick="deleteProduct(${p.id})">🗑️</button>
-                    </div>
+    <div id="cabinetContent" style="display:none;">
+        <div class="card mb-3">
+            <div class="flex gap-2" style="align-items:center; margin-bottom:1rem;">
+                <div id="userAvatar" class="user-avatar">?</div>
+                <div>
+                    <h3 id="userName" style="font-size:1.5rem; font-weight:800;"></h3>
+                    <p id="userEmail" class="text-muted"></p>
                 </div>
             </div>
-        `).join('');
-    }
-
-    function renderAdminVerifiedProducts() {
-        const adminVerifiedProductsList = document.getElementById('adminVerifiedProductsList');
-        adminVerifiedProductsList.innerHTML = verifiedProducts.map(p => `
-            <div class="card mb-2">
-                <div class="flex-between">
-                    <div>
-                        <h4 class="card-title">${p.name}</h4>
-                        <p class="text-muted">$${p.price} | Остаток: ${p.stock}</p>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal(${p.id})">✏️</button>
-                        <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct(${p.id})">🗑️</button>
-                    </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div id="productsCount" class="stat-number">0</div>
+                    <div class="stat-label">Товаров</div>
+                </div>
+                <div class="stat-card">
+                    <div id="reviewsCount" class="stat-number">0</div>
+                    <div class="stat-label">Отзывов</div>
+                </div>
+                <div class="stat-card">
+                    <div id="pointsCount" class="stat-number">0</div>
+                    <div class="stat-label">Баллов</div>
+                </div>
+                <div class="stat-card">
+                    <div id="avgRating" class="stat-number">0★</div>
+                    <div class="stat-label">Рейтинг</div>
                 </div>
             </div>
-        `).join('');
-    }
+            <div class="referral-box">
+                <p style="font-weight:600; margin-bottom:0.5rem;">🔗 Ваша реферальная ссылка:</p>
+                <span id="referralLink" class="referral-link"></span>
+                <button class="btn btn-primary btn-small" style="margin-top:0.5rem;" onclick="copyReferralLink()">📋 Копировать</button>
+            </div>
+            <button class="btn btn-danger btn-small" onclick="logout()">🚪 Выйти</button>
+        </div>
 
-    // ===== ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) =====
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('referrals')">👥 Рефералы</button>
+            <button class="tab" onclick="switchTab('requests')">📋 Запросы</button>
+            <button class="tab" onclick="switchTab('commissions')">💰 Комиссии</button>
+        </div>
 
-    window.showSection = function(sectionId) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
-        
-        if (sectionId === 'catalog') renderProducts();
-        else if (sectionId === 'verified') renderVerifiedProducts();
-        else if (sectionId === 'cabinet') updateCabinet();
-        else if (sectionId === 'admin') updateAdmin();
-    }
+        <div id="referrals" class="tab-content active">
+            <h3 style="margin-bottom:1rem;">👥 Приглашённые пользователи</h3>
+            <div id="referralsList"></div>
+        </div>
 
-    window.toggleLoginModal = function() {
-        document.getElementById('loginModal').classList.toggle('active');
-    }
-    window.toggleRegisterModal = function() {
-        document.getElementById('registerModal').classList.toggle('active');
-    }
-    window.toggleAddProductModal = function() {
-        document.getElementById('addProductModal').classList.toggle('active');
-    }
-    window.toggleAddVerifiedProductModal = function() {
-        document.getElementById('addVerifiedProductModal').classList.toggle('active');
-    }
-    window.closeEditProductModal = function() {
-        document.getElementById('editProductModal').classList.remove('active');
-    }
-    window.closeEditVerifiedProductModal = function() {
-        document.getElementById('editVerifiedProductModal').classList.remove('active');
-    }
-    window.closePaymentModal = function() {
-        document.getElementById('paymentModal').classList.remove('active');
-    }
-    window.closeRequestProductModal = function() {
-        document.getElementById('requestProductModal').classList.remove('active');
-    }
+        <div id="requests" class="tab-content">
+            <h3 style="margin-bottom:1rem;">📋 Мои запросы</h3>
+            <div id="requestsList"></div>
+        </div>
 
-    window.renderProducts = function() {
-        const grid = document.getElementById('productGrid');
-        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        const filtered = products.filter(p => 
-            p.name.toLowerCase().includes(searchTerm) || 
-            p.description.toLowerCase().includes(searchTerm)
-        );
-        grid.innerHTML = filtered.map(p => `
-            <div class="card position-relative">
-                ${p.stock <= 5 ? `<div class="stock-badge ${p.stock === 0 ? 'out' : 'low'}">Осталось: ${p.stock}</div>` : `<div class="stock-badge">В наличии: ${p.stock}</div>`}
-                <div class="product-image">${p.image ? `<img src="${p.image}" alt="${p.name}">` : '📦'}</div>
-                <h3 class="card-title">${p.name}</h3>
-                <p class="card-content">${p.description}</p>
-                <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                <div class="card-footer">
-                    <button class="btn btn-primary btn-small" onclick="showRequestProductOptions(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button>
+        <div id="commissions" class="tab-content">
+            <h3 style="margin-bottom:1rem;">💰 Мои комиссии</h3>
+            <div class="commission-stats">
+                <div class="commission-stat">
+                    <div id="totalCommission" class="amount">$0.00</div>
+                    <div class="label">Всего</div>
+                </div>
+                <div class="commission-stat">
+                    <div id="paidCommission" class="amount">$0.00</div>
+                    <div class="label">Выплачено</div>
+                </div>
+                <div class="commission-stat">
+                    <div id="unpaidCommission" class="amount">$0.00</div>
+                    <div class="label">Ожидание</div>
                 </div>
             </div>
-        `).join('');
-    }
+            <div id="commissionsList"></div>
+        </div>
+    </div>
+</div>
 
-    window.renderVerifiedProducts = function() {
-        const grid = document.getElementById('verifiedProductGrid');
-        const searchTerm = document.getElementById('verifiedSearchInput')?.value.toLowerCase() || '';
-        const filtered = verifiedProducts.filter(p => 
-            p.name.toLowerCase().includes(searchTerm) || 
-            p.description.toLowerCase().includes(searchTerm)
-        );
-        grid.innerHTML = filtered.map(p => `
-            <div class="card position-relative">
-                <div class="product-image">${p.image ? `<img src="${p.image}" alt="${p.name}">` : '✅'}</div>
-                <h3 class="card-title">${p.name}<span class="verified-badge">Проверено</span></h3>
-                <p class="card-content">${p.description}</p>
-                <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 1rem 0;">$${p.price}</div>
-                <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                <p class="text-muted" style="font-size: 0.9rem;">${p.reviews} отзывов</p>
-                <div class="card-footer">
-                    <button class="btn btn-primary btn-small" onclick="showPaymentOptions(${p.id})">Купить</button>
-                </div>
+<!-- ADMIN -->
+<div id="admin" class="section">
+    <h2 class="section-title mb-3">⚙️ Панель администратора</h2>
+
+    <div id="adminNotification" class="admin-notification" style="display:none;">
+        🔒 Доступ только для администраторов
+    </div>
+
+    <div id="adminContent" style="display:none;">
+        <div class="tabs">
+            <button class="tab active" onclick="switchAdminTab('users')">👥 Пользователи</button>
+            <button class="tab" onclick="switchAdminTab('requests')">📋 Запросы</button>
+            <button class="tab" onclick="switchAdminTab('products')">📦 Каталог</button>
+            <button class="tab" onclick="switchAdminTab('verified')">✅ Проверенные</button>
+        </div>
+
+        <div id="users-admin" class="tab-content active">
+            <h3 style="margin-bottom:1rem;">👥 Все пользователи</h3>
+            <div id="usersList"></div>
+        </div>
+
+        <div id="requests-admin" class="tab-content">
+            <h3 style="margin-bottom:1rem;">📋 Запросы товаров</h3>
+            <div id="adminRequestsList"></div>
+        </div>
+
+        <div id="products-admin" class="tab-content">
+            <div class="flex-between mb-3">
+                <h3>📦 Каталог товаров</h3>
+                <button class="btn btn-primary btn-small" onclick="toggleAddProductModal()">+ Добавить</button>
             </div>
-        `).join('');
-    }
+            <div id="adminProductsList"></div>
+        </div>
 
-    window.showRequestProductOptions = function(productId) {
-        if (!currentUser) {
-            showErrorMessage('Пожалуйста, авторизуйтесь');
-            toggleLoginModal();
-            return;
-        }
-        const product = products.find(p => p.id === productId);
-        document.getElementById('requestProductOptions').innerHTML = `
-            <div class="payment-option">
-                <h4>💳 Оформить карту банка</h4>
-                <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                <button class="btn btn-primary" onclick="submitProductRequest(${productId}, 'card')">Оформить карту</button>
+        <div id="verified-admin" class="tab-content">
+            <div class="flex-between mb-3">
+                <h3>✅ Проверенные товары</h3>
+                <button class="btn btn-primary btn-small" onclick="toggleAddVerifiedProductModal()">+ Добавить</button>
             </div>
-            <div class="payment-option">
-                <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                <button class="btn btn-secondary" onclick="submitProductRequest(${productId}, 'later')">Получить товар</button>
+            <div id="adminVerifiedProductsList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- LOGIN -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">🔑 Вход в аккаунт</h3>
+            <button class="modal-close" onclick="toggleLoginModal()">✕</button>
+        </div>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="loginEmail" class="form-input" required placeholder="your@email.com">
             </div>
-        `;
-        document.getElementById('requestProductModal').classList.add('active');
-    }
-
-    window.showPaymentOptions = async function(productId) {
-        if (!currentUser) {
-            showErrorMessage('Пожалуйста, авторизуйтесь');
-            toggleLoginModal();
-            return;
-        }
-        const product = verifiedProducts.find(p => p.id === productId);
-        document.getElementById('paymentOptions').innerHTML = `
-            <div class="payment-option">
-                <h4>💳 Оформить карту банка</h4>
-                <p>Деньги переводятся сразу, товар доставляется 3-5 дней</p>
-                <button class="btn btn-primary" onclick="processPayment(${productId}, 'card')">Оплатить $${product.price}</button>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" id="loginPassword" class="form-input" required placeholder="••••••">
             </div>
-            <div class="payment-option">
-                <h4>⏰ Оплатить сейчас, получить оплату через 3 дня</h4>
-                <p>Деньги отправляются сразу, как отправите отзыв и чек</p>
-                <button class="btn btn-secondary" onclick="processPayment(${productId}, 'later')">Получить товар</button>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Войти</button>
+        </form>
+        <p style="text-align:center; margin-top:1rem; color:var(--text-muted);">
+            Нет аккаунта? <a href="#" onclick="toggleLoginModal(); toggleRegisterModal();" style="color:var(--primary);">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+<!-- REGISTER -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📝 Регистрация</h3>
+            <button class="modal-close" onclick="toggleRegisterModal()">✕</button>
+        </div>
+        <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label class="form-label">Имя</label>
+                <input type="text" id="registerName" class="form-input" required placeholder="Ваше имя">
             </div>
-        `;
-        document.getElementById('paymentModal').classList.add('active');
-    }
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="registerEmail" class="form-input" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" id="registerPassword" class="form-input" required placeholder="Минимум 6 символов">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
 
-       window.processPayment = async function(productId, method) {
-        const product = verifiedProducts.find(p => p.id === productId);
-        
-        // Сохраняем комиссию если есть реферрер
-        if (currentUserData?.referrerId) {
-            await addDoc(collection(db, 'commissions'), {
-                referrerId: currentUserData.referrerId,
-                referredUserId: currentUser.uid,
-                productId: productId,
-                productName: product.name,
-                amount: product.price * 0.05,
-                paid: false,
-                date: new Date().toISOString()
-            });
-        }
-        
-        // Обновляем счётчик товаров
-        await updateDoc(doc(db, 'users', currentUser.uid), {
-            productsCount: (currentUserData.productsCount || 0) + 1
-        });
-        
-        product.stock--;
-        closePaymentModal();
-        
-        if (method === 'card') {
-            showSuccessMessage(`✅ Платёж $${product.price} обработан! Доставка 3-5 дней.`);
-        } else {
-            showSuccessMessage(`✅ Товар зарезервирован! Отправьте отзыв и чек.`);
-        }
-    }
+<!-- ADD PRODUCT -->
+<div id="addProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📦 Добавить товар</h3>
+            <button class="modal-close" onclick="toggleAddProductModal()">✕</button>
+        </div>
+        <form onsubmit="handleAddProduct(event)">
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input type="text" id="productName" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Категория</label>
+                <select id="productCategory" class="form-input">
+                    <option value="electronics">Электроника</option>
+                    <option value="home">Дом</option>
+                    <option value="sports">Спорт</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <input type="text" id="productDescription" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL товара</label>
+                <input type="url" id="productUrl" class="form-input" placeholder="https://...">
+            </div>
+                        <div class="form-group">
+                <label class="form-label">Остаток на складе</label>
+                <input type="number" id="productStock" class="form-input" required value="10">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Изображение</label>
+                <input type="file" id="productImage" class="form-input" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Добавить товар</button>
+        </form>
+    </div>
+</div>
 
-    // ===== ТОВАРЫ (локальные) =====
-    window.handleAddProduct = function(e) {
-        e.preventDefault();
-        const imageFile = document.getElementById('productImage').files[0];
-        
-        function createProduct(image) {
-            const newProduct = {
-                id: Math.max(...products.map(p => p.id), 0) + 1,
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                description: document.getElementById('productDescription').value,
-                url: document.getElementById('productUrl').value,
-                image: image,
-                rating: 0,
-                reviews: 0,
-                stock: parseInt(document.getElementById('productStock').value)
-            };
-            products.push(newProduct);
-            toggleAddProductModal();
-            showSuccessMessage('✅ Товар успешно добавлен!');
-            document.querySelector('#addProductModal form').reset();
-            updateAdmin();
-        }
-        
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => createProduct(event.target.result);
-            reader.readAsDataURL(imageFile);
-        } else {
-            createProduct(null);
-        }
-    }
+<!-- ADD VERIFIED PRODUCT -->
+<div id="addVerifiedProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">✅ Добавить проверенный товар</h3>
+            <button class="modal-close" onclick="toggleAddVerifiedProductModal()">✕</button>
+        </div>
+        <form onsubmit="handleAddVerifiedProduct(event)">
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input type="text" id="verifiedProductName" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Категория</label>
+                <select id="verifiedProductCategory" class="form-input">
+                    <option value="electronics">Электроника</option>
+                    <option value="home">Дом</option>
+                    <option value="sports">Спорт</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <input type="text" id="verifiedProductDescription" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Цена ($)</label>
+                <input type="number" id="verifiedProductPrice" class="form-input" required step="0.01">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Остаток на складе</label>
+                <input type="number" id="verifiedProductStock" class="form-input" required value="10">
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL товара</label>
+                <input type="url" id="verifiedProductUrl" class="form-input" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Изображение</label>
+                <input type="file" id="verifiedProductImage" class="form-input" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Добавить товар</button>
+        </form>
+    </div>
+</div>
 
-    window.handleAddVerifiedProduct = function(e) {
-        e.preventDefault();
-        const imageFile = document.getElementById('verifiedProductImage').files[0];
-        
-        function createProduct(image) {
-            const newProduct = {
-                id: Math.max(...verifiedProducts.map(p => p.id), 0) + 1,
-                name: document.getElementById('verifiedProductName').value,
-                category: document.getElementById('verifiedProductCategory').value,
-                description: document.getElementById('verifiedProductDescription').value,
-                price: parseFloat(document.getElementById('verifiedProductPrice').value),
-                stock: parseInt(document.getElementById('verifiedProductStock').value),
-                url: document.getElementById('verifiedProductUrl').value,
-                image: image,
-                rating: 0,
-                reviews: 0
-            };
-            verifiedProducts.push(newProduct);
-            toggleAddVerifiedProductModal();
-            showSuccessMessage('✅ Проверенный товар добавлен!');
-            document.querySelector('#addVerifiedProductModal form').reset();
-            updateAdmin();
-        }
-        
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => createProduct(event.target.result);
-            reader.readAsDataURL(imageFile);
-        } else {
-            createProduct(null);
-        }
-    }
+<!-- EDIT PRODUCT -->
+<div id="editProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">✏️ Редактировать товар</h3>
+            <button class="modal-close" onclick="closeEditProductModal()">✕</button>
+        </div>
+        <form onsubmit="handleEditProduct(event)">
+            <input type="hidden" id="editProductId">
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input type="text" id="editProductName" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Категория</label>
+                <select id="editProductCategory" class="form-input">
+                    <option value="electronics">Электроника</option>
+                    <option value="home">Дом</option>
+                    <option value="sports">Спорт</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <input type="text" id="editProductDescription" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL товара</label>
+                <input type="url" id="editProductUrl" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Остаток</label>
+                <input type="number" id="editProductStock" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Новое изображение</label>
+                <input type="file" id="editProductImage" class="form-input" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Сохранить</button>
+        </form>
+    </div>
+</div>
 
-    window.openEditProductModal = function(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) return;
-        document.getElementById('editProductId').value = product.id;
-        document.getElementById('editProductName').value = product.name;
-        document.getElementById('editProductDescription').value = product.description;
-        document.getElementById('editProductCategory').value = product.category;
-        document.getElementById('editProductUrl').value = product.url;
-        document.getElementById('editProductStock').value = product.stock;
-        document.getElementById('editProductModal').classList.add('active');
-    }
+<!-- EDIT VERIFIED PRODUCT -->
+<div id="editVerifiedProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">✏️ Редактировать товар</h3>
+            <button class="modal-close" onclick="closeEditVerifiedProductModal()">✕</button>
+        </div>
+        <form onsubmit="handleEditVerifiedProduct(event)">
+            <input type="hidden" id="editVerifiedProductId">
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input type="text" id="editVerifiedProductName" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Категория</label>
+                <select id="editVerifiedProductCategory" class="form-input">
+                    <option value="electronics">Электроника</option>
+                    <option value="home">Дом</option>
+                    <option value="sports">Спорт</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание</label>
+                <input type="text" id="editVerifiedProductDescription" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Цена ($)</label>
+                <input type="number" id="editVerifiedProductPrice" class="form-input" required step="0.01">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Остаток</label>
+                <input type="number" id="editVerifiedProductStock" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL товара</label>
+                <input type="url" id="editVerifiedProductUrl" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Новое изображение</label>
+                <input type="file" id="editVerifiedProductImage" class="form-input" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Сохранить</button>
+        </form>
+    </div>
+</div>
 
-    window.openEditVerifiedProductModal = function(productId) {
-        const product = verifiedProducts.find(p => p.id === productId);
-        if (!product) return;
-        document.getElementById('editVerifiedProductId').value = product.id;
-        document.getElementById('editVerifiedProductName').value = product.name;
-        document.getElementById('editVerifiedProductDescription').value = product.description;
-        document.getElementById('editVerifiedProductCategory').value = product.category;
-        document.getElementById('editVerifiedProductPrice').value = product.price;
-        document.getElementById('editVerifiedProductStock').value = product.stock;
-        document.getElementById('editVerifiedProductUrl').value = product.url;
-        document.getElementById('editVerifiedProductModal').classList.add('active');
-    }
+<!-- PAYMENT MODAL -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">💳 Способ оплаты</h3>
+            <button class="modal-close" onclick="closePaymentModal()">✕</button>
+        </div>
+        <div id="paymentOptions"></div>
+    </div>
+</div>
 
-    window.handleEditProduct = function(e) {
-        e.preventDefault();
-        const productId = parseInt(document.getElementById('editProductId').value);
-        const product = products.find(p => p.id === productId);
-        
-        function updateProductData() {
-            product.name = document.getElementById('editProductName').value;
-            product.description = document.getElementById('editProductDescription').value;
-            product.category = document.getElementById('editProductCategory').value;
-            product.url = document.getElementById('editProductUrl').value;
-            product.stock = parseInt(document.getElementById('editProductStock').value);
-            closeEditProductModal();
-            showSuccessMessage('✅ Товар обновлён!');
-            updateAdmin();
-        }
-        
-        const imageFile = document.getElementById('editProductImage').files[0];
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => { product.image = event.target.result; updateProductData(); };
-            reader.readAsDataURL(imageFile);
-        } else {
-            updateProductData();
-        }
-    }
+<!-- REQUEST PRODUCT MODAL -->
+<div id="requestProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📋 Запросить товар</h3>
+            <button class="modal-close" onclick="closeRequestProductModal()">✕</button>
+        </div>
+        <div id="requestProductOptions"></div>
+    </div>
+</div>
 
-    window.handleEditVerifiedProduct = function(e) {
-        e.preventDefault();
-        const productId = parseInt(document.getElementById('editVerifiedProductId').value);
-        const product = verifiedProducts.find(p => p.id === productId);
-        
-        function updateProductData() {
-            product.name = document.getElementById('editVerifiedProductName').value;
-            product.description = document.getElementById('editVerifiedProductDescription').value;
-            product.category = document.getElementById('editVerifiedProductCategory').value;
-            product.price = parseFloat(document.getElementById('editVerifiedProductPrice').value);
-            product.stock = parseInt(document.getElementById('editVerifiedProductStock').value);
-            product.url = document.getElementById('editVerifiedProductUrl').value;
-            closeEditVerifiedProductModal();
-            showSuccessMessage('✅ Товар обновлён!');
-            updateAdmin();
-        }
-        
-        const imageFile = document.getElementById('editVerifiedProductImage').files[0];
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (event) => { product.image = event.target.result; updateProductData(); };
-            reader.readAsDataURL(imageFile);
-        } else {
-            updateProductData();
-        }
-    }
+<!-- ===== ЗДЕСЬ ВСТАВЬТЕ ВАШ <script type="module"> ===== -->
 
-    window.deleteProduct = function(productId) {
-        if (confirm('Удалить товар?')) {
-            products = products.filter(p => p.id !== productId);
-            showSuccessMessage('✅ Товар удалён!');
-            updateAdmin();
-        }
-    }
 
-    window.deleteVerifiedProduct = function(productId) {
-        if (confirm('Удалить товар?')) {
-            verifiedProducts = verifiedProducts.filter(p => p.id !== productId);
-            showSuccessMessage('✅ Товар удалён!');
-            updateAdmin();
-        }
-    }
-
-    window.markCommissionAsPaid = async function(commissionId) {
-        await updateDoc(doc(db, 'commissions', commissionId), { paid: true });
-        showSuccessMessage('✅ Комиссия выплачена!');
-        updateAdmin();
-    }
-
-    // ===== ТАБЫ =====
-    window.switchTab = function(tabName) {
-        document.querySelectorAll('#cabinet .tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('#cabinet .tab-content').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(tabName).classList.add('active');
-    }
-
-    window.switchAdminTab = function(tabName) {
-        document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('#admin .tab-content').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(tabName + '-admin').classList.add('active');
-    }
-
-    // ===== УТИЛИТЫ =====
-    window.copyReferralLink = function() {
-        const link = document.getElementById('referralLink').textContent;
-        navigator.clipboard.writeText(link);
-        showSuccessMessage('📋 Ссылка скопирована!');
-    }
-
-    window.showSuccessMessage = function(message) {
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-success';
-        alert.textContent = message;
-        alert.style.cssText = 'position:fixed;top:80px;right:20px;z-index:2000;max-width:400px;';
-        document.body.appendChild(alert);
-        setTimeout(() => alert.remove(), 3000);
-    }
-
-    window.showErrorMessage = function(message) {
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-error';
-        alert.textContent = message;
-        alert.style.cssText = 'position:fixed;top:80px;right:20px;z-index:2000;max-width:400px;';
-        document.body.appendChild(alert);
-        setTimeout(() => alert.remove(), 3000);
-    }
-
-    // ===== ИНИЦИАЛИЗАЦИЯ =====
-    document.addEventListener('DOMContentLoaded', () => {
-        // Поиск
-        document.getElementById('searchInput')?.addEventListener('input', renderProducts);
-        document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
-        
-        // Проверяем реферальный код в URL
-        const urlParams = getUrlParams();
-        if (urlParams.ref) {
-            showSuccessMessage('🎉 Вы пришли по реферальной ссылке!');
-        }
-    });
-
-    // Закрытие модалов по клику на фон
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.classList.remove('active');
-        }
-    });
-
-</script>
+</body>
+</html>
