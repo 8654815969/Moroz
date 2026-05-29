@@ -1439,7 +1439,17 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-                        if (window.firebaseAuth) {
+                        // Проверка локальных аккаунтов (админ) — ДО Firebase
+            const localUser = users.find(u => u.email === email && u.password === password);
+            if (localUser) {
+                currentUser = { ...localUser };
+                toggleLoginModal();
+                updateHeader();
+                showSuccessMessage('Вы успешно вошли!');
+                document.querySelector('#loginModal form').reset();
+                return;
+            }          
+            if (window.firebaseAuth) {
                 window.fbSignIn(window.firebaseAuth, email, password)
                     .then((cred) => {
                         currentUser = { name: email.split('@')[0], email: email, role: 'user', referralCode: 'REF' + Math.random().toString(36).substr(2,9).toUpperCase(), points: 0, reviews: 0, products: 0 };
