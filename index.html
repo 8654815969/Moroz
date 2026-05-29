@@ -1359,6 +1359,60 @@
     </footer>
 
     <script>
+        
+    // ===== ОБНОВЛЕННОЕ ХРАНИЛИЩЕ ДАННЫХ =====
+    let currentUser = null;
+    let products = [];
+    let verifiedProducts = [];
+    
+    // 5. Универсальная функция сохранения (добавляем в основной скрипт)
+    async function saveData(type, data) {
+        try {
+            const db = window.db; // Получаем доступ к Firestore
+            
+            switch(type) {
+                case 'product':
+                    if (data.id) {
+                        await setDoc(doc(db, "products", data.id), data);
+                    } else {
+                        await addDoc(collection(db, "products"), data);
+                    }
+                    break;
+                    
+                case 'user':
+                    await setDoc(doc(db, "users", data.id), data);
+                    break;
+                    
+                case 'review':
+                    await addDoc(collection(db, "reviews"), data);
+                    break;
+                    
+                default:
+                    throw new Error("Unknown data type");
+            }
+            return true;
+        } catch (error) {
+            console.error("Ошибка сохранения:", error);
+            showErrorMessage(`Ошибка: ${error.message}`);
+            return false;
+        }
+    }
+
+    // Пример использования:
+    async function handleAddProduct(e) {
+        e.preventDefault();
+        const newProduct = {
+            name: document.getElementById('productName').value,
+            // ... другие поля
+        };
+        
+        const success = await saveData('product', newProduct);
+        if (success) {
+            showSuccessMessage('Товар сохранен!');
+            toggleAddProductModal();
+        }
+    }
+
         // ===== ХРАНИЛИЩЕ ДАННЫХ (с сохранением) =====
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
@@ -1431,41 +1485,36 @@ const users = await getDocs(collection(db, "users"));
         }
 
         function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
+           import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-            if (users.find(u => u.email === email)) {
-                showErrorMessage('Пользователь с таким email уже существует');
-                return;
-            }
+async function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
 
-            const urlParams = getUrlParams();
-            const referrer = urlParams.ref ? users.find(u => u.referralCode === urlParams.ref) : null;
+    try {
+        // 1. Создаем пользователя в Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(firebaseApp.auth, email, password);
+        
+        // 2. Сохраняем дополнительные данные в Firestore
+        await setDoc(doc(firebaseApp.db, "users", userCredential.user.uid), {
+            name,
+            email,
+            role: 'user',
+            referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            points: 0,
+            reviews: 0,
+            products: 0
+        });
 
-            const newUser = {
-                id: Date.now(),
-                name, email, password,
-                role: 'user',
-                referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                points: 0, reviews: 0, products: 0,
-                referrer: referrer ? referrer.id : null
-            };
-
-            users.push(newUser);
-            currentUser = { ...newUser };
-            saveData();
-
-            if (referrer) {
-                showSuccessMessage(`✅ Вы зарегистрировались по ссылке от ${referrer.name}!`);
-            }
-
-            toggleRegisterModal();
-            updateHeader();
-            showSuccessMessage('Вы успешно зарегистрировались!');
-            document.querySelector('#registerModal form').reset();
-        }
+        showSuccessMessage('Регистрация прошла успешно!');
+        toggleRegisterModal();
+    } catch (error) {
+        showErrorMessage(`Ошибка регистрации: ${error.message}`);
+    }
+}
 
         function logout() {
             currentUser = null;
@@ -1582,20 +1631,51 @@ const users = await getDocs(collection(db, "users"));
         }
 
         // ===== ТОВАРЫ =====
-        function renderProducts() {
-            const grid = document.getElementById('productGrid');
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term));
-            grid.innerHTML = filtered.map(p => `
-                <div class="card position-relative">
-                    <div class="stock-badge ${p.stock === 0 ? 'out' : p.stock <= 5 ? 'low' : ''}">Остаток: ${p.stock}</div>
-                    <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
-                    <h3 class="card-title">${p.name}</h3>
-                    <p class="card-content">${p.description}</p>
-                    <div class="rating mb-2">${'⭐'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</div>
-                    <div class="card-footer"><button class="btn btn-primary btn-small" onclick="showRequestProductOptions(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button></div>
-                </div>`).join('');
-        }
+        import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function renderProducts() {
+    const grid = document.getElementById('productGrid');
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    
+    try {
+        // Получаем товары из Firestore
+        const q = query(collection(firebaseApp.db, "products"));
+        const querySnapshot = await getDocs(q);
+        
+        let products = [];
+        querySnapshot.forEach((doc) => {
+            products.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Фильтрация по поисковому запросу
+        const filtered = products.filter(p => 
+            p.name.toLowerCase().includes(term) || 
+            p.description.toLowerCase().includes(term)
+        );
+
+        // Рендерим карточки товаров
+        grid.innerHTML = filtered.map(p => `
+            <div class="card position-relative">
+                <div class="stock-badge ${p.stock === 0 ? 'out' : p.stock <= 5 ? 'low' : ''}">
+                    Остаток: ${p.stock}
+                </div>
+                <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
+                <h3 class="card-title">${p.name}</h3>
+                <p class="card-content">${p.description}</p>
+                <div class="card-footer">
+                    <button class="btn btn-primary btn-small" 
+                            onclick="showRequestProductOptions('${p.id}')" 
+                            ${p.stock === 0 ? 'disabled' : ''}>
+                        Запросить
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error("Ошибка загрузки товаров:", error);
+        grid.innerHTML = '<p class="text-muted">Ошибка загрузки товаров</p>';
+    }
+}
 
         function renderVerifiedProducts() {
             const grid = document.getElementById('verifiedProductGrid');
@@ -1654,27 +1734,40 @@ const users = await getDocs(collection(db, "users"));
 
         // ===== ДОБАВЛЕНИЕ ТОВАРОВ =====
         function handleAddProduct(e) {
-            e.preventDefault();
-            const file = document.getElementById('productImage').files[0];
-            const create = (img) => {
-                products.push({
-                    id: Math.max(...products.map(p => p.id), 0) + 1,
-                    name: document.getElementById('productName').value,
-                    category: document.getElementById('productCategory').value,
-                    description: document.getElementById('productDescription').value,
-                    url: document.getElementById('productUrl').value,
-                    image: img, rating: 0, reviews: 0,
-                    stock: parseInt(document.getElementById('productStock').value)
-                });
-                saveData();
-                toggleAddProductModal();
-                showSuccessMessage('Товар добавлен!');
-                document.querySelector('#addProductModal form').reset();
-                updateAdmin();
-            };
-            if (file) { const r = new FileReader(); r.onload = ev => create(ev.target.result); r.readAsDataURL(file); }
-            else create(null);
+            import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function handleAddProduct(e) {
+    e.preventDefault();
+    const file = document.getElementById('productImage').files[0];
+    
+    const newProduct = {
+        name: document.getElementById('productName').value,
+        category: document.getElementById('productCategory').value,
+        description: document.getElementById('productDescription').value,
+        url: document.getElementById('productUrl').value,
+        stock: parseInt(document.getElementById('productStock').value),
+        rating: 0,
+        reviews: 0,
+        createdAt: new Date()
+    };
+
+    try {
+        // Если есть изображение - сначала загружаем его
+        if (file) {
+            const imageUrl = await uploadImage(file);
+            newProduct.image = imageUrl;
         }
+
+        // Добавляем товар в Firestore
+        await addDoc(collection(firebaseApp.db, "products"), newProduct);
+        
+        showSuccessMessage('Товар успешно добавлен!');
+        toggleAddProductModal();
+        renderProducts(); // Обновляем список
+    } catch (error) {
+        showErrorMessage(`Ошибка добавления товара: ${error.message}`);
+    }
+}
 
         function handleAddVerifiedProduct(e) {
             e.preventDefault();
@@ -1845,12 +1938,71 @@ const users = await getDocs(collection(db, "users"));
             if (e.target.classList.contains('modal')) e.target.classList.remove('active');
         });
     </script>
+<!-- Основной скрипт приложения -->
+<script>
+    // Глобальные переменные
+    let currentUser = null;
+    let products = [];
+    let verifiedProducts = [];
+    
+    // ===== ОСНОВНЫЕ ФУНКЦИИ =====
+    
+    // Инициализация приложения
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Загрузка данных из Firestore
+        await loadInitialData();
+        
+        // Обработчики событий
+        setupEventListeners();
+        
+        // Проверка авторизации
+        checkAuthState();
+    });
+    
+    async function loadInitialData() {
+        try {
+            // Загрузка товаров
+            const productsQuery = firebase.query(firebase.collection(window.db, "products"));
+            const productsSnapshot = await firebase.getDocs(productsQuery);
+            products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Загрузка проверенных товаров
+            const verifiedQuery = firebase.query(firebase.collection(window.db, "verifiedProducts"));
+            const verifiedSnapshot = await firebase.getDocs(verifiedQuery);
+            verifiedProducts = verifiedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            renderProducts();
+            renderVerifiedProducts();
+        } catch (error) {
+            console.error("Ошибка загрузки данных:", error);
+        }
+    }
+    
+    // Остальные функции вашего приложения...
+    // (остальной код остается без изменений, но использует firebase.* вместо прямых вызовов)
+</script>
 
-   <!-- FIREBASE -->
+<!-- Firebase модуль (должен быть один в конце файла) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { 
+        getAuth, 
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+        getFirestore, 
+        collection, 
+        getDocs,
+        setDoc,
+        doc,
+        addDoc,
+        onSnapshot,
+        query,
+        where
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
@@ -1864,25 +2016,28 @@ const users = await getDocs(collection(db, "users"));
     
     // Инициализация Firebase
     const app = initializeApp(firebaseConfig);
-    window.firebaseAuth = getAuth(app);
-    window.db = getFirestore(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     
-    // Пример использования Firestore
-    async function loadUsers() {
-        try {
-            const querySnapshot = await getDocs(collection(window.db, "users"));
-            querySnapshot.forEach((doc) => {
-                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-            });
-        } catch (error) {
-            console.error("Ошибка загрузки пользователей:", error);
-        }
-    }
-    
-    // Вызываем при загрузке страницы
-    document.addEventListener('DOMContentLoaded', () => {
-        loadUsers();
-    });
+    // Делаем доступными глобально
+    window.firebase = {
+        auth,
+        db,
+        // Auth
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        // Firestore
+        collection, 
+        getDocs,
+        setDoc,
+        doc,
+        addDoc,
+        onSnapshot,
+        query,
+        where
+    };
 </script>
 </body>
 </html>
