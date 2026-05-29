@@ -7,11 +7,20 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        header { background: #2563eb; color: white; padding: 1rem; }
+        header { background: #2563eb; color: white; padding: 1rem; display: flex; justify-content: space-between; }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
-        .card { background: white; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; }
+        .card { background: white; border-radius: 8px; padding: 1rem; margin: 1rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; transition: 0.3s; }
         .btn-primary { background: #2563eb; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-success { background: #16a34a; color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; }
+        .form-group input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+        .admin-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
     </style>
 </head>
 <body>
@@ -19,11 +28,49 @@
         <div class="container">
             <h1>Честный Отзыв</h1>
             <div id="authButtons">
-                <button class="btn btn-primary" onclick="toggleLoginModal()">Вход</button>
+                <button class="btn btn-primary" onclick="toggleModal('loginModal')">Вход</button>
             </div>
         </div>
     </header>
     <main class="container" id="app"></main>
+
+    <!-- Модальные окна -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Вход</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="loginPassword">
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()">Войти</button>
+            <button class="btn" onclick="toggleModal('loginModal')">Отмена</button>
+            <p style="margin-top: 1rem;">Нет аккаунта? <a href="#" onclick="toggleModal('registerModal')">Зарегистрироваться</a></p>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <h2>Регистрация</h2>
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="registerName">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="registerEmail">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="registerPassword">
+            </div>
+            <button class="btn btn-primary" onclick="handleRegister()">Зарегистрироваться</button>
+            <button class="btn" onclick="toggleModal('registerModal')">Отмена</button>
+        </div>
+    </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -48,10 +95,16 @@
 
         // Глобальные переменные
         let currentUser = null;
+        let userData = null;
 
         // Проверка авторизации
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async (user) => {
             currentUser = user;
+            if (user) {
+                // Загружаем дополнительные данные пользователя
+                const userDoc = await db.collection("users").doc(user.uid).get();
+                userData = userDoc.data();
+            }
             updateUI();
         });
 
@@ -63,33 +116,49 @@
                     <span>${currentUser.email}</span>
                     <button class="btn btn-primary" onclick="logout()">Выход</button>
                 `;
+                
+                // Показываем админ-панель если пользователь админ
+                if (userData && userData.role === 'admin') {
+                    showAdminPanel();
+                } else {
+                    loadProducts();
+                }
             } else {
                 authButtons.innerHTML = `
-                    <button class="btn btn-primary" onclick="toggleLoginModal()">Вход</button>
+                    <button class="btn btn-primary" onclick="toggleModal('loginModal')">Вход</button>
                 `;
+                loadProducts();
             }
         }
 
         // Вход
-        async function handleLogin(email, password) {
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                toggleLoginModal();
+                toggleModal('loginModal');
             } catch (error) {
                 alert(error.message);
             }
         }
 
         // Регистрация
-        async function handleRegister(email, password, name) {
+        async function handleRegister() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await db.collection("users").doc(userCredential.user.uid).set({
                     name: name,
                     email: email,
+                    role: email.endsWith('@admin.com') ? 'admin' : 'user',
                     createdAt: new Date()
                 });
-                toggleRegisterModal();
+                toggleModal('registerModal');
             } catch (error) {
                 alert(error.message);
             }
@@ -100,33 +169,122 @@
             auth.signOut();
         }
 
-        // Модальные окна
-        function toggleLoginModal() {
-            console.log("Toggle login modal");
-            // Реализуйте логику показа/скрытия модального окна
-        }
-        
-        function toggleRegisterModal() {
-            console.log("Toggle register modal");
-            // Реализуйте логику показа/скрытия модального окна
+        // Управление модальными окнами
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
 
         // Загрузка товаров
         async function loadProducts() {
-            const snapshot = await db.collection("products").get();
-            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderProducts(products);
+            try {
+                const snapshot = await db.collection("products").get();
+                const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts(products);
+            } catch (error) {
+                console.error("Ошибка загрузки товаров:", error);
+            }
         }
 
         // Отображение товаров
         function renderProducts(products) {
             const app = document.getElementById('app');
-            app.innerHTML = products.map(product => `
-                <div class="card">
-                    <h3>${product.name}</h3>
-                    <p>${product.description}</p>
+            app.innerHTML = `
+                <h2>Наши товары</h2>
+                ${products.map(product => `
+                    <div class="card">
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <p>Цена: ${product.price} руб.</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Админ-панель
+        function showAdminPanel() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <h2>⚙️ Админ-панель</h2>
+                <div class="admin-panel">
+                    <div class="grid">
+                        <button class="btn btn-primary" onclick="showProductManagement()">Управление товарами</button>
+                        <button class="btn btn-primary" onclick="showUserManagement()">Управление пользователями</button>
+                        <button class="btn btn-primary" onclick="showOrderManagement()">Управление заказами</button>
+                    </div>
+                    <div id="adminContent"></div>
                 </div>
-            `).join('');
+            `;
+        }
+
+        // Управление товарами
+        async function showProductManagement() {
+            const snapshot = await db.collection("products").get();
+            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            document.getElementById('adminContent').innerHTML = `
+                <h3>Управление товарами</h3>
+                <button class="btn btn-success" onclick="showAddProductForm()">Добавить товар</button>
+                <div class="card" style="margin-top: 1rem;">
+                    ${products.map(product => `
+                        <div style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                            <h4>${product.name}</h4>
+                            <p>${product.description}</p>
+                            <p>Цена: ${product.price} руб.</p>
+                            <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">Удалить</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Форма добавления товара
+        function showAddProductForm() {
+            document.getElementById('adminContent').innerHTML += `
+                <div class="card" style="margin-top: 1rem;">
+                    <h4>Добавить новый товар</h4>
+                    <div class="form-group">
+                        <label>Название</label>
+                        <input type="text" id="productName">
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea id="productDescription" style="width: 100%;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Цена</label>
+                        <input type="number" id="productPrice">
+                    </div>
+                    <button class="btn btn-success" onclick="addProduct()">Добавить</button>
+                </div>
+            `;
+        }
+
+        // Добавление товара
+        async function addProduct() {
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = document.getElementById('productPrice').value;
+            
+            try {
+                await db.collection("products").add({
+                    name: name,
+                    description: description,
+                    price: parseFloat(price),
+                    createdAt: new Date()
+                });
+                showProductManagement();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Удаление товара
+        async function deleteProduct(productId) {
+            if (confirm("Вы уверены, что хотите удалить этот товар?")) {
+                await db.collection("products").doc(productId).delete();
+                showProductManagement();
+            }
         }
 
         // Инициализация
