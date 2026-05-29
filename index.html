@@ -649,6 +649,15 @@
 window.showSection = showSection;
 window.toggleLoginModal = toggleLoginModal;
 window.toggleRegisterModal = toggleRegisterModal;
-
+<script>
+function toggleLoginModal(){
+  var m = document.getElementById('loginModal');
+  if(m) m.classList.toggle('active');
+}
+function toggleRegisterModal(){
+  var m = document.getElementById('registerModal');
+  if(m) m.classList.toggle('active');
+}
+</script>
 </body>
 </html>
