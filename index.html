@@ -1598,22 +1598,20 @@ window.deleteUser = async function(userId) {
         loadAdminUsers(); // обновить список
     }
 }
-</script>
-
-function switchAdminTab(tabName, event) {
+    function switchAdminTab(tabName, event) {
     document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('#admin .tab-content').forEach(tc => tc.classList.remove('active'));
     event.target.classList.add('active');
     document.getElementById(tabName + '-admin').classList.add('active');
 
-    Подгружаем данные для каждой вкладки
+    // Подгружаем данные для каждой вкладки
     if (tabName === 'users') loadAdminUsers();
     if (tabName === 'products') loadAdminProducts();
     if (tabName === 'requests') loadAdminRequests();
     if (tabName === 'verified') loadAdminVerifiedProducts();
     if (tabName === 'reviews') loadAdminReviews();
 }
-
+</script>
 </main>
 </body>
 </html>
