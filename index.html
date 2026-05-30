@@ -1017,7 +1017,125 @@
             </div>
         </div>
 
-        <!-- Verified Products Tab -->
+        <!-- Verified Products Tab -->async function uploadVerifiedProductImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// 2. Добавление проверенного товара
+window.handleAddVerifiedProduct = async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('verifiedProductName').value;
+    const description = document.getElementById('verifiedProductDescription').value;
+    const category = document.getElementById('verifiedProductCategory').value;
+    const url = document.getElementById('verifiedProductUrl').value;
+    const stock = Number(document.getElementById('verifiedProductStock').value);
+    const price = Number(document.getElementById('verifiedProductPrice').value);
+    const imageInput = document.getElementById('verifiedProductImage');
+    let imageData = null;
+    if (imageInput.files.length > 0) {
+        imageData = await uploadVerifiedProductImage(imageInput.files[0]);
+    }
+    const id = Date.now().toString();
+    await window.firebase.setDoc(
+        window.firebase.doc(window.firebase.db, 'verified_products', id),
+        {
+            id, name, description, category, url, stock, price, imageData, createdAt: new Date()
+        }
+    );
+    document.getElementById('addVerifiedProductModal').classList.remove('active');
+    event.target.reset();
+    loadAdminVerifiedProducts();
+    alert('Проверенный товар добавлен!');
+};
+
+// 3. Открытие модалки на редактирование проверенного товара
+window.editVerifiedProduct = async function(productId) {
+    const docSnap = await window.firebase.getDocs(window.firebase.query(
+        window.firebase.collection(window.firebase.db, 'verified_products'),
+        window.firebase.where('id', '==', productId)
+    ));
+    if (docSnap.empty) return alert('Товар не найден');
+    const data = docSnap.docs[0].data();
+    document.getElementById('editVerifiedProductId').value = productId;
+    document.getElementById('editVerifiedProductName').value = data.name;
+    document.getElementById('editVerifiedProductDescription').value = data.description;
+    document.getElementById('editVerifiedProductCategory').value = data.category;
+    document.getElementById('editVerifiedProductUrl').value = data.url;
+    document.getElementById('editVerifiedProductStock').value = data.stock;
+    document.getElementById('editVerifiedProductPrice').value = data.price;
+    document.getElementById('editVerifiedProductModal').classList.add('active');
+};
+
+// 4. Сохранение изменений
+window.handleEditVerifiedProduct = async function(event) {
+    event.preventDefault();
+    const productId = document.getElementById('editVerifiedProductId').value;
+    const name = document.getElementById('editVerifiedProductName').value;
+    const description = document.getElementById('editVerifiedProductDescription').value;
+    const category = document.getElementById('editVerifiedProductCategory').value;
+    const url = document.getElementById('editVerifiedProductUrl').value;
+    const stock = Number(document.getElementById('editVerifiedProductStock').value);
+    const price = Number(document.getElementById('editVerifiedProductPrice').value);
+    const imageInput = document.getElementById('editVerifiedProductImage');
+    let imageData = null;
+    if (imageInput.files.length > 0) {
+        imageData = await uploadVerifiedProductImage(imageInput.files[0]);
+    }
+    const updateObj = { name, description, category, url, stock, price, updatedAt: new Date() };
+    if (imageData) updateObj.imageData = imageData;
+    await window.firebase.setDoc(
+        window.firebase.doc(window.firebase.db, 'verified_products', productId),
+        updateObj,
+        { merge: true }
+    );
+    document.getElementById('editVerifiedProductModal').classList.remove('active');
+    event.target.reset();
+    loadAdminVerifiedProducts();
+    alert('Проверенный товар изменён!');
+};
+
+// 5. Мягкое удаление
+window.deleteVerifiedProduct = async function(productId) {
+    if (confirm('Удалить товар?')) {
+        await window.firebase.setDoc(
+            window.firebase.doc(window.firebase.db, 'verified_products', productId),
+            { deleted: true },
+            { merge: true }
+        );
+        alert('Проверенный товар помечен как удалённый');
+        loadAdminVerifiedProducts();
+    }
+}
+
+// 6. Вывод списка проверенных товаров в админке
+window.loadAdminVerifiedProducts = async function() {
+    const productsSnap = await window.firebase.getDocs(window.firebase.collection(window.firebase.db, 'verified_products'));
+    const productsList = document.getElementById('adminVerifiedProductsList');
+    productsList.innerHTML = Array.from(productsSnap.docs)
+        .filter(doc => !doc.data().deleted)
+        .map(doc=>{
+            const data = doc.data();
+            return `<div class="card mb-2">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="card-title">${data.name || '(Без названия)'}</h4>
+                        <div style="font-size:0.95em; color:#888;">${data.category || ''}</div>
+                        <div style="font-size:1.0em; color:#1e293b;">${data.price ? 'Цена: $'+data.price : ''}</div>
+                        ${data.imageData ? `<img src="${data.imageData}" style="max-width:100px;max-height:60px;border-radius:8px;margin-top:6px;" alt="">` : ''}
+                    </div>
+                    <div>
+                        <button class="btn btn-warning btn-small" onclick="editVerifiedProduct('${data.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${data.id}')">🗑️</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+};
         <div id="verified-admin" class="tab-content">
             <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
             <div class="card">
@@ -1733,22 +1851,17 @@ async function loadAdminProducts() {
             </div>`;
         }).join('');
 }
-    function loadAdminRequests() {
-    // Можно реализовать позже (вывод заявок)
+              </div>
+                </div>
+            </div>`;
+        }).join('');
 }
-function loadAdminProducts() {
-    // Уже реализована! Убедись, что тут нет конфликта имен — должна быть 1 версия!
-}
-function loadAdminVerifiedProducts() {
-    // Можно реализовать позже (вывод проверенных товаров)
-}
-function loadAdminReviews() {
-    // Можно реализовать позже (вывод отзывов)
-}
-function toggleAddProductModal() {
+   window.loadAdminRequests = function() {}
+window.loadAdminVerifiedProducts = function() {}
+window.toggleAddProductModal = function() {
     document.getElementById('addProductModal').classList.toggle('active');
 }
-function toggleAddVerifiedProductModal() {
+window.toggleAddVerifiedProductModal = function() {
     document.getElementById('addVerifiedProductModal').classList.toggle('active');
 }
 </script>
