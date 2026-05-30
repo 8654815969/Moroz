@@ -978,12 +978,12 @@
 
     <div id="adminContent" style="display: none;">
         <div class="tabs">
-            <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
-            <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
-            <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
-            <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
-            <button class="tab" onclick="switchAdminTab('reviews')">Отзывы</button>
-            <button class="tab" onclick="switchAdminTab('commissions')">Комиссии</button>
+            <button class="tab active" onclick="switchAdminTab('users', event)">Пользователи</button>
+<button class="tab" onclick="switchAdminTab('requests', event)">Запросы товаров</button>
+<button class="tab" onclick="switchAdminTab('products', event)">Товары для тестирования</button>
+<button class="tab" onclick="switchAdminTab('verified', event)">Проверенные товары</button>
+<button class="tab" onclick="switchAdminTab('reviews', event)">Отзывы</button>
+<button class="tab" onclick="switchAdminTab('commissions', event)">Комиссии</button>
         </div>
 
         <!-- Users Tab -->
@@ -1562,17 +1562,20 @@ async function loadAdminUsers() {
     const usersSnap = await window.firebase.getDocs(window.firebase.collection(window.firebase.db, 'users'));
     const usersList = document.getElementById('usersList');
     usersList.innerHTML = Array.from(usersSnap.docs).map(doc=>{
-        const data = doc.data();
-        return `<div class="card mb-2">
-            <div class="flex-between">
-                <div>
-                    <h4 class="card-title">${data.name}</h4>
-                    <p class="text-muted">${data.email}</p>
-                </div>
-                <span class="badge badge-primary">${data.role || 'user'}</span>
+    const data = doc.data();
+    return `<div class="card mb-2">
+        <div class="flex-between">
+            <div>
+                <h4 class="card-title">${data.name}</h4>
+                <p class="text-muted">${data.email}</p>
             </div>
-        </div>`;
-    }).join('');
+            <div>
+                <button class="btn btn-warning btn-small" onclick="editUser('${doc.id}')">✏️</button>
+                <button class="btn btn-danger btn-small" onclick="deleteUser('${doc.id}')">🗑️</button>
+            </div>
+        </div>
+    </div>`;
+}).join('');
 }
 
 // Кнопка "Админ" теперь всегда запускает updateAdminPanel при переходе
@@ -1580,9 +1583,36 @@ document.getElementById('adminNavLink').addEventListener('click', function() {
     updateAdminPanel();
     showSection('admin');
 });
+    window.editUser = function(userId) {
+    alert('Форма редактирования пользователя ' + userId + ' (здесь будет логика)');
+   
+}
+window.deleteUser = async function(userId) {
+    if (confirm('Удалить пользователя?')) {
+        await window.firebase.setDoc(
+            window.firebase.doc(window.firebase.db, 'users', userId),
+            { deleted: true }, // или используй await deleteDoc(...) если удаляешь совсем
+            { merge: true }    // если делаешь "мягкое удаление"
+        );
+        alert('Пользователь помечен как удалённый');
+        loadAdminUsers(); // обновить список
+    }
+}
 </script>
 
-<!-- Функции каталога/заявок/админки/товаров вставь сюда (оставь как у тебя было, они не конфликтуют)! -->
+function switchAdminTab(tabName, event) {
+    document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#admin .tab-content').forEach(tc => tc.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tabName + '-admin').classList.add('active');
+
+    Подгружаем данные для каждой вкладки
+    if (tabName === 'users') loadAdminUsers();
+    if (tabName === 'products') loadAdminProducts();
+    if (tabName === 'requests') loadAdminRequests();
+    if (tabName === 'verified') loadAdminVerifiedProducts();
+    if (tabName === 'reviews') loadAdminReviews();
+}
 
 </main>
 </body>
