@@ -1542,6 +1542,44 @@ document.querySelectorAll('.modal').forEach(modal => {
     });
 });
 // Сюда ДОБАВЬ свои функции каталога, рендера продуктов, работы с товарами и пр. — всё из старого файла!
+    function updateAdminPanel() {
+    const userData = window.currentUserData;
+    if (!userData || userData.role !== 'admin') {
+        document.getElementById('adminNotification').style.display = 'block';
+        document.getElementById('adminContent').style.display = 'none';
+        return;
+    }
+    document.getElementById('adminNotification').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+
+    // Вот тут можно вызывать загрузку пользователей, товаров, заявок:
+    loadAdminUsers();
+    // ... добавь loadAdminProducts(), loadAdminRequests() если напишешь такие функции!
+}
+
+// Пример функции для загрузки пользователей в админку:
+async function loadAdminUsers() {
+    const usersSnap = await window.firebase.getDocs(window.firebase.collection(window.firebase.db, 'users'));
+    const usersList = document.getElementById('usersList');
+    usersList.innerHTML = Array.from(usersSnap.docs).map(doc=>{
+        const data = doc.data();
+        return `<div class="card mb-2">
+            <div class="flex-between">
+                <div>
+                    <h4 class="card-title">${data.name}</h4>
+                    <p class="text-muted">${data.email}</p>
+                </div>
+                <span class="badge badge-primary">${data.role || 'user'}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// Кнопка "Админ" теперь всегда запускает updateAdminPanel при переходе
+document.getElementById('adminNavLink').addEventListener('click', function() {
+    updateAdminPanel();
+    showSection('admin');
+});
 </script>
 
 <!-- Функции каталога/заявок/админки/товаров вставь сюда (оставь как у тебя было, они не конфликтуют)! -->
