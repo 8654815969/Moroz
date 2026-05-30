@@ -1733,6 +1733,24 @@ async function loadAdminProducts() {
             </div>`;
         }).join('');
 }
+    function loadAdminRequests() {
+    // Можно реализовать позже (вывод заявок)
+}
+function loadAdminProducts() {
+    // Уже реализована! Убедись, что тут нет конфликта имен — должна быть 1 версия!
+}
+function loadAdminVerifiedProducts() {
+    // Можно реализовать позже (вывод проверенных товаров)
+}
+function loadAdminReviews() {
+    // Можно реализовать позже (вывод отзывов)
+}
+function toggleAddProductModal() {
+    document.getElementById('addProductModal').classList.toggle('active');
+}
+function toggleAddVerifiedProductModal() {
+    document.getElementById('addVerifiedProductModal').classList.toggle('active');
+}
 </script>
 </main>
 </body>
