@@ -5,9 +5,347 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
     <style>
-        /* Сюда идут все ваши стили из обоих файлов (можно оставить только из большего, т.к. они охватывают всё, а из меньшего уникальные элементы, типа .referral-tree, .empty-state, .copy-btn - добавить) */
-        /* ... ВСТАВИТЬ СТИЛИ из КОДА 1 ... */
-        /* ... и ДОПОЛНИТЕЛЬНЫЕ СТИЛИ из КОДА 2 ниже: */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #f97316;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --background: #ffffff;
+            --surface: #f9fafb;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            display: none;
+            padding: 2rem 0;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content {
+            color: var(--text-muted);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            color: #047857;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 4px solid var(--primary);
+            color: #1e40af;
+        }
+
+        .referral-link-box {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .referral-link-input {
+            background: white;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 0.5rem;
+        }
+
         .copy-btn {
             background: var(--primary);
             color: white;
@@ -17,10 +355,54 @@
             cursor: pointer;
             font-weight: 500;
         }
-        .copy-btn:hover { background: var(--primary-dark); }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .user-info {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-email {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
         .referral-tree {
             margin-top: 2rem;
         }
+
         .tree-item {
             background: white;
             border-left: 3px solid var(--primary);
@@ -29,24 +411,54 @@
             border-radius: 4px;
             border: 1px solid var(--border);
         }
+
         .tree-item-name {
             font-weight: 600;
             color: var(--text);
         }
+
         .tree-item-email {
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-top: 0.25rem;
         }
+
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
             color: var(--text-muted);
         }
+
         .empty-state-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
             opacity: 0.3;
+        }
+
+        .referral-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .stats, .referral-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -60,41 +472,607 @@
             </div>
             <nav>
                 <a onclick="showSection('home')">Главная</a>
-                <a onclick="showSection('verified')">Проверенные товары</a>
-                <a onclick="showSection('catalog')">Каталог</a>
                 <a onclick="showSection('cabinet')" id="cabinetLink" style="display: none;">Личный кабинет</a>
                 <a onclick="showSection('referrals')" id="referralsLink" style="display: none;">Рефералы</a>
-                <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a> <!-- из большого файла -->
             </nav>
             <div class="auth-buttons">
                 <button class="btn btn-secondary btn-small" id="loginBtn" onclick="toggleLoginModal()">Вход</button>
                 <button class="btn btn-primary btn-small" id="registerBtn" onclick="toggleRegisterModal()">Регистрация</button>
-                <button class="btn btn-danger btn-small" id="logoutBtn" style="display:none;" onclick="logout()">Выход</button>
+                <button class="btn btn-danger btn-small" id="logoutBtn" onclick="logout()" style="display: none;">Выход</button>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="container">
-        <!-- ... Home, Verified, Catalog, Cabinet, Referrals, Admin sections ... -->
-        <!-- Переписываем секцию cabinet/referral так, чтобы в ней появлялось дерево и реф статистика -->
-        <!-- Вынести UI из меньшего и большего в одну общую секцию: -->
-        <!-- ... ВСТАВИТЕ СОДЕРЖИМОЕ MAIN из основного кода, для секции #cabinet участок UI/разметку взять из меньшего кода, т.е. с деревом и stats ...  -->
-        <!-- ... Если что, в #cabinet можно оставить и tabs, и stats, и дерево, и ссылки - ничего не потеряется -->
-        <!-- ... Все прочие секции из большого кода оставить как есть, так как они уникальны по логике -->
-        
-        <!-- Остальной основной HTML как есть без изменений ... -->
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <h1 style="margin-bottom: 2rem;">⭐ Станьте экспертом по выбору лучших товаров!</h1>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Участвуйте в отборе товаров, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
+        </section>
 
+        <!-- Cabinet Section -->
+        <section id="cabinet" class="section">
+            <h1 style="margin-bottom: 2rem;">👤 Личный кабинет</h1>
+            
+            <div id="notLoggedInMessage" class="alert alert-info">
+                <span>Пожалуйста, авторизуйтесь, чтобы увидеть ваш личный кабинет</span>
+            </div>
+
+            <div id="cabinetContent" style="display: none;">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="user-avatar" id="userAvatar">У</div>
+                        <div>
+                            <div class="user-name" id="userName">Пользователь</div>
+                            <div class="user-email" id="userEmail">email@example.com</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="referral-stats">
+                    <div class="stat-card">
+                        <div class="stat-label">👥 Приглашено друзей</div>
+                        <div class="stat-value" id="referralCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">🎁 Заработано баллов</div>
+                        <div class="stat-value" id="referralPoints">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📊 Конверсия</div>
+                        <div class="stat-value" id="conversionRate">0%</div>
+                    </div>
+                </div>
+
+                <div class="referral-link-box">
+                    <h3 style="margin-bottom: 1rem;">Ваша реферальная ссылка</h3>
+                    <div class="referral-link-input" id="referralLink">https://example.com/?ref=loading</div>
+                    <button class="copy-btn" onclick="copyReferralLink()">📋 Скопировать ссылку</button>
+                </div>
+
+                <div class="referral-tree">
+                    <h3 style="margin-bottom: 1rem;">Дерево рефералов</h3>
+                    <div id="referralTreeContainer" class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>Ваши приглашенные друзья будут отображаться здесь</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Пока у вас нет активных рефералов</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Referrals Section -->
+        <section id="referrals" class="section">
+            <h1 style="margin-bottom: 2rem;">🎁 Реферальная программа</h1>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Приглашайте друзей и зарабатывайте награды за каждого, кто присоединится</p>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+                    <h3 class="card-title">Как это работает?</h3>
+                    <p class="card-content">Поделитесь своей реферальной ссылкой с друзьями. Когда они зарегистрируются, вы оба получите бонусы!</p>
+                </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎁</div>
+                    <h3 class="card-title">Награды</h3>
+                    <p class="card-content">За каждого приглашенного друга вы получите 50 баллов и доступ к эксклюзивным товарам.</p>
+                </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
+                    <h3 class="card-title">Преимущества</h3>
+                    <p class="card-content">Накапливайте баллы, получайте товары на тестирование и помогайте другим выбирать лучшее!</p>
+                </div>
+            </div>
+        </section>
     </main>
-    
-    <!-- ... Модалки login/register/etc ... -->
-    <!-- Firebase Module (type="module" обязательно) -->
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Вход</h2>
+                <button class="close-btn" onclick="toggleLoginModal()">×</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Регистрация</h2>
+                <button class="close-btn" onclick="toggleRegisterModal()">×</button>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Имя</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Реферальный код (опционально)</label>
+                    <input type="text" id="referralCode" placeholder="Введите код реферера">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, addDoc, onSnapshot, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIz*****Jg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.appspot.com",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Export to global scope
+        window.firebase = {
+            auth,
+            db,
+            collection,
+            getDocs,
+            setDoc,
+            doc,
+            addDoc,
+            onSnapshot,
+            query,
+            where,
+            updateDoc,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        };
+
+        // Current user
+        let currentUser = null;
+
+        // Listen to auth state changes
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            updateAuthUI();
+            if (user) {
+                await loadUserData();
+            }
+        });
+
+        // Load user data from Firestore
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', currentUser.uid)));
+                if (!userDoc.empty) {
+                    const userData = userDoc.docs[0].data();
+                    window.currentUserData = userData;
+                    updateCabinetUI(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Update cabinet UI
+        function updateCabinetUI(userData) {
+            document.getElementById('userName').textContent = userData.name || 'Пользователь';
+            document.getElementById('userEmail').textContent = userData.email || '';
+            document.getElementById('userAvatar').textContent = (userData.name || 'У')[0].toUpperCase();
+            document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${userData.referralCode}`;
+            document.getElementById('referralCount').textContent = userData.referralCount || 0;
+            document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
+            
+            const conversionRate = (userData.referralCount || 0) > 0 ? '100%' : '0%';
+            document.getElementById('conversionRate').textContent = conversionRate;
+
+            // Load referral tree
+            loadReferralTree(userData.referralCode);
+        }
+
+        // Load referral tree
+        async function loadReferralTree(referralCode) {
+            try {
+                const referrals = await getDocs(query(collection(db, 'users'), where('referrerCode', '==', referralCode)));
+                const container = document.getElementById('referralTreeContainer');
+                
+                if (referrals.empty) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <p>Ваши приглашенные друзья будут отображаться здесь</p>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Пока у вас нет активных рефералов</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = referrals.docs.map(doc => {
+                        const data = doc.data();
+                        return `
+                            <div class="tree-item">
+                                <div class="tree-item-name">${data.name}</div>
+                                <div class="tree-item-email">${data.email}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading referral tree:', error);
+            }
+        }
+
+        // Update auth UI
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const cabinetLink = document.getElementById('cabinetLink');
+            const referralsLink = document.getElementById('referralsLink');
+            const notLoggedInMessage = document.getElementById('notLoggedInMessage');
+            const cabinetContent = document.getElementById('cabinetContent');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                cabinetLink.style.display = 'block';
+                referralsLink.style.display = 'block';
+                notLoggedInMessage.style.display = 'none';
+                cabinetContent.style.display = 'block';
+            } else {
+                loginBtn.style.display = 'block';
+                registerBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                cabinetLink.style.display = 'none';
+                referralsLink.style.display = 'none';
+                notLoggedInMessage.style.display = 'flex';
+                cabinetContent.style.display = 'none';
+            }
+        }
+
+        // Handle login
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                toggleLoginModal();
+                alert('Успешный вход!');
+            } catch (error) {
+                alert('Ошибка входа: ' + error.message);
+            }
+        };
+
+        // Handle register
+        window.handleRegister = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const referralCode = document.getElementById('referralCode').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Generate unique referral code
+                const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                // Save user data to Firestore
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    referralCode: newReferralCode,
+                    referrerCode: referralCode || null,
+                    referralCount: 0,
+                    referralPoints: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                });
+
+                // If referral code provided, update referrer's count
+                if (referralCode) {
+                    const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', referralCode));
+                    const referrerDocs = await getDocs(referrerQuery);
+                    
+                    if (!referrerDocs.empty) {
+                        const referrerDoc = referrerDocs.docs[0];
+                        const referrerData = referrerDoc.data();
+                        await updateDoc(doc(db, 'users', referrerDoc.id), {
+                            referralCount: (referrerData.referralCount || 0) + 1,
+                            referralPoints: (referrerData.referralPoints || 0) + 50,
+                            updatedAt: new Date()
+                        });
+                    }
+                }
+
+                toggleRegisterModal();
+                alert('Успешная регистрация!');
+            } catch (error) {
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                currentUser = null;
+                updateAuthUI();
+                showSection('home');
+                alert('Вы вышли из аккаунта');
+            } catch (error) {
+                alert('Ошибка выхода: ' + error.message);
+            }
+        };
+    </script>
+
+    <!-- Local Functions -->
+    <script>
+        // Show section
+        function showSection(sectionId) {
+            if ((sectionId === 'cabinet' || sectionId === 'referrals') && !window.currentUser) {
+                alert('Пожалуйста, авторизуйтесь');
+                return;
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Toggle modals
+        function toggleLoginModal() {
+            document.getElementById('loginModal').classList.toggle('active');
+        }
+
+        function toggleRegisterModal() {
+            document.getElementById('registerModal').classList.toggle('active');
+        }
+
+        // Copy referral link
+        function copyReferralLink() {
+            const link = document.getElementById('referralLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована!');
+            });
+        }
+
+        // Close modals on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
+                    <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-secondary" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
+                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог проверенных товаров</button>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 3rem;">
+                <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+                        <h3 class="card-title">1. Выберите товар</h3>
+                        <p class="card-content">Просмотрите каталог товаров и выберите интересующий вас продукт для тестирования.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📦</div>
+                        <h3 class="card-title">2. Получите товар</h3>
+                        <p class="card-content">Мы отправим вам товар на тестирование совершенно бесплатно.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
+                        <h3 class="card-title">3. Оставьте отзыв</h3>
+                        <p class="card-content">Поделитесь своим честным мнением и помогите другим выбрать качественные товары.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verified Products Section -->
+        <section id="verified" class="section">
+            <h1 style="margin-bottom: 2rem;">✅ Проверенные товары для покупки</h1>
+            <div style="margin-bottom: 2rem;">
+                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            </div>
+            <div class="grid grid-3" id="verifiedProductGrid"></div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="section">
+            <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
+            <div style="margin-bottom: 2rem;">
+                <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            </div>
+            <div class="grid grid-3" id="productGrid"></div>
+        </section>
+
+        <!-- Cabinet Section - ОБНОВЛЕННЫЙ -->
+        <section id="cabinet" class="section">
+            <h1 style="margin-bottom: 2rem;">👤 Личный кабинет</h1>
+            <div id="notLoggedInMessage" class="alert alert-info">
+                <span>Пожалуйста, авторизуйтесь, чтобы увидеть ваш личный кабинет</span>
+            </div>
+            <div id="cabinetContent" style="display: none;">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="user-avatar" id="userAvatar">У</div>
+                        <div>
+                            <div class="user-name" id="userName">Пользователь</div>
+                            <div class="user-email" id="userEmail">email@example.com</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-small" id="logoutCabButton" onclick="logout()">Выход</button>
+                </div>
+                <!-- Блок статистики рефералов -->
+                <div class="referral-stats">
+                    <div class="stat-card">
+                        <div class="stat-label">👥 Приглашено друзей</div>
+                        <div class="stat-value" id="referralCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">🎁 Заработано баллов</div>
+                        <div class="stat-value" id="referralPoints">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📊 Конверсия</div>
+                        <div class="stat-value" id="conversionRate">0%</div>
+                    </div>
+                </div>
+                <div class="referral-link-box">
+                    <h3 style="margin-bottom: 1rem;">Ваша реферальная ссылка</h3>
+                    <div class="referral-link-input" id="referralLink">https://example.com/?ref=loading</div>
+                    <button class="copy-btn" onclick="copyReferralLink()">📋 Скопировать ссылку</button>
+                </div>
+                <div class="referral-tree">
+                    <h3 style="margin-bottom: 1rem;">Дерево рефералов</h3>
+                    <div id="referralTreeContainer" class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>Ваши приглашенные друзья будут отображаться здесь</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Пока у вас нет активных рефералов</p>
+                    </div>
+                </div>
+                <!-- Остальные ваши табы, отзывы, баллы и т.д. По желанию вставьте свой block tabs/reviews/requests/etc ниже! -->
+            </div>
+        </section>
+
+        <!-- Referrals Section (опционально, как FAQ) -->
+        <section id="referrals" class="section">
+            <h1 style="margin-bottom: 2rem;">🎁 Реферальная программа</h1>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Приглашайте друзей и зарабатывайте награды за каждого, кто присоединится</p>
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+                    <h3 class="card-title">Как это работает?</h3>
+                    <p class="card-content">Поделитесь своей реферальной ссылкой с друзьями. Когда они зарегистрируются, вы оба получите бонусы!</p>
+                </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎁</div>
+                    <h3 class="card-title">Награды</h3>
+                    <p class="card-content">За каждого приглашенного друга вы получите 50 баллов и доступ к эксклюзивным товарам.</p>
+                </div>
+                <div class="card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
+                    <h3 class="card-title">Преимущества</h3>
+                    <p class="card-content">Накапливайте баллы, получайте товары на тестирование и помогайте другим выбирать лучшее!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section (оставить полностью как было в крупном коде) -->
+        <section id="admin" class="section">
+          <!-- ...Весь ваш ADMIN HTML здесь (users, products, requests etc)... -->
+        </section>
+
+        <!-- Все модальные окна (login, register, product, edit, add, verified, pay etc), КАК В КРУПНОМ КОДЕ -->
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Вход</h2>
+                    <button class="close-btn" onclick="toggleLoginModal()">×</button>
+                </div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Register Modal С ДОП рефералом -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Регистрация</h2>
+                    <button class="close-btn" onclick="toggleRegisterModal()">×</button>
+                </div>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Реферальный код (опционально)</label>
+                        <input type="text" id="referralCode" placeholder="Введите код реферера">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Остальные модалки (add/edit product, verify product, payment, request etc) из твоего основного кода, без изменений! -->
+
+        <!-- ФУТЕР -->
+        <footer>
+            <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
+        </footer>
+        <!-- Firebase Module -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, setDoc, doc, addDoc, onSnapshot, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, setDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
+    // !!! Измени на свой !!!
     apiKey: "AIz*****Jg",
     authDomain: "saintmarketology.firebaseapp.com",
     projectId: "saintmarketology",
@@ -106,43 +1084,24 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Делаем firebase в глобальный scope
-window.firebase = {
-    auth,
-    db,
-    collection,
-    getDocs,
-    setDoc,
-    doc,
-    addDoc,
-    onSnapshot,
-    query,
-    where,
-    updateDoc,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-};
+window.firebase = { auth, db, collection, getDocs, setDoc, doc, query, where, updateDoc, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
 let currentUser = null;
-window.currentUser = null; // для локальных скриптов
 
-// --- Listen to auth state changes ---
+// --- React to Auth state ---
 onAuthStateChanged(auth, async (user) => {
-    currentUser = user;
-    window.currentUser = user;
+    window.currentUser = currentUser = user;
     updateAuthUI();
     if (user) await loadUserData();
 });
 
-// Получить url параметры (реф ссылка!)
+// --- Get URL params ---
 function getUrlParams(){
     const params = new URLSearchParams(window.location.search);
     return { ref: params.get("ref") };
 }
 
-// Загрузить профиль пользователя из Firestore
+// --- Load Firebase user profile and referral data ---
 async function loadUserData() {
     if (!currentUser) return;
     try {
@@ -152,22 +1111,22 @@ async function loadUserData() {
             window.currentUserData = userData;
             updateCabinetUI(userData);
         }
-    } catch (e) { console.error('Ошибка профиля:', e);}
+    } catch (error) { console.error(error);}
 }
 
-// UI кабинета и дерева рефералов
+// --- Update Cabinet (referral personal) ---
 function updateCabinetUI(userData) {
     document.getElementById('userName').textContent = userData.name || 'Пользователь';
     document.getElementById('userEmail').textContent = userData.email || '';
     document.getElementById('userAvatar').textContent = (userData.name || 'У')[0].toUpperCase();
-    document.getElementById('referralLink').textContent = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
+    document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${userData.referralCode}`;
     document.getElementById('referralCount').textContent = userData.referralCount || 0;
     document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
     document.getElementById('conversionRate').textContent = (userData.referralCount||0)>0?'100%':'0%';
     loadReferralTree(userData.referralCode);
 }
 
-// Дерево рефералов
+// --- Load referral tree for cabinet ---
 async function loadReferralTree(referralCode) {
     try {
         const q = query(collection(db, 'users'), where('referrerCode', '==', referralCode));
@@ -194,11 +1153,10 @@ async function loadReferralTree(referralCode) {
         }
     } catch (e) {
         document.getElementById('referralTreeContainer').innerHTML = "Ошибка загрузки дерева рефералов";
-        console.error(e);
     }
 }
 
-// Переключение между авторизацией и личным кабинетом
+// --- Update UI for nav/auth ---
 function updateAuthUI() {
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
@@ -207,7 +1165,6 @@ function updateAuthUI() {
     const referralsLink = document.getElementById('referralsLink');
     const notLoggedInMessage = document.getElementById('notLoggedInMessage');
     const cabinetContent = document.getElementById('cabinetContent');
-
     if (currentUser) {
         loginBtn.style.display = 'none';
         registerBtn.style.display = 'none';
@@ -227,7 +1184,7 @@ function updateAuthUI() {
     }
 }
 
-// --- AUTH HANDLING (вызывать напрямую из form onsubmit) ---
+// --- Handle login/register/logout ---
 window.handleLogin = async function(event) {
     event.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -240,14 +1197,12 @@ window.handleLogin = async function(event) {
         alert('Ошибка входа: ' + error.message);
     }
 };
-
 window.handleRegister = async function(event) {
     event.preventDefault();
     const name = document.getElementById('registerName').value;
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
-    const referralCode = document.getElementById('referralCode')?.value || getUrlParams().ref || null;
-
+    const referralCode = document.getElementById('referralCode').value || getUrlParams().ref || null;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -258,10 +1213,9 @@ window.handleRegister = async function(event) {
             referralCode: newReferralCode,
             referrerCode: referralCode || null,
             referralCount: 0, referralPoints: 0,
-            createdAt: new Date(), updatedAt: new Date()
+            createdAt: new Date(),
+            updatedAt: new Date()
         });
-
-        // Если вписан рефкод, обновляем у того, кто пригласил статистику
         if (referralCode) {
             const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', referralCode));
             const referrerDocs = await getDocs(referrerQuery);
@@ -281,8 +1235,6 @@ window.handleRegister = async function(event) {
         alert('Ошибка регистрации: ' + error.message);
     }
 };
-
-// --- LOGOUT --- 
 window.logout = async function() {
     try {
         await signOut(auth);
@@ -294,10 +1246,11 @@ window.logout = async function() {
         alert('Ошибка выхода: ' + error.message);
     }
 };
+
 </script>
-<!-- Local Functions, UI, Tabs, Notifications, Copy link, etc. -->
+
+<!-- UI Helpers, Section Switch, Copy Link, Modals, etc. -->
 <script>
-// --- Универсальное переключение секций ---
 function showSection(sectionId) {
     if ((sectionId === 'cabinet' || sectionId === 'referrals') && !window.currentUser) {
         alert('Пожалуйста, авторизуйтесь');
@@ -305,83 +1258,26 @@ function showSection(sectionId) {
     }
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(sectionId).classList.add('active');
-    // для админки, тянем ваши функции из "большого" файла
-    if(sectionId === 'admin' && typeof updateAdmin === 'function') updateAdmin();
-    if(sectionId === 'catalog' && typeof renderProducts === 'function') renderProducts();
-    if(sectionId === 'verified' && typeof renderVerifiedProducts === 'function') renderVerifiedProducts();
-    // для кабинета, если функции есть
-    if(sectionId === 'cabinet' && typeof updateCabinet === 'function') updateCabinet();
+    // Можно доп. логику для каталога/админки, если нужны обновления.
 }
-
-// Для открытия и закрытия модалок — общий подход
 function toggleLoginModal() {
     document.getElementById('loginModal').classList.toggle('active');
 }
 function toggleRegisterModal() {
     document.getElementById('registerModal').classList.toggle('active');
 }
-
-// --- Копирование реферальной ссылки ---
 function copyReferralLink() {
     const link = document.getElementById('referralLink').textContent;
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(link).then(()=>{ showMiniAlert('Ссылка скопирована!','success'); });
-    } else {
-        // fallback
-        alert('Скопируйте ссылку вручную:\n' + link);
-    }
+    navigator.clipboard.writeText(link).then(() => {
+        alert('Ссылка скопирована!');
+    });
 }
-
-// --- Mini-alert like в меньшем коде, но в стиле большего ---
-function showMiniAlert(msg,type){
-    let alert = document.createElement('div');
-    alert.className = 'alert alert-'+(type||'success');
-    alert.textContent = msg;
-    alert.style.position = 'fixed';
-    alert.style.top = '80px';
-    alert.style.right = '20px';
-    alert.style.zIndex = '2000';
-    alert.style.maxWidth = '400px';
-    document.body.appendChild(alert);
-    setTimeout(()=>alert.remove(), 3000);
-}
-
-// --- Закрытие модалок по клику по фону ---
+// Close modals on click outside
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('active');
     });
 });
-
-// --- Для tabs если используется (например, в admin) ---
-window.switchTab = function(tabName) {
-    document.querySelectorAll('#cabinet .tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('#cabinet .tab-content').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(tabName).classList.add('active');
-}
-window.switchAdminTab = function(tabName) {
-    document.querySelectorAll('#admin .tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('#admin .tab-content').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(tabName + '-admin').classList.add('active');
-}
-
-// --- Пример переноса старых функций уведомлений (оставить на всякий случай) ---
-function showSuccessMessage(msg){ showMiniAlert(msg, 'success'); }
-function showErrorMessage(msg){ showMiniAlert(msg, 'error'); }
-
-// --- Фильтр поиска по товарам (если есть renderProducts / renderVerifiedProducts) ---
-document.addEventListener('DOMContentLoaded', ()=>{
-    if(document.getElementById('searchInput') && typeof renderProducts === 'function')
-        document.getElementById('searchInput').addEventListener('input', renderProducts);
-    if(document.getElementById('verifiedSearchInput') && typeof renderVerifiedProducts === 'function')
-        document.getElementById('verifiedSearchInput').addEventListener('input', renderVerifiedProducts);
-
-    // Обработка реф ссылки через URL (для уведомления)
-    const params = new URLSearchParams(window.location.search);
-    if(params.has('ref')){
-        showMiniAlert('🎉 Вы пришли по реферальной ссылке!','success');
-    }
-});
 </script>
+
+
