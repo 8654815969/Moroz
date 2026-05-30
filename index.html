@@ -970,8 +970,86 @@
 
 <!-- Admin Section -->
 <section id="admin" class="section">
-    <!-- Весь ваш админ HTML как было -->
+    <h1 style="margin-bottom: 2rem;">⚙️ Админ панель</h1>
+
+    <div id="adminNotification" class="alert alert-info">
+        <span>Только администраторы могут получить доступ к этому разделу</span>
+    </div>
+
+    <div id="adminContent" style="display: none;">
+        <div class="tabs">
+            <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
+            <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
+            <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
+            <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
+            <button class="tab" onclick="switchAdminTab('reviews')">Отзывы</button>
+            <button class="tab" onclick="switchAdminTab('commissions')">Комиссии</button>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users-admin" class="tab-content active">
+            <div class="card">
+                <h3 class="card-title mb-2">Список пользователей</h3>
+                <div id="usersList">
+                    <p class="text-muted">Нет пользователей</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Tab -->
+        <div id="requests-admin" class="tab-content">
+            <div class="card">
+                <h3 class="card-title mb-2">Запросы товаров на тестирование</h3>
+                <div id="adminRequestsList">
+                    <p class="text-muted">Нет запросов</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="products-admin" class="tab-content">
+            <button class="btn btn-primary mb-2" onclick="toggleAddProductModal()">+ Добавить товар</button>
+            <div class="card">
+                <h3 class="card-title mb-2">Товары для тестирования</h3>
+                <div id="adminProductsList">
+                    <p class="text-muted">Нет товаров</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified Products Tab -->
+        <div id="verified-admin" class="tab-content">
+            <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
+            <div class="card">
+                <h3 class="card-title mb-2">Проверенные товары</h3>
+                <div id="adminVerifiedProductsList">
+                    <p class="text-muted">Нет проверенных товаров</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div id="reviews-admin" class="tab-content">
+            <div class="card">
+                <h3 class="card-title mb-2">Отзывы на проверку</h3>
+                <div id="adminReviewsList">
+                    <p class="text-muted">Нет отзывов</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commissions Tab -->
+        <div id="commissions-admin" class="tab-content">
+            <div class="card">
+                <h3 class="card-title mb-2">Управление комиссиями</h3>
+                <div id="adminCommissionsList">
+                    <p class="text-muted">Нет комиссий</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 
 <!-- МОДАЛКИ (login, register с полем referral, остальные как были) -->
 <div id="loginModal" class="modal">
