@@ -1304,6 +1304,12 @@ function updateCabinetUI(userData) {
     document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
     document.getElementById('conversionRate').textContent = (userData.referralCount||0)>0?'100%':'0%';
     loadReferralTree(userData.referralCode);
+ const adminNavLink = document.getElementById('adminNavLink');
+    if (userData.role === 'admin') {
+        adminNavLink.style.display = 'block';
+    } else {
+        adminNavLink.style.display = 'none';
+    }
 }
 
 async function loadReferralTree(referralCode) {
