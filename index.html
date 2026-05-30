@@ -1611,6 +1611,128 @@ window.deleteUser = async function(userId) {
     if (tabName === 'verified') loadAdminVerifiedProducts();
     if (tabName === 'reviews') loadAdminReviews();
 }
+    // ==================
+/// ============= А Д М И Н К А   Т О В А Р О В ============
+// ==================
+
+// 1. Загрузка изображения (конвертируем в base64-строчку)
+async function uploadProductImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// 2. Форма добавления товара (модалка уже есть в HTML!)
+// <form onsubmit="handleAddProduct(event)">
+window.handleAddProduct = async function(event) {
+    event.preventDefault();
+    const name = document.getElementById('productName').value;
+    const description = document.getElementById('productDescription').value;
+    const category = document.getElementById('productCategory').value;
+    const url = document.getElementById('productUrl').value;
+    const stock = Number(document.getElementById('productStock').value);
+    const imageInput = document.getElementById('productImage');
+    let imageData = null;
+    if (imageInput.files.length > 0) {
+        imageData = await uploadProductImage(imageInput.files[0]);
+    }
+    const id = Date.now().toString();
+    await window.firebase.setDoc(
+        window.firebase.doc(window.firebase.db, 'products', id),
+        {
+            id, name, description, category, url, stock, imageData, createdAt: new Date()
+        }
+    );
+    document.getElementById('addProductModal').classList.remove('active');
+    event.target.reset();
+    loadAdminProducts();
+    alert('Товар добавлен!');
+};
+
+// 3. Форма редактирования товара (модалка уже есть!)
+// <form onsubmit="handleEditProduct(event)">
+window.editProduct = async function(productId) {
+    const docSnap = await window.firebase.getDocs(window.firebase.query(
+        window.firebase.collection(window.firebase.db, 'products'),
+        window.firebase.where('id', '==', productId)
+    ));
+    if (docSnap.empty) return alert('Товар не найден');
+    const data = docSnap.docs[0].data();
+    document.getElementById('editProductId').value = productId;
+    document.getElementById('editProductName').value = data.name;
+    document.getElementById('editProductDescription').value = data.description;
+    document.getElementById('editProductCategory').value = data.category;
+    document.getElementById('editProductUrl').value = data.url;
+    document.getElementById('editProductStock').value = data.stock;
+    // Скрывать/открывать preview картинки можно по желанию
+    document.getElementById('editProductModal').classList.add('active');
+};
+
+window.handleEditProduct = async function(event) {
+    event.preventDefault();
+    const productId = document.getElementById('editProductId').value;
+    const name = document.getElementById('editProductName').value;
+    const description = document.getElementById('editProductDescription').value;
+    const category = document.getElementById('editProductCategory').value;
+    const url = document.getElementById('editProductUrl').value;
+    const stock = Number(document.getElementById('editProductStock').value);
+    const imageInput = document.getElementById('editProductImage');
+    let imageData = null;
+    if (imageInput.files.length > 0) {
+        imageData = await uploadProductImage(imageInput.files[0]);
+    }
+    const updateObj = { name, description, category, url, stock, updatedAt: new Date() };
+    if (imageData) updateObj.imageData = imageData;
+    await window.firebase.setDoc(
+        window.firebase.doc(window.firebase.db, 'products', productId),
+        updateObj,
+        { merge: true }
+    );
+    document.getElementById('editProductModal').classList.remove('active');
+    event.target.reset();
+    loadAdminProducts();
+    alert('Товар изменён!');
+};
+
+// 4. Удаление товара (мягкое, через поле deleted)
+window.deleteProduct = async function(productId) {
+    if (confirm('Удалить товар?')) {
+        await window.firebase.setDoc(
+            window.firebase.doc(window.firebase.db, 'products', productId),
+            { deleted: true },
+            { merge: true }
+        );
+        alert('Товар помечен как удалённый');
+        loadAdminProducts();
+    }
+}
+
+// 5. Вывод товаров в вкладке "Товары для тестирования"
+async function loadAdminProducts() {
+    const productsSnap = await window.firebase.getDocs(window.firebase.collection(window.firebase.db, 'products'));
+    const productsList = document.getElementById('adminProductsList');
+    productsList.innerHTML = Array.from(productsSnap.docs)
+        .filter(doc => !doc.data().deleted) // не показывать удалённые
+        .map(doc=>{
+            const data = doc.data();
+            return `<div class="card mb-2">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="card-title">${data.name || '(Без названия)'}</h4>
+                        <div style="font-size:0.95em; color:#888;">${data.category || ''}</div>
+                        ${data.imageData ? `<img src="${data.imageData}" style="max-width:100px;max-height:60px;border-radius:8px;margin-top:6px;" alt="">` : ''}
+                    </div>
+                    <div>
+                        <button class="btn btn-warning btn-small" onclick="editProduct('${data.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteProduct('${data.id}')">🗑️</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+}
 </script>
 </main>
 </body>
