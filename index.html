@@ -1958,8 +1958,8 @@ window.renderVerifiedProducts = function() {
             <h3 class="card-title">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
             <p class="card-content">${p.description || ''}</p>
             <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">$${p.price ?? 0}</div>
-            <div class="card-footer">
-                <button class="btn btn-primary btn-small" onclick="showPaymentOptions('${p.id}')">Купить</button>
+            <<div class="card-footer">
+    <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
             </div>
         </div>`).join('');
 };
