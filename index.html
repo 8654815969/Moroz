@@ -1661,25 +1661,37 @@
 }
 
         // Interaction Functions
-        window.submitProductRequest = async function(productId, paymentMethod) {
-            const product = window.products.find(p => p.id === productId);
-            const request = {
-                userId: window.currentUser.id,
-                productId: productId,
-                paymentMethod: paymentMethod,
-                category: product.category,
-                status: 'pending',
-                date: new Date().toLocaleDateString('ru-RU')
-            };
-            
-            await addDoc(collection(db, "productRequests"), request);
-            await updateDoc(doc(db, "users", window.currentUser.id), {
-                products: increment(1)
-            });
-            
-            closeRequestProductModal();
-            showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен!`);
-        };
+     window.submitProductRequest = async function(productId, paymentMethod) {
+    const product = window.products.find(p => p.id === productId);
+    
+    // 🔹 ПРОВЕРКА — уже запрашивал этот товар?
+    const alreadyRequested = window.productRequests.some(r => 
+        r.userId === window.currentUser.id && r.productId === productId
+    );
+    
+    if (alreadyRequested) {
+        showErrorMessage(`Вы уже запрашивали товар "${product.name}"!`);
+        closeRequestProductModal();
+        return; // СТОП — дальше не выполняем
+    }
+    
+    const request = {
+        userId: window.currentUser.id,
+        productId: productId,
+        paymentMethod: paymentMethod,
+        category: product.category,
+        status: 'pending',
+        date: new Date().toLocaleDateString('ru-RU')
+    };
+    
+    await addDoc(collection(db, "productRequests"), request);
+    await updateDoc(doc(db, "users", window.currentUser.id), {
+        products: increment(1)
+    });
+    
+    closeRequestProductModal();
+    showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен!`);
+};
 
                window.processPayment = async function(productId, method) {
             const product = window.verifiedProducts.find(p => p.id === productId);
