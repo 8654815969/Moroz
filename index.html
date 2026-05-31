@@ -1586,7 +1586,7 @@
             showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен!`);
         };
 
-        window.processPayment = async function(productId, method) {
+               window.processPayment = async function(productId, method) {
             const product = window.verifiedProducts.find(p => p.id === productId);
             
             if (method === 'card') {
@@ -1610,11 +1610,24 @@
                     referredUserId: window.currentUser.id,
                     productId: productId,
                     amount: product.price * 0.05,
-                    paid: false
+                    paid: false,
+                    date: new Date().toLocaleDateString('ru-RU')
                 };
                 await addDoc(collection(db, "commissions"), commission);
             }
         };
+            
+            if (window.currentUser.referrer) {
+    const commission = {
+        referrerId: window.currentUser.referrer,
+        referredUserId: window.currentUser.id,
+        productId: productId,
+        amount: product.price * 0.05,
+        paid: false,
+        date: new Date().toLocaleDateString('ru-RU')
+    };
+    await addDoc(collection(db, "commissions"), commission);
+}
 
         window.approveRequest = async function(requestId) {
             await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
@@ -1629,6 +1642,10 @@
         window.markCommissionAsPaid = async function(id) {
             await updateDoc(doc(db, "commissions", id), { paid: true });
             showSuccessMessage('Комиссия выплачена!');
+        };
+                    window.cancelCommissionPayment = async function(id) {
+            await updateDoc(doc(db, "commissions", id), { paid: false });
+            showSuccessMessage('Выплата отменена!');
         };
 
         window.addReview = async function(productId, rating, text) {
@@ -1799,11 +1816,52 @@
                     <button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">Одобрить</button>
                 </div>`).join('');
 
-            document.getElementById('adminCommissionsList').innerHTML = window.commissions.map(c => `
-                <div class="card mb-2 flex-between">
-                    <div><h4 class="card-title">$${c.amount.toFixed(2)}</h4><p class="text-muted">Кому: ${window.users.find(u => u.id === c.referrerId)?.name}</p></div>
-                    ${!c.paid ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid('${c.id}')">Выплатить</button>` : '<span class="badge badge-success">Выплачено</span>'}
-                </div>`).join('');
+                       // === СТАТИСТИКА КОМИССИЙ ===
+            const totalComm = window.commissions.reduce((sum, c) => sum + c.amount, 0);
+            const paidComm = window.commissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
+            const unpaidComm = totalComm - paidComm;
+
+            const statsHTML = `
+                <div class="stats mb-3">
+                    <div class="stat-card">
+                        <div class="stat-label">Всего комиссий</div>
+                        <div class="stat-value">$${totalComm.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--success);">
+                        <div class="stat-label">Выплачено</div>
+                        <div class="stat-value">$${paidComm.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--warning);">
+                        <div class="stat-label">К выплате</div>
+                        <div class="stat-value">$${unpaidComm.toFixed(2)}</div>
+                    </div>
+                </div>`;
+
+            const listHTML = window.commissions.length === 0 
+                ? '<p class="text-muted">Нет комиссий</p>' 
+                : window.commissions.map(c => {
+                    const referrer = window.users.find(u => u.id === c.referrerId)?.name || 'Неизвестно';
+                    const buyer = window.users.find(u => u.id === c.referredUserId)?.name || 'Неизвестно';
+                    const productName = window.verifiedProducts.find(p => p.id === c.productId)?.name || 'Товар';
+                    return `
+                    <div class="card mb-2 flex-between">
+                        <div>
+                            <h4 class="card-title">$${c.amount.toFixed(2)} — ${productName}</h4>
+                            <p class="text-muted">💰 Кому: <b>${referrer}</b></p>
+                            <p class="text-muted">🛒 Купил: ${buyer}</p>
+                            <p class="text-muted">📅 ${c.date || 'Дата не указана'}</p>
+                        </div>
+                        <div class="text-center">
+                            ${!c.paid 
+                                ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid('${c.id}')">Выплатить</button>` 
+                                : `<span class="badge badge-success">Выплачено</span>
+                                   <br><br>
+                                   <button class="btn btn-warning btn-small" onclick="cancelCommissionPayment('${c.id}')">Отменить</button>`}
+                        </div>
+                    </div>`;
+                }).join('');
+
+            document.getElementById('adminCommissionsList').innerHTML = statsHTML + listHTML;
         };
 
       window.renderProducts = function() {
