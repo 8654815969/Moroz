@@ -416,11 +416,11 @@
         /* Stats */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
-
+     
         .stat-card {
             background: white;
             padding: 1.5rem;
@@ -866,23 +866,26 @@
 
             <div style="margin-top: 3rem;">
                 <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
-                <div class="grid grid-3">
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
-                        <h3 class="card-title">1. Выберите товар</h3>
-                        <p class="card-content">Просмотрите каталог товаров и выберите интересующий вас продукт для тестирования.</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📦</div>
-                        <h3 class="card-title">2. Получите товар</h3>
-                        <p class="card-content">Мы отправим вам товар на тестирование совершенно бесплатно.</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
-                        <h3 class="card-title">3. Оставьте отзыв</h3>
-                        <p class="card-content">Поделитесь своим честным мнением и помогите другим выбрать качественные товары.</p>
-                    </div>
-                </div>
+                <div class="features-grid">
+    <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Реферальная система</h3>
+        <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Проверенные товары</h3>
+        <p>Все товары проходят проверку качества перед публикацией</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Система отзывов</h3>
+        <p>Честные отзывы от реальных покупателей</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Безопасность</h3>
+        <p>Защищённые платежи и надёжная доставка</p>
             </div>
         </section>
 
