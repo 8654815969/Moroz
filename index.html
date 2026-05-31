@@ -1637,13 +1637,11 @@
         }
     }
 };
-        window.async function deleteProduct(id) {
+        window.deleteProduct = async function(id) {
     if (!confirm("Удалить этот товар?")) return;
     try {
         console.log('🗑 Удаляю товар ID:', id);
-
-        await deleteDoc(doc(db, "products", id));  // ⚠️ проверь имя коллекции!
-
+        await deleteDoc(doc(db, "products", id));
         console.log('✅ Товар удалён');
         showSuccessMessage('Товар удалён!');
     } catch (err) {
@@ -1651,7 +1649,7 @@
         showErrorMessage('Ошибка: ' + err.message);
     }
 }
-        window.async function deleteVerifiedProduct(id) {
+        window.deleteVerifiedProduct = async function(id) {
     if (!confirm("Удалить проверенный товар?")) return;
     try {
         await deleteDoc(doc(db, "verifiedProducts", id));
