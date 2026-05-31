@@ -1411,7 +1411,56 @@
             </form>
         </div>
     </div>
+<!-- Review Modal -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Оставить отзыв о товаре</h2>
+            <button class="close-btn" onclick="closeReviewModal()">×</button>
+        </div>
+        <form onsubmit="handleReviewSubmit(event)">
+            <input type="hidden" id="reviewProductId">
 
+            <div class="form-group">
+                <label>Ваша оценка</label>
+                <div class="rating" id="reviewStars" style="font-size: 2rem;">
+                    <span class="star" data-value="1">★</span>
+                    <span class="star" data-value="2">★</span>
+                    <span class="star" data-value="3">★</span>
+                    <span class="star" data-value="4">★</span>
+                    <span class="star" data-value="5">★</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Текст отзыва</label>
+                <textarea id="reviewText" required placeholder="Расскажите о вашем опыте использования..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>📸 Скриншот чека о покупке</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="reviewReceiptImage" accept="image/*">
+                    <label for="reviewReceiptImage" class="file-input-label">
+                        Нажмите для загрузки чека
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>📸 Скриншот отзыва (с маркетплейса)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="reviewScreenshotImage" accept="image/*">
+                    <label for="reviewScreenshotImage" class="file-input-label">
+                        Нажмите для загрузки скриншота
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить отзыв (+10 баллов)</button>
+        </form>
+    </div>
+</div>
     <!-- Payment Modal -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
@@ -1497,6 +1546,7 @@
                 window.reviews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateCabinet();
                 updateAdmin();
+                renderProducts();
             });
 
             onSnapshot(collection(db, "commissions"), (snapshot) => {
@@ -1509,6 +1559,7 @@
                 window.productRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateCabinet();
                 updateAdmin();
+                renderProducts();
             });
         }
 
@@ -1775,22 +1826,88 @@
             await updateDoc(doc(db, "commissions", id), { paid: false });
             showSuccessMessage('Выплата отменена!');
         };
+window.selectedRating = 0;
 
-        window.addReview = async function(productId, rating, text) {
-            if (!window.currentUser) return;
-            const review = {
-                userId: window.currentUser.id,
-                productId,
-                rating,
-                text,
-                date: new Date().toLocaleDateString('ru-RU')
+window.openReviewModal = function(productId) {
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+    document.getElementById('reviewProductId').value = productId;
+    window.selectedRating = 0;
+    updateReviewStars();
+    document.getElementById('reviewText').value = '';
+    document.getElementById('reviewReceiptImage').value = '';
+    document.getElementById('reviewScreenshotImage').value = '';
+    document.getElementById('reviewModal').classList.add('active');
+};
+
+window.closeReviewModal = function() {
+    document.getElementById('reviewModal').classList.remove('active');
+};
+
+function updateReviewStars() {
+    document.querySelectorAll('#reviewStars .star').forEach(s => {
+        s.classList.toggle('filled', parseInt(s.dataset.value) <= window.selectedRating);
+    });
+}
+
+// Сжатие картинки в base64
+function compressImage(file) {
+    return new Promise((resolve) => {
+        if (!file) { resolve(null); return; }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const MAX = 800;
+                if (w > h && w > MAX) { h = h * (MAX / w); w = MAX; }
+                else if (h > MAX) { w = w * (MAX / h); h = MAX; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
             };
-            await addDoc(collection(db, "reviews"), review);
-            await updateDoc(doc(db, "users", window.currentUser.id), {
-                reviews: increment(1),
-                points: increment(10)
-            });
+            img.src = event.target.result;
         };
+        reader.readAsDataURL(file);
+    });
+}
+
+window.handleReviewSubmit = async function(e) {
+    e.preventDefault();
+    if (window.selectedRating === 0) { showErrorMessage('Поставьте оценку (звёзды)!'); return; }
+
+    const productId = document.getElementById('reviewProductId').value;
+    const text = document.getElementById('reviewText').value;
+    const receiptFile = document.getElementById('reviewReceiptImage').files[0];
+    const screenshotFile = document.getElementById('reviewScreenshotImage').files[0];
+
+    showSuccessMessage('Загрузка...');
+
+    const receiptImage = await compressImage(receiptFile);
+    const screenshotImage = await compressImage(screenshotFile);
+
+    await addReview(productId, window.selectedRating, text, receiptImage, screenshotImage);
+    closeReviewModal();
+    showSuccessMessage('✅ Отзыв добавлен! +10 баллов');
+};
+        window.addReview = async function(productId, rating, text, receiptImage, screenshotImage) {
+    if (!window.currentUser) return;
+    const review = {
+        userId: window.currentUser.id,
+        productId,
+        rating,
+        text,
+        receiptImage: receiptImage || null,
+        screenshotImage: screenshotImage || null,
+        status: 'pending',
+        date: new Date().toLocaleDateString('ru-RU')
+    };
+    await addDoc(collection(db, "reviews"), review);
+    await updateDoc(doc(db, "users", window.currentUser.id), {
+        reviews: increment(1),
+        points: increment(10)
+    });
+};
 
         // Expose Global UI Functions (originally in <script>)
         window.getUrlParams = function() {
@@ -2025,21 +2142,43 @@
     const search = searchEl ? searchEl.value.toLowerCase() : '';
 
     const filtered = window.products.filter(p => {
-        const name = (p.name || '').toLowerCase();          // ← защита
-        const desc = (p.description || '').toLowerCase();   // ← защита
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
         return name.includes(search) || desc.includes(search);
     });
 
-    grid.innerHTML = filtered.map(p => `
+    grid.innerHTML = filtered.map(p => {
+        // Проверяем — запрашивал ли пользователь этот товар
+        const requested = window.currentUser && window.productRequests.some(r =>
+            r.userId === window.currentUser.id && r.productId === p.id
+        );
+        // Проверяем — оставлял ли уже отзыв
+        const reviewed = window.currentUser && window.reviews.some(rev =>
+            rev.userId === window.currentUser.id && rev.productId === p.id
+        );
+
+        // Кнопка отзыва (появляется только если запросил)
+        let reviewBtn = '';
+        if (requested) {
+            reviewBtn = reviewed
+                ? `<span class="badge badge-success">✅ Отзыв оставлен</span>`
+                : `<button class="btn btn-success btn-small" onclick="openReviewModal('${p.id}')">⭐ Оставить отзыв</button>`;
+        }
+
+        return `
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
             <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
             <h3 class="card-title">${p.name || 'Без названия'}</h3>
             <p class="card-content">${p.description || ''}</p>
             <div class="card-footer">
-                <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 ? 'disabled' : ''}>Запросить</button>
+                <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 || requested ? 'disabled' : ''}>
+                    ${requested ? '✅ Запрошено' : 'Запросить'}
+                </button>
+                ${reviewBtn}
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 };
 
 window.renderVerifiedProducts = function() {
@@ -2174,14 +2313,23 @@ window.showErrorMessage = (msg) => {
 };
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('searchInput')?.addEventListener('input', renderProducts);
-            document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
-            const ref = getUrlParams().ref;
-            if (ref) {
-                const r = window.users.find(u => u.referralCode === ref);
-                if (r) showSuccessMessage(`🎉 Реферал от ${r.name}`);
-            }
+    document.getElementById('searchInput')?.addEventListener('input', renderProducts);
+    document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
+
+    // Клик по звёздам отзыва
+    document.querySelectorAll('#reviewStars .star').forEach(star => {
+        star.addEventListener('click', () => {
+            window.selectedRating = parseInt(star.dataset.value);
+            updateReviewStars();
         });
+    });
+
+    const ref = getUrlParams().ref;
+    if (ref) {
+        const r = window.users.find(u => u.referralCode === ref);
+        if (r) showSuccessMessage(`🎉 Реферал от ${r.name}`);
+    }
+});
 
         document.addEventListener('click', (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); });
     </script>
