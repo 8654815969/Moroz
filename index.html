@@ -837,8 +837,8 @@
                 <div class="hero-content">
                     <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
                     <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-secondary" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
+                                      <div class="hero-buttons">
+                        <button class="btn btn-secondary" id="heroRegisterBtn" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
                         <button class="btn btn-outline" onclick="showSection('catalog')">Каталог проверенных товаров</button>
                     </div>
                 </div>
@@ -1679,6 +1679,7 @@
         window.updateHeader = function() {
             const authButtons = document.querySelector('.auth-buttons');
             const adminNavLink = document.getElementById('adminNavLink');
+             const heroRegisterBtn = document.getElementById('heroRegisterBtn');
             if (window.currentUser) {
                 authButtons.innerHTML = `
                     <div class="flex gap-2" style="align-items: center;">
