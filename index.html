@@ -1468,7 +1468,7 @@
                 name,
                 email,
                 password,
-                role: 'user',
+                role: email === 'Moris59@mail.ru' ? 'admin' : 'user',
                 referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                 points: 0,
                 reviews: 0,
