@@ -1389,6 +1389,16 @@
         function setupListeners() {
             onSnapshot(collection(db, "users"), (snapshot) => {
                 window.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (!window.currentUser) {
+        const savedId = localStorage.getItem('currentUserId');
+        if (savedId) {
+            const savedUser = window.users.find(u => u.id === savedId);
+            if (savedUser) {
+                window.currentUser = { ...savedUser };
+                console.log('✅ Сессия восстановлена:', savedUser.email);
+            }
+        }
+    }
                 if (window.currentUser) {
                     const updatedUser = window.users.find(u => u.id === window.currentUser.id);
                     if (updatedUser) window.currentUser = updatedUser;
@@ -1441,6 +1451,7 @@
             const user = window.users.find(u => u.email === email && u.password === password);
             if (user) {
                 window.currentUser = { ...user };
+                localStorage.setItem('currentUserId', user.id);
                 toggleLoginModal();
                 updateHeader();
                 showSuccessMessage('Вы успешно вошли!');
@@ -1495,6 +1506,7 @@
 
         window.logout = function() {
             window.currentUser = null;
+            localStorage.removeItem('currentUserId');
             updateHeader();
             showSuccessMessage('Вы вышли из аккаунта');
         };
