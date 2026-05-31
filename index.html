@@ -1604,19 +1604,7 @@
                 stock: increment(-1)
             });
             
-            if (window.currentUser.referrer) {
-                const commission = {
-                    referrerId: window.currentUser.referrer,
-                    referredUserId: window.currentUser.id,
-                    productId: productId,
-                    amount: product.price * 0.05,
-                    paid: false,
-                    date: new Date().toLocaleDateString('ru-RU')
-                };
-                await addDoc(collection(db, "commissions"), commission);
-            }
-        };
-            
+           
             if (window.currentUser.referrer) {
     const commission = {
         referrerId: window.currentUser.referrer,
