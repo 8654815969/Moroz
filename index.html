@@ -1616,7 +1616,7 @@
     };
     await addDoc(collection(db, "commissions"), commission);
 }
-
+ };
         window.approveRequest = async function(requestId) {
             await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
             showSuccessMessage('Запрос одобрен!');
