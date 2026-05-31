@@ -1855,7 +1855,22 @@
             
             const refLink = `${window.location.origin}${window.location.pathname}?ref=${window.currentUser.referralCode}`;
             document.getElementById('referralLink').textContent = refLink;
-            
+                        // === СПИСОК ПРИГЛАШЁННЫХ ===
+            const myReferrals = window.users.filter(u => u.referrer === window.currentUser.id);
+            const referralsList = document.getElementById('referralsList');
+            referralsList.innerHTML = myReferrals.length === 0 
+                ? '<p class="text-muted">Вы ещё никого не пригласили</p>' 
+                : myReferrals.map(u => `
+                    <div class="card mb-2 flex-between">
+                        <div class="flex gap-2">
+                            <div class="user-avatar">${u.name.charAt(0)}</div>
+                            <div>
+                                <h4 class="card-title">${u.name}</h4>
+                                <p class="text-muted">${u.email}</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-success">Приглашён</span>
+                    </div>`).join('');
             const reviewsList = document.getElementById('reviewsList');
             reviewsList.innerHTML = userReviews.length === 0 ? '<p class="text-muted">Нет отзывов</p>' : userReviews.map(r => `
                 <div class="card mb-2">
@@ -2033,7 +2048,7 @@ window.renderVerifiedProducts = function() {
             <h3 class="card-title">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
             <p class="card-content">${p.description || ''}</p>
             <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">$${p.price ?? 0}</div>
-            <<div class="card-footer">
+            <div class="card-footer">
     <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
             </div>
         </div>`).join('');
