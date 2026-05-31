@@ -1637,7 +1637,7 @@
         }
     }
 };
-        async function deleteProduct(id) {
+        window.async function deleteProduct(id) {
     if (!confirm("Удалить этот товар?")) return;
     try {
         console.log('🗑 Удаляю товар ID:', id);
@@ -1651,7 +1651,7 @@
         showErrorMessage('Ошибка: ' + err.message);
     }
 }
-        async function deleteVerifiedProduct(id) {
+        window.async function deleteVerifiedProduct(id) {
     if (!confirm("Удалить проверенный товар?")) return;
     try {
         await deleteDoc(doc(db, "verifiedProducts", id));
