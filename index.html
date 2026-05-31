@@ -34,6 +34,7 @@
             line-height: 1.6;
         }
 
+        /* Header */
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -161,12 +162,23 @@
             background: #059669;
         }
 
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
+        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -211,6 +223,7 @@
             flex-wrap: wrap;
         }
 
+        /* Main Content */
         main {
             padding: 3rem 0;
         }
@@ -229,6 +242,7 @@
             to { opacity: 1; }
         }
 
+        /* Grid */
         .grid {
             display: grid;
             gap: 2rem;
@@ -243,6 +257,11 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
 
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Cards */
         .card {
             background: white;
             border-radius: var(--radius);
@@ -257,11 +276,23 @@
             transform: translateY(-4px);
         }
 
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
         .card-title {
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--text);
-            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
         }
 
         .card-content {
@@ -279,6 +310,7 @@
             gap: 0.5rem;
         }
 
+        /* Badge */
         .badge {
             display: inline-block;
             padding: 0.35rem 0.75rem;
@@ -287,11 +319,81 @@
             font-weight: 600;
         }
 
+        .badge-primary {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
         .badge-success {
             background: rgba(16, 185, 129, 0.1);
             color: var(--success);
         }
 
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Rating */
+        .rating {
+            display: flex;
+            gap: 0.25rem;
+            font-size: 1.2rem;
+        }
+
+        .star {
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #d1d5db;
+        }
+
+        .star.filled {
+            color: #fbbf24;
+        }
+
+        .star:hover {
+            color: #fbbf24;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Stats */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -321,6 +423,7 @@
             color: var(--text);
         }
 
+        /* Tabs */
         .tabs {
             display: flex;
             border-bottom: 2px solid var(--border);
@@ -356,6 +459,7 @@
             display: block;
         }
 
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -394,7 +498,6 @@
         }
 
         .modal-title {
-            font-size: 1.5rem;
             font-weight: 600;
         }
 
@@ -410,6 +513,7 @@
             color: var(--text);
         }
 
+        /* Alert */
         .alert {
             padding: 1rem;
             border-radius: var(--radius);
@@ -437,6 +541,7 @@
             color: #1e40af;
         }
 
+        /* Product Image */
         .product-image {
             width: 100%;
             height: 200px;
@@ -452,81 +557,34 @@
             overflow: hidden;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        input, textarea, select {
+        .product-image img {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
+            height: 100%;
+            object-fit: cover;
         }
 
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .referral-link-box {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .referral-link-input {
-            background: white;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-family: monospace;
-            font-size: 0.9rem;
-            word-break: break-all;
-            margin-bottom: 1rem;
-        }
-
-        .user-info {
-            background: white;
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
+        /* Stock Badge */
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
+        .stock-badge.low {
+            background: var(--warning);
+        }
+
+        .stock-badge.out {
+            background: var(--danger);
+        }
+
+        /* File Input */
         .file-input-wrapper {
             position: relative;
             overflow: hidden;
@@ -555,38 +613,7 @@
             background: rgba(37, 99, 235, 0.05);
         }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        .mb-2 { margin-bottom: 1rem; }
-        .mb-3 { margin-bottom: 1.5rem; }
-        .mt-3 { margin-top: 1.5rem; }
-
-        .flex {
-            display: flex;
-        }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .gap-2 { gap: 1rem; }
-
-        footer {
-            background: var(--text);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            margin-top: 3rem;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
@@ -600,17 +627,25 @@
                 gap: 1rem;
             }
 
+            nav a {
+                font-size: 0.85rem;
+            }
+
             .header-container {
                 flex-direction: column;
                 gap: 1rem;
             }
 
-            .grid-2, .grid-3 {
+            .grid-2, .grid-3, .grid-4 {
                 grid-template-columns: 1fr;
             }
 
             .stats {
                 grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
             }
 
             .hero-buttons {
@@ -621,15 +656,159 @@
                 width: 100%;
                 text-align: center;
             }
+        }
 
-            .user-info {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        /* Utility */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .verified-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .payment-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .payment-option h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .payment-option p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .payment-option .btn {
+            width: 100%;
+        }
+
+        .referral-link-box {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .referral-link-input {
+            background: white;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .user-info {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .request-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .request-status.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .request-status.approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .request-status.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header>
         <div class="header-container">
             <div class="logo">
@@ -640,17 +819,17 @@
                 <a onclick="showSection('home')">Главная</a>
                 <a onclick="showSection('verified')">Проверенные товары</a>
                 <a onclick="showSection('catalog')">Каталог</a>
-                <a onclick="showSection('cabinet')" id="cabinetLink" style="display: none;">Кабинет</a>
+                <a onclick="showSection('cabinet')">Личный кабинет</a>
                 <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
             </nav>
             <div class="auth-buttons">
-                <button class="btn btn-secondary btn-small" id="loginBtn" onclick="toggleLoginModal()">Вход</button>
-                <button class="btn btn-primary btn-small" id="registerBtn" onclick="toggleRegisterModal()">Регистрация</button>
-                <button class="btn btn-danger btn-small" id="logoutBtn" onclick="logout()" style="display: none;">Выход</button>
+                <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
+                <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>
             </div>
         </div>
     </header>
 
+    <!-- Main Content -->
     <main class="container">
         <!-- Home Section -->
         <section id="home" class="section active">
@@ -660,7 +839,7 @@
                     <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
                     <div class="hero-buttons">
                         <button class="btn btn-secondary" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
-                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров</button>
+                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог проверенных товаров</button>
                     </div>
                 </div>
             </div>
@@ -690,22 +869,26 @@
         <!-- Verified Products Section -->
         <section id="verified" class="section">
             <h1 style="margin-bottom: 2rem;">✅ Проверенные товары для покупки</h1>
+            
             <div style="margin-bottom: 2rem;">
                 <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
+
             <div class="grid grid-3" id="verifiedProductGrid">
-                <div class="text-center text-muted">Товары загружаются...</div>
+                <!-- Verified products will be inserted here -->
             </div>
         </section>
 
         <!-- Catalog Section -->
         <section id="catalog" class="section">
             <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
+            
             <div style="margin-bottom: 2rem;">
                 <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
+
             <div class="grid grid-3" id="productGrid">
-                <div class="text-center text-muted">Товары загружаются...</div>
+                <!-- Products will be inserted here -->
             </div>
         </section>
 
@@ -718,7 +901,7 @@
             </div>
 
             <div id="cabinetContent" style="display: none;">
-                <div class="user-info">
+                <div class="user-info flex-between">
                     <div class="flex gap-2">
                         <div class="user-avatar" id="userAvatar">У</div>
                         <div>
@@ -726,41 +909,43 @@
                             <div class="text-muted" style="font-size: 0.9rem;" id="userEmail">email@example.com</div>
                         </div>
                     </div>
+                    <button class="btn btn-danger btn-small" onclick="logout()">Выход</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Получено товаров</div>
+                        <div class="stat-value" id="productsCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Отзывов написано</div>
+                        <div class="stat-value" id="reviewsCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Средний рейтинг</div>
+                        <div class="stat-value" id="avgRating">0★</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Баллов</div>
+                        <div class="stat-value" id="pointsCount">0</div>
+                    </div>
                 </div>
 
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('referral')">Реферральная программа</button>
                     <button class="tab" onclick="switchTab('reviews')">Мои отзывы</button>
                     <button class="tab" onclick="switchTab('requests')">Мои запросы</button>
+                    <button class="tab" onclick="switchTab('commissions')">Комиссии</button>
                 </div>
 
                 <!-- Referral Tab -->
                 <div id="referral" class="tab-content active">
-                    <div class="stats">
-                        <div class="stat-card">
-                            <div class="stat-label">👥 Приглашено друзей</div>
-                            <div class="stat-value" id="referralCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">📦 Получено товаров</div>
-                            <div class="stat-value" id="productsCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">⭐ Написано отзывов</div>
-                            <div class="stat-value" id="reviewsCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">🎁 Баллов</div>
-                            <div class="stat-value" id="pointsCount">0</div>
-                        </div>
-                    </div>
-
                     <div class="card">
                         <h3 class="card-title mb-2">Ваша реферральная ссылка</h3>
-                        <p class="text-muted mb-2">Поделитесь этой ссылкой с друзьями. Они автоматически зарегистрируются как ваши рефералы!</p>
+                        <p class="text-muted mb-2">Поделитесь этой ссылкой с друзьями. Они автоматически зарегистрируются как ваши рефералы и вы получите 5% комиссию с их покупок!</p>
                         <div class="referral-link-box">
                             <div class="referral-link-input" id="referralLink">https://example.com/?ref=REF123456</div>
-                            <button class="btn btn-primary" onclick="copyReferralLink()" style="width: 100%;">📋 Копировать ссылку</button>
+                            <button class="btn btn-primary btn-small" onclick="copyReferralLink()" style="width: 100%;">📋 Копировать ссылку</button>
                         </div>
                     </div>
 
@@ -785,6 +970,30 @@
                         <p class="text-muted">Вы ещё не запрашивали товары</p>
                     </div>
                 </div>
+
+                <!-- Commissions Tab -->
+                <div id="commissions" class="tab-content">
+                    <div class="grid grid-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Всего заработано</div>
+                            <div class="stat-value" id="totalCommission">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Выплачено</div>
+                            <div class="stat-value" id="paidCommission">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">К выплате</div>
+                            <div class="stat-value" id="unpaidCommission">$0</div>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <h3 class="card-title mb-2">История комиссий</h3>
+                        <div id="commissionsList">
+                            <p class="text-muted">Комиссии отсутствуют</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -798,13 +1007,36 @@
 
             <div id="adminContent" style="display: none;">
                 <div class="tabs">
-                    <button class="tab active" onclick="switchAdminTab('products')">Товары для тестирования</button>
+                    <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
+                    <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
+                    <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
                     <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
-                    <button class="tab" onclick="switchAdminTab('users')">Пользователи</button>
+                    <button class="tab" onclick="switchAdminTab('reviews')">Отзывы</button>
+                    <button class="tab" onclick="switchAdminTab('commissions')">Комиссии</button>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="users-admin" class="tab-content active">
+                    <div class="card">
+                        <h3 class="card-title mb-2">Список пользователей</h3>
+                        <div id="usersList">
+                            <p class="text-muted">Нет пользователей</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests Tab -->
+                <div id="requests-admin" class="tab-content">
+                    <div class="card">
+                        <h3 class="card-title mb-2">Запросы товаров на тестирование</h3>
+                        <div id="adminRequestsList">
+                            <p class="text-muted">Нет запросов</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Products Tab -->
-                <div id="products-admin" class="tab-content active">
+                <div id="products-admin" class="tab-content">
                     <button class="btn btn-primary mb-2" onclick="toggleAddProductModal()">+ Добавить товар</button>
                     <div class="card">
                         <h3 class="card-title mb-2">Товары для тестирования</h3>
@@ -825,12 +1057,22 @@
                     </div>
                 </div>
 
-                <!-- Users Tab -->
-                <div id="users-admin" class="tab-content">
+                <!-- Reviews Tab -->
+                <div id="reviews-admin" class="tab-content">
                     <div class="card">
-                        <h3 class="card-title mb-2">Список пользователей</h3>
-                        <div id="usersList">
-                            <p class="text-muted">Нет пользователей</p>
+                        <h3 class="card-title mb-2">Отзывы на проверку</h3>
+                        <div id="adminReviewsList">
+                            <p class="text-muted">Нет отзывов</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commissions Tab -->
+                <div id="commissions-admin" class="tab-content">
+                    <div class="card">
+                        <h3 class="card-title mb-2">Управление комиссиями</h3>
+                        <div id="adminCommissionsList">
+                            <p class="text-muted">Нет комиссий</p>
                         </div>
                     </div>
                 </div>
@@ -879,12 +1121,21 @@
                     <label>Пароль</label>
                     <input type="password" id="registerPassword" required>
                 </div>
-                <div class="form-group">
-                    <label>Реферальный код (опционально)</label>
-                    <input type="text" id="referralCode" placeholder="Введите код реферера">
-                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Request Product Modal -->
+    <div id="requestProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Запросить товар на тестирование</h2>
+                <button class="close-btn" onclick="closeRequestProductModal()">×</button>
+            </div>
+            <div id="requestProductOptions">
+                <!-- Payment options will be inserted here -->
+            </div>
         </div>
     </div>
 
@@ -922,7 +1173,64 @@
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="productStock" min="0" required>
                 </div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="productImage" accept="image/*">
+                        <label for="productImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактировать товар</h2>
+                <button class="close-btn" onclick="closeEditProductModal()">×</button>
+            </div>
+            <form onsubmit="handleEditProduct(event)">
+                <input type="hidden" id="editProductId">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="editProductDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="editProductCategory" required>
+                        <option value="electronics">Электроника</option>
+                        <option value="home">Товары для дома</option>
+                        <option value="beauty">Красота и уход</option>
+                        <option value="sports">Спорт и фитнес</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на товар</label>
+                    <input type="url" id="editProductUrl" required>
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе (шт.)</label>
+                    <input type="number" id="editProductStock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editProductImage" accept="image/*">
+                        <label for="editProductImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
             </form>
         </div>
     </div>
@@ -965,19 +1273,97 @@
                     <label>Ссылка на товар</label>
                     <input type="url" id="verifiedProductUrl" required>
                 </div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="verifiedProductImage" accept="image/*">
+                        <label for="verifiedProductImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
             </form>
         </div>
     </div>
 
-    <!-- Firebase Module -->
+    <!-- Edit Verified Product Modal -->
+    <div id="editVerifiedProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактировать проверенный товар</h2>
+                <button class="close-btn" onclick="closeEditVerifiedProductModal()">×</button>
+            </div>
+            <form onsubmit="handleEditVerifiedProduct(event)">
+                <input type="hidden" id="editVerifiedProductId">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="editVerifiedProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="editVerifiedProductDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="editVerifiedProductCategory" required>
+                        <option value="electronics">Электроника</option>
+                        <option value="home">Товары для дома</option>
+                        <option value="beauty">Красота и уход</option>
+                        <option value="sports">Спорт и фитнес</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Цена ($)</label>
+                    <input type="number" id="editVerifiedProductPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе (шт.)</label>
+                    <input type="number" id="editVerifiedProductStock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на товар</label>
+                    <input type="url" id="editVerifiedProductUrl" required>
+                </div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editVerifiedProductImage" accept="image/*">
+                        <label for="editVerifiedProductImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Выберите способ оплаты</h2>
+                <button class="close-btn" onclick="closePaymentModal()">×</button>
+            </div>
+            <div id="paymentOptions">
+                <!-- Payment options will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, setDoc, doc, addDoc, onSnapshot, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const firebaseConfig = {
-            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            apiKey: "AIz*****Jg",
             authDomain: "saintmarketology.firebaseapp.com",
             projectId: "saintmarketology",
             storageBucket: "saintmarketology.firebasestorage.app",
@@ -985,488 +1371,630 @@
             appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
             measurementId: "G-S52HDR9550"
         };
-        
+
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        window.firebase = {
-            auth,
-            db,
-            collection,
-            getDocs,
-            setDoc,
-            doc,
-            addDoc,
-            onSnapshot,
-            query,
-            where,
-            updateDoc,
-            deleteDoc,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged
-        };
 
-        let currentUser = null;
-        let currentUserData = null;
+        // Data Storage (Synced with Firebase)
+        window.currentUser = null;
+        window.users = [];
+        window.products = [];
+        window.verifiedProducts = [];
+        window.reviews = [];
+        window.commissions = [];
+        window.productRequests = [];
 
-        // Listen to auth state
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            updateAuthUI();
-            if (user) {
-                await loadUserData();
-                loadProducts();
-            }
-        });
-
-        // Load user data
-        async function loadUserData() {
-            if (!currentUser) return;
-            
-            try {
-                const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', currentUser.uid)));
-                if (!userDoc.empty) {
-                    currentUserData = userDoc.docs[0].data();
-                    updateCabinetUI(currentUserData);
-                } else {
-                    const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                    const userData = {
-                        uid: currentUser.uid,
-                        email: currentUser.email,
-                        name: currentUser.displayName || 'Пользователь',
-                        referralCode: newReferralCode,
-                        referrerCode: localStorage.getItem('referrerCode') || null,
-                        referralCount: 0,
-                        referralPoints: 0,
-                        productsCount: 0,
-                        reviewsCount: 0,
-                        role: 'user',
-                        createdAt: new Date()
-                    };
-                    await setDoc(doc(db, 'users', currentUser.uid), userData);
-                    currentUserData = userData;
-                    updateCabinetUI(userData);
+        // Firebase Sync Listeners
+        function setupListeners() {
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                window.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (window.currentUser) {
+                    const updatedUser = window.users.find(u => u.id === window.currentUser.id);
+                    if (updatedUser) window.currentUser = updatedUser;
                 }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
+                updateHeader();
+                updateCabinet();
+                updateAdmin();
+            });
+
+            onSnapshot(collection(db, "products"), (snapshot) => {
+                window.products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts();
+                updateAdmin();
+            });
+
+            onSnapshot(collection(db, "verifiedProducts"), (snapshot) => {
+                window.verifiedProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderVerifiedProducts();
+                updateAdmin();
+            });
+
+            onSnapshot(collection(db, "reviews"), (snapshot) => {
+                window.reviews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateCabinet();
+                updateAdmin();
+            });
+
+            onSnapshot(collection(db, "commissions"), (snapshot) => {
+                window.commissions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateCabinet();
+                updateAdmin();
+            });
+
+            onSnapshot(collection(db, "productRequests"), (snapshot) => {
+                window.productRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateCabinet();
+                updateAdmin();
+            });
         }
 
-        // Update cabinet UI
-        function updateCabinetUI(userData) {
-            document.getElementById('userName').textContent = userData.name || 'Пользователь';
-            document.getElementById('userEmail').textContent = userData.email || '';
-            document.getElementById('userAvatar').textContent = (userData.name || 'У')[0].toUpperCase();
-            document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${userData.referralCode}`;
-            document.getElementById('referralCount').textContent = userData.referralCount || 0;
-            document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
-            document.getElementById('productsCount').textContent = userData.productsCount || 0;
-            document.getElementById('reviewsCount').textContent = userData.reviewsCount || 0;
-            document.getElementById('pointsCount').textContent = userData.referralPoints || 0;
+        // Initialize App
+        setupListeners();
 
-            loadReferralsList(userData.referralCode);
-        }
-
-        // Load referrals list
-        async function loadReferralsList(referralCode) {
-            try {
-                const referrals = await getDocs(query(collection(db, 'users'), where('referrerCode', '==', referralCode)));
-                const container = document.getElementById('referralsList');
-                
-                if (referrals.empty) {
-                    container.innerHTML = '<p class="text-muted">Вы ещё никого не пригласили</p>';
-                } else {
-                    container.innerHTML = referrals.docs.map(doc => {
-                        const data = doc.data();
-                        return `
-                            <div class="card mb-2">
-                                <div class="flex-between">
-                                    <div>
-                                        <div style="font-weight: 600;">${data.name}</div>
-                                        <div class="text-muted" style="font-size: 0.9rem;">${data.email}</div>
-                                    </div>
-                                    <div class="badge badge-success">Активен</div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            } catch (error) {
-                console.error('Error loading referrals:', error);
-            }
-        }
-
-        // Load products
-        async function loadProducts() {
-            try {
-                const productsSnap = await getDocs(collection(db, 'products'));
-                const verifiedSnap = await getDocs(collection(db, 'verifiedProducts'));
-                
-                const catalogGrid = document.getElementById('productGrid');
-                const verifiedGrid = document.getElementById('verifiedProductGrid');
-                const adminProductsList = document.getElementById('adminProductsList');
-                const adminVerifiedList = document.getElementById('adminVerifiedProductsList');
-
-                const products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                const verified = verifiedSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                if (products.length === 0) {
-                    catalogGrid.innerHTML = '<div class="text-center text-muted">Товары еще не добавлены</div>';
-                    adminProductsList.innerHTML = '<p class="text-muted">Нет товаров</p>';
-                } else {
-                    catalogGrid.innerHTML = products.map(p => `
-                        <div class="card">
-                            <div class="product-image">📦</div>
-                            <h3 class="card-title">${p.name}</h3>
-                            <p class="card-content">${p.description}</p>
-                            <div class="card-footer">
-                                <span class="badge badge-success">${p.category}</span>
-                                <span class="text-muted" style="font-size: 0.9rem;">Осталось: ${p.stock}</span>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    adminProductsList.innerHTML = products.map(p => `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <div style="font-weight: 600;">${p.name}</div>
-                                    <div class="text-muted" style="font-size: 0.9rem;">${p.description}</div>
-                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Осталось: ${p.stock}</div>
-                                </div>
-                                <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">Удалить</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-
-                if (verified.length === 0) {
-                    verifiedGrid.innerHTML = '<div class="text-center text-muted">Товары еще не добавлены</div>';
-                    adminVerifiedList.innerHTML = '<p class="text-muted">Нет проверенных товаров</p>';
-                } else {
-                    verifiedGrid.innerHTML = verified.map(p => `
-                        <div class="card">
-                            <div class="product-image">✅</div>
-                            <h3 class="card-title">${p.name}</h3>
-                            <p class="card-content">${p.description}</p>
-                            <div class="card-footer">
-                                <span class="badge badge-success">Проверено</span>
-                                <span style="font-weight: 600;">$${p.price}</span>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    adminVerifiedList.innerHTML = verified.map(p => `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <div style="font-weight: 600;">${p.name}</div>
-                                    <div class="text-muted" style="font-size: 0.9rem;">$${p.price}</div>
-                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Осталось: ${p.stock}</div>
-                                </div>
-                                <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">Удалить</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error loading products:', error);
-            }
-        }
-
-        // Load users for admin
-        async function loadUsers() {
-            try {
-                const usersSnap = await getDocs(collection(db, 'users'));
-                const usersList = document.getElementById('usersList');
-                const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                if (users.length === 0) {
-                    usersList.innerHTML = '<p class="text-muted">Нет пользователей</p>';
-                } else {
-                    usersList.innerHTML = users.map(u => `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <div style="font-weight: 600;">${u.name}</div>
-                                    <div class="text-muted" style="font-size: 0.9rem;">${u.email}</div>
-                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Рефералов: ${u.referralCount || 0}</div>
-                                </div>
-                                <div class="badge badge-success">${u.role}</div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        }
-
-        // Handle login
-        window.handleLogin = async function(event) {
-            event.preventDefault();
+        // Authentication Functions
+        window.handleLogin = async function(e) {
+            e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
+            
+            const user = window.users.find(u => u.email === email && u.password === password);
+            if (user) {
+                window.currentUser = { ...user };
                 toggleLoginModal();
-                alert('Успешный вход!');
-            } catch (error) {
-                alert('Ошибка входа: ' + error.message);
+                updateHeader();
+                showSuccessMessage('Вы успешно вошли!');
+                document.querySelector('#loginModal form').reset();
+            } else {
+                showErrorMessage('Неверный email или пароль');
             }
         };
 
-        // Handle register
-        window.handleRegister = async function(event) {
-            event.preventDefault();
+        window.handleRegister = async function(e) {
+            e.preventDefault();
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-            const referralCode = document.getElementById('referralCode').value;
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
-
-                await setDoc(doc(db, 'users', user.uid), {
-                    uid: user.uid,
-                    name: name,
-                    email: email,
-                    referralCode: newReferralCode,
-                    referrerCode: referralCode || null,
-                    referralCount: 0,
-                    referralPoints: 0,
-                    productsCount: 0,
-                    reviewsCount: 0,
-                    role: 'user',
-                    createdAt: new Date()
-                });
-
-                if (referralCode) {
-                    const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', referralCode));
-                    const referrerDocs = await getDocs(referrerQuery);
-                    
-                    if (!referrerDocs.empty) {
-                        const referrerDoc = referrerDocs.docs[0];
-                        const referrerData = referrerDoc.data();
-                        await updateDoc(doc(db, 'users', referrerDoc.id), {
-                            referralCount: (referrerData.referralCount || 0) + 1,
-                            referralPoints: (referrerData.referralPoints || 0) + 50
-                        });
-                    }
-                }
-
-                toggleRegisterModal();
-                alert('Успешная регистрация!');
-            } catch (error) {
-                alert('Ошибка регистрации: ' + error.message);
-            }
-        };
-
-        // Handle add product
-        window.handleAddProduct = async function(event) {
-            event.preventDefault();
             
-            const product = {
-                name: document.getElementById('productName').value,
-                description: document.getElementById('productDescription').value,
-                category: document.getElementById('productCategory').value,
-                url: document.getElementById('productUrl').value,
-                stock: parseInt(document.getElementById('productStock').value),
-                createdAt: new Date()
-            };
-
-            try {
-                await addDoc(collection(db, 'products'), product);
-                toggleAddProductModal();
-                alert('Товар добавлен!');
-                loadProducts();
-                document.getElementById('addProductModal').querySelector('form').reset();
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-            }
-        };
-
-        // Handle add verified product
-        window.handleAddVerifiedProduct = async function(event) {
-            event.preventDefault();
-            
-            const product = {
-                name: document.getElementById('verifiedProductName').value,
-                description: document.getElementById('verifiedProductDescription').value,
-                category: document.getElementById('verifiedProductCategory').value,
-                price: parseFloat(document.getElementById('verifiedProductPrice').value),
-                stock: parseInt(document.getElementById('verifiedProductStock').value),
-                url: document.getElementById('verifiedProductUrl').value,
-                createdAt: new Date()
-            };
-
-            try {
-                await addDoc(collection(db, 'verifiedProducts'), product);
-                toggleAddVerifiedProductModal();
-                alert('Проверенный товар добавлен!');
-                loadProducts();
-                document.getElementById('addVerifiedProductModal').querySelector('form').reset();
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-            }
-        };
-
-        // Delete product
-        window.deleteProduct = async function(productId) {
-            if (confirm('Вы уверены?')) {
-                try {
-                    await deleteDoc(doc(db, 'products', productId));
-                    alert('Товар удален!');
-                    loadProducts();
-                } catch (error) {
-                    alert('Ошибка: ' + error.message);
-                }
-            }
-        };
-
-        // Delete verified product
-        window.deleteVerifiedProduct = async function(productId) {
-            if (confirm('Вы уверены?')) {
-                try {
-                    await deleteDoc(doc(db, 'verifiedProducts', productId));
-                    alert('Товар удален!');
-                    loadProducts();
-                } catch (error) {
-                    alert('Ошибка: ' + error.message);
-                }
-            }
-        };
-
-        // Logout
-        window.logout = async function() {
-            try {
-                await signOut(auth);
-                currentUser = null;
-                currentUserData = null;
-                updateAuthUI();
-                showSection('home');
-                alert('Вы вышли из аккаунта');
-            } catch (error) {
-                alert('Ошибка выхода: ' + error.message);
-            }
-        };
-
-        // Update auth UI
-        function updateAuthUI() {
-            const loginBtn = document.getElementById('loginBtn');
-            const registerBtn = document.getElementById('registerBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const cabinetLink = document.getElementById('cabinetLink');
-            const adminLink = document.getElementById('adminNavLink');
-            const notLoggedInMessage = document.getElementById('notLoggedInMessage');
-            const cabinetContent = document.getElementById('cabinetContent');
-            const adminNotification = document.getElementById('adminNotification');
-            const adminContent = document.getElementById('adminContent');
-
-            if (currentUser) {
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'none';
-                logoutBtn.style.display = 'block';
-                cabinetLink.style.display = 'block';
-                notLoggedInMessage.style.display = 'none';
-                cabinetContent.style.display = 'block';
-
-                // Check if admin
-                if (currentUserData && currentUserData.role === 'admin') {
-                    adminLink.style.display = 'block';
-                    adminNotification.style.display = 'none';
-                    adminContent.style.display = 'block';
-                    loadUsers();
-                } else {
-                    adminLink.style.display = 'none';
-                }
-            } else {
-                loginBtn.style.display = 'block';
-                registerBtn.style.display = 'block';
-                logoutBtn.style.display = 'none';
-                cabinetLink.style.display = 'none';
-                adminLink.style.display = 'none';
-                notLoggedInMessage.style.display = 'flex';
-                cabinetContent.style.display = 'none';
-                adminNotification.style.display = 'flex';
-                adminContent.style.display = 'none';
-            }
-        }
-    </script>
-
-    <!-- Local Functions -->
-    <script>
-        function showSection(sectionId) {
-            if ((sectionId === 'cabinet' || sectionId === 'admin') && !window.currentUser) {
-                alert('Пожалуйста, авторизуйтесь');
+            if (window.users.find(u => u.email === email)) {
+                showErrorMessage('Пользователь с таким email уже существует');
                 return;
             }
+            
+            const urlParams = getUrlParams();
+            const referrer = urlParams.ref ? window.users.find(u => u.referralCode === urlParams.ref) : null;
+            
+            const newUser = {
+                name,
+                email,
+                password,
+                role: 'user',
+                referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                points: 0,
+                reviews: 0,
+                products: 0,
+                referrer: referrer ? referrer.id : null
+            };
+            
+            try {
+                const docRef = await addDoc(collection(db, "users"), newUser);
+                window.currentUser = { id: docRef.id, ...newUser };
+                
+                if (referrer) {
+                    showSuccessMessage(`✅ Вы зарегистрировались по реферальной ссылке от ${referrer.name}!`);
+                }
+                
+                toggleRegisterModal();
+                updateHeader();
+                showSuccessMessage('Вы успешно зарегистрировались!');
+                document.querySelector('#registerModal form').reset();
+            } catch (error) {
+                showErrorMessage('Ошибка регистрации');
+            }
+        };
 
+        window.logout = function() {
+            window.currentUser = null;
+            updateHeader();
+            showSuccessMessage('Вы вышли из аккаунта');
+        };
+
+        // Admin CRUD
+        window.handleAddProduct = async function(e) {
+            e.preventDefault();
+            const imageFile = document.getElementById('productImage').files[0];
+            let imageData = null;
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    imageData = event.target.result;
+                    await saveProduct(imageData);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                await saveProduct(null);
+            }
+
+            async function saveProduct(image) {
+                const newProduct = {
+                    name: document.getElementById('productName').value,
+                    category: document.getElementById('productCategory').value,
+                    description: document.getElementById('productDescription').value,
+                    url: document.getElementById('productUrl').value,
+                    image: image,
+                    rating: 0,
+                    reviews: 0,
+                    stock: parseInt(document.getElementById('productStock').value)
+                };
+                await addDoc(collection(db, "products"), newProduct);
+                toggleAddProductModal();
+                showSuccessMessage('Товар успешно добавлен!');
+                document.querySelector('#addProductModal form').reset();
+            }
+        };
+
+        window.handleEditProduct = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProductId').value;
+            const imageFile = document.getElementById('editProductImage').files[0];
+            
+            const updateData = {
+                name: document.getElementById('editProductName').value,
+                description: document.getElementById('editProductDescription').value,
+                category: document.getElementById('editProductCategory').value,
+                url: document.getElementById('editProductUrl').value,
+                stock: parseInt(document.getElementById('editProductStock').value)
+            };
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    updateData.image = event.target.result;
+                    await updateDoc(doc(db, "products", id), updateData);
+                    finish();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                await updateDoc(doc(db, "products", id), updateData);
+                finish();
+            }
+
+            function finish() {
+                closeEditProductModal();
+                showSuccessMessage('Товар успешно обновлён!');
+            }
+        };
+
+        window.deleteProduct = async function(id) {
+            if (confirm('Вы уверены?')) {
+                await deleteDoc(doc(db, "products", id));
+                showSuccessMessage('Товар удалён');
+            }
+        };
+
+        window.handleAddVerifiedProduct = async function(e) {
+            e.preventDefault();
+            const imageFile = document.getElementById('verifiedProductImage').files[0];
+            let imageData = null;
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    imageData = event.target.result;
+                    await saveProduct(imageData);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                await saveProduct(null);
+            }
+
+            async function saveProduct(image) {
+                const newProduct = {
+                    name: document.getElementById('verifiedProductName').value,
+                    category: document.getElementById('verifiedProductCategory').value,
+                    description: document.getElementById('verifiedProductDescription').value,
+                    price: parseFloat(document.getElementById('verifiedProductPrice').value),
+                    stock: parseInt(document.getElementById('verifiedProductStock').value),
+                    url: document.getElementById('verifiedProductUrl').value,
+                    image: image,
+                    rating: 0,
+                    reviews: 0
+                };
+                await addDoc(collection(db, "verifiedProducts"), newProduct);
+                toggleAddVerifiedProductModal();
+                showSuccessMessage('Проверенный товар успешно добавлен!');
+                document.querySelector('#addVerifiedProductModal form').reset();
+            }
+        };
+
+        window.handleEditVerifiedProduct = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editVerifiedProductId').value;
+            const imageFile = document.getElementById('editVerifiedProductImage').files[0];
+            
+            const updateData = {
+                name: document.getElementById('editVerifiedProductName').value,
+                description: document.getElementById('editVerifiedProductDescription').value,
+                category: document.getElementById('editVerifiedProductCategory').value,
+                price: parseFloat(document.getElementById('editVerifiedProductPrice').value),
+                stock: parseInt(document.getElementById('editVerifiedProductStock').value),
+                url: document.getElementById('editVerifiedProductUrl').value
+            };
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    updateData.image = event.target.result;
+                    await updateDoc(doc(db, "verifiedProducts", id), updateData);
+                    finish();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                await updateDoc(doc(db, "verifiedProducts", id), updateData);
+                finish();
+            }
+
+            function finish() {
+                closeEditVerifiedProductModal();
+                showSuccessMessage('Товар успешно обновлён!');
+            }
+        };
+
+        window.deleteVerifiedProduct = async function(id) {
+            if (confirm('Вы уверены?')) {
+                await deleteDoc(doc(db, "verifiedProducts", id));
+                showSuccessMessage('Товар удалён');
+            }
+        };
+
+        // Interaction Functions
+        window.submitProductRequest = async function(productId, paymentMethod) {
+            const product = window.products.find(p => p.id === productId);
+            const request = {
+                userId: window.currentUser.id,
+                productId: productId,
+                paymentMethod: paymentMethod,
+                category: product.category,
+                status: 'pending',
+                date: new Date().toLocaleDateString('ru-RU')
+            };
+            
+            await addDoc(collection(db, "productRequests"), request);
+            await updateDoc(doc(db, "users", window.currentUser.id), {
+                products: increment(1)
+            });
+            
+            closeRequestProductModal();
+            showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен!`);
+        };
+
+        window.processPayment = async function(productId, method) {
+            const product = window.verifiedProducts.find(p => p.id === productId);
+            
+            if (method === 'card') {
+                showSuccessMessage(`✅ Платёж на сумму $${product.price} успешно обработан!`);
+            } else {
+                showSuccessMessage(`✅ Товар зарезервирован!`);
+            }
+            
+            closePaymentModal();
+            
+            await updateDoc(doc(db, "users", window.currentUser.id), {
+                products: increment(1)
+            });
+            await updateDoc(doc(db, "verifiedProducts", productId), {
+                stock: increment(-1)
+            });
+            
+            if (window.currentUser.referrer) {
+                const commission = {
+                    referrerId: window.currentUser.referrer,
+                    referredUserId: window.currentUser.id,
+                    productId: productId,
+                    amount: product.price * 0.05,
+                    paid: false
+                };
+                await addDoc(collection(db, "commissions"), commission);
+            }
+        };
+
+        window.approveRequest = async function(requestId) {
+            await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
+            showSuccessMessage('Запрос одобрен!');
+        };
+
+        window.rejectRequest = async function(requestId) {
+            await updateDoc(doc(db, "productRequests", requestId), { status: 'rejected' });
+            showSuccessMessage('Запрос отклонен!');
+        };
+
+        window.markCommissionAsPaid = async function(id) {
+            await updateDoc(doc(db, "commissions", id), { paid: true });
+            showSuccessMessage('Комиссия выплачена!');
+        };
+
+        window.addReview = async function(productId, rating, text) {
+            if (!window.currentUser) return;
+            const review = {
+                userId: window.currentUser.id,
+                productId,
+                rating,
+                text,
+                date: new Date().toLocaleDateString('ru-RU')
+            };
+            await addDoc(collection(db, "reviews"), review);
+            await updateDoc(doc(db, "users", window.currentUser.id), {
+                reviews: increment(1),
+                points: increment(10)
+            });
+        };
+
+        // Expose Global UI Functions (originally in <script>)
+        window.getUrlParams = function() {
+            const params = new URLSearchParams(window.location.search);
+            return { ref: params.get('ref') };
+        };
+
+        window.showSection = function(sectionId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-        }
+            if (sectionId === 'catalog') renderProducts();
+            else if (sectionId === 'verified') renderVerifiedProducts();
+            else if (sectionId === 'cabinet') updateCabinet();
+            else if (sectionId === 'admin') updateAdmin();
+        };
 
-        function toggleLoginModal() {
-            document.getElementById('loginModal').classList.toggle('active');
-        }
+        window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
+        window.toggleRegisterModal = () => document.getElementById('registerModal').classList.toggle('active');
+        window.toggleAddProductModal = () => document.getElementById('addProductModal').classList.toggle('active');
+        window.toggleAddVerifiedProductModal = () => document.getElementById('addVerifiedProductModal').classList.toggle('active');
+        window.closeEditProductModal = () => document.getElementById('editProductModal').classList.remove('active');
+        window.closeEditVerifiedProductModal = () => document.getElementById('editVerifiedProductModal').classList.remove('active');
+        window.closePaymentModal = () => document.getElementById('paymentModal').classList.remove('active');
+        window.closeRequestProductModal = () => document.getElementById('requestProductModal').classList.remove('active');
 
-        function toggleRegisterModal() {
-            document.getElementById('registerModal').classList.toggle('active');
-        }
+        window.updateHeader = function() {
+            const authButtons = document.querySelector('.auth-buttons');
+            const adminNavLink = document.getElementById('adminNavLink');
+            if (window.currentUser) {
+                authButtons.innerHTML = `
+                    <div class="flex gap-2" style="align-items: center;">
+                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">${window.currentUser.name.charAt(0)}</div>
+                        <span style="color: white;">${window.currentUser.name}</span>
+                    </div>`;
+                adminNavLink.style.display = window.currentUser.role === 'admin' ? 'block' : 'none';
+            } else {
+                authButtons.innerHTML = `
+                    <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
+                    <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>`;
+                adminNavLink.style.display = 'none';
+            }
+        };
 
-        function toggleAddProductModal() {
-            document.getElementById('addProductModal').classList.toggle('active');
-        }
+        window.updateCabinet = function() {
+            if (!window.currentUser) {
+                document.getElementById('notLoggedInMessage').style.display = 'block';
+                document.getElementById('cabinetContent').style.display = 'none';
+                return;
+            }
+            document.getElementById('notLoggedInMessage').style.display = 'none';
+            document.getElementById('cabinetContent').style.display = 'block';
+            
+            document.getElementById('userName').textContent = window.currentUser.name;
+            document.getElementById('userEmail').textContent = window.currentUser.email;
+            document.getElementById('userAvatar').textContent = window.currentUser.name.charAt(0);
+            document.getElementById('productsCount').textContent = window.currentUser.products;
+            document.getElementById('reviewsCount').textContent = window.currentUser.reviews;
+            document.getElementById('pointsCount').textContent = window.currentUser.points;
+            
+            const userReviews = window.reviews.filter(r => r.userId === window.currentUser.id);
+            const avg = userReviews.length > 0 ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1) : 0;
+            document.getElementById('avgRating').textContent = avg + '★';
+            
+            const refLink = `${window.location.origin}${window.location.pathname}?ref=${window.currentUser.referralCode}`;
+            document.getElementById('referralLink').textContent = refLink;
+            
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = userReviews.length === 0 ? '<p class="text-muted">Нет отзывов</p>' : userReviews.map(r => `
+                <div class="card mb-2">
+                    <h4 class="card-title">${window.products.find(p => p.id === r.productId)?.name || window.verifiedProducts.find(p => p.id === r.productId)?.name || 'Товар'}</h4>
+                    <div class="rating">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                    <p class="text-muted mt-2">${r.text}</p>
+                </div>`).join('');
 
-        function toggleAddVerifiedProductModal() {
-            document.getElementById('addVerifiedProductModal').classList.toggle('active');
-        }
+            const userRequests = window.productRequests.filter(r => r.userId === window.currentUser.id);
+            const requestsList = document.getElementById('requestsList');
+            requestsList.innerHTML = userRequests.length === 0 ? '<p class="text-muted">Нет запросов</p>' : userRequests.map(r => `
+                <div class="card mb-2 flex-between">
+                    <div>
+                        <h4 class="card-title">${window.products.find(p => p.id === r.productId)?.name || 'Товар'}</h4>
+                        <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Позже'}</p>
+                    </div>
+                    <span class="request-status ${r.status}">${r.status === 'pending' ? '⏳ Ожидание' : r.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}</span>
+                </div>`).join('');
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
+            const userCommissions = window.commissions.filter(c => c.referrerId === window.currentUser.id);
+            const total = userCommissions.reduce((sum, c) => sum + c.amount, 0);
+            const paid = userCommissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
+            document.getElementById('totalCommission').textContent = '$' + total.toFixed(2);
+            document.getElementById('paidCommission').textContent = '$' + paid.toFixed(2);
+            document.getElementById('unpaidCommission').textContent = '$' + (total - paid).toFixed(2);
+            
+            const commList = document.getElementById('commissionsList');
+            commList.innerHTML = userCommissions.length === 0 ? '<p class="text-muted">Нет комиссий</p>' : userCommissions.map(c => `
+                <div class="card mb-2 flex-between">
+                    <div>
+                        <h4 class="card-title">${window.verifiedProducts.find(p => p.id === c.productId)?.name || 'Товар'}</h4>
+                        <p class="text-muted">От: ${window.users.find(u => u.id === c.referredUserId)?.name}</p>
+                    </div>
+                    <div class="text-right">
+                        <div style="font-weight: bold;">$${c.amount.toFixed(2)}</div>
+                        <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">${c.paid ? 'Выплачено' : 'Ожидание'}</span>
+                    </div>
+                </div>`).join('');
+        };
+
+        window.updateAdmin = function() {
+            if (!window.currentUser || window.currentUser.role !== 'admin') return;
+            document.getElementById('adminNotification').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            
+            document.getElementById('usersList').innerHTML = window.users.map(u => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">${u.name}</h4><p class="text-muted">${u.email}</p></div>
+                    <span class="badge badge-primary">${u.role}</span>
+                </div>`).join('');
+            
+            document.getElementById('adminRequestsList').innerHTML = window.productRequests.length === 0 ? '<p class="text-muted">Нет запросов</p>' : window.productRequests.map(r => `
+                <div class="card mb-2 flex-between">
+                    <div>
+                        <h4 class="card-title">${window.products.find(p => p.id === r.productId)?.name}</h4>
+                        <p class="text-muted">От: ${window.users.find(u => u.id === r.userId)?.name}</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success btn-small" onclick="approveRequest('${r.id}')">✅</button>
+                        <button class="btn btn-danger btn-small" onclick="rejectRequest('${r.id}')">❌</button>
+                    </div>
+                </div>`).join('');
+
+            document.getElementById('adminProductsList').innerHTML = window.products.map(p => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">${p.name}</h4><p class="text-muted">Склад: ${p.stock}</p></div>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning btn-small" onclick="openEditProductModal('${p.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">🗑️</button>
+                    </div>
+                </div>`).join('');
+
+            document.getElementById('adminVerifiedProductsList').innerHTML = window.verifiedProducts.map(p => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">${p.name}</h4><p class="text-muted">$${p.price} | Склад: ${p.stock}</p></div>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal('${p.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">🗑️</button>
+                    </div>
+                </div>`).join('');
+
+            document.getElementById('adminReviewsList').innerHTML = window.reviews.map(r => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">${window.verifiedProducts.find(p => p.id === r.productId)?.name || 'Товар'}</h4><p class="text-muted">От: ${window.users.find(u => u.id === r.userId)?.name}</p></div>
+                    <button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">Одобрить</button>
+                </div>`).join('');
+
+            document.getElementById('adminCommissionsList').innerHTML = window.commissions.map(c => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">$${c.amount.toFixed(2)}</h4><p class="text-muted">Кому: ${window.users.find(u => u.id === c.referrerId)?.name}</p></div>
+                    ${!c.paid ? `<button class="btn btn-success btn-small" onclick="markCommissionAsPaid('${c.id}')">Выплатить</button>` : '<span class="badge badge-success">Выплачено</span>'}
+                </div>`).join('');
+        };
+
+        window.renderProducts = function() {
+            const grid = document.getElementById('productGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = window.products.filter(p => p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search));
+            grid.innerHTML = filtered.map(p => `
+                <div class="card position-relative">
+                    <div class="stock-badge ${p.stock <= 5 ? 'low' : ''}">${p.stock === 0 ? 'Нет в наличии' : 'Склад: ' + p.stock}</div>
+                    <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
+                    <h3 class="card-title">${p.name}</h3>
+                    <p class="card-content">${p.description}</p>
+                    <div class="card-footer"><button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${p.stock === 0 ? 'disabled' : ''}>Запросить</button></div>
+                </div>`).join('');
+        };
+
+        window.renderVerifiedProducts = function() {
+            const grid = document.getElementById('verifiedProductGrid');
+            const search = document.getElementById('verifiedSearchInput').value.toLowerCase();
+            const filtered = window.verifiedProducts.filter(p => p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search));
+            grid.innerHTML = filtered.map(p => `
+                <div class="card position-relative">
+                    <div class="product-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+                    <h3 class="card-title">${p.name}<span class="verified-badge">Проверено</span></h3>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">$${p.price}</div>
+                    <div class="card-footer"><button class="btn btn-primary btn-small" onclick="showPaymentOptions('${p.id}')">Купить</button></div>
+                </div>`).join('');
+        };
+
+        window.showRequestProductOptions = function(id) {
+            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+            document.getElementById('requestProductOptions').innerHTML = `
+                <div class="payment-option"><h4>💳 Оформить карту</h4><button class="btn btn-primary" onclick="submitProductRequest('${id}', 'card')">Выбрать</button></div>
+                <div class="payment-option"><h4>⏰ Оплатить позже</h4><button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button></div>`;
+            document.getElementById('requestProductModal').classList.add('active');
+        };
+
+        window.showPaymentOptions = function(id) {
+            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+            const p = window.verifiedProducts.find(x => x.id === id);
+            document.getElementById('paymentOptions').innerHTML = `
+                <div class="payment-option"><h4>💳 Карта</h4><button class="btn btn-primary" onclick="processPayment('${id}', 'card')">Оплатить $${p.price}</button></div>
+                <div class="payment-option"><h4>⏰ Позже</h4><button class="btn btn-secondary" onclick="processPayment('${id}', 'later')">Зарезервировать</button></div>`;
+            document.getElementById('paymentModal').classList.add('active');
+        };
+
+        window.openEditProductModal = (id) => {
+            const p = window.products.find(x => x.id === id);
+            document.getElementById('editProductId').value = p.id;
+            document.getElementById('editProductName').value = p.name;
+            document.getElementById('editProductDescription').value = p.description;
+            document.getElementById('editProductCategory').value = p.category;
+            document.getElementById('editProductUrl').value = p.url;
+            document.getElementById('editProductStock').value = p.stock;
+            document.getElementById('editProductModal').classList.add('active');
+        };
+
+        window.openEditVerifiedProductModal = (id) => {
+            const p = window.verifiedProducts.find(x => x.id === id);
+            document.getElementById('editVerifiedProductId').value = p.id;
+            document.getElementById('editVerifiedProductName').value = p.name;
+            document.getElementById('editVerifiedProductDescription').value = p.description;
+            document.getElementById('editVerifiedProductCategory').value = p.category;
+            document.getElementById('editVerifiedProductPrice').value = p.price;
+            document.getElementById('editVerifiedProductStock').value = p.stock;
+            document.getElementById('editVerifiedProductUrl').value = p.url;
+            document.getElementById('editVerifiedProductModal').classList.add('active');
+        };
+
+        window.approveReview = (id) => showSuccessMessage('Отзыв одобрен!');
+        window.switchTab = (name) => {
+            document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
-        }
-
-        function switchAdminTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabName + '-admin').classList.add('active');
+            document.getElementById(name).classList.add('active');
+        };
+        window.switchAdminTab = (name) => {
+            document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
-        }
+            document.getElementById(name + '-admin').classList.add('active');
+        };
+        window.copyReferralLink = () => {
+            navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
+            showSuccessMessage('Скопировано!');
+        };
 
-        function copyReferralLink() {
-            const link = document.getElementById('referralLink').textContent;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Ссылка скопирована!');
-            });
-        }
+        window.showSuccessMessage = (msg) => {
+            const a = document.createElement('div'); a.className = 'alert alert-success'; a.textContent = msg;
+            a.style = 'position:fixed; top:80px; right:20px; z-index:2000;'; document.body.appendChild(a);
+            setTimeout(() => a.remove(), 3000);
+        };
 
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
+        window.showErrorMessage = (msg) => {
+            const a = document.createElement('div'); a.className = 'alert alert-error'; a.textContent = msg;
+            a.style = 'position:fixed; top:80px; right:20px; z-index:2000;'; document.body.appendChild(a);
+            setTimeout(() => a.remove(), 3000);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchInput')?.addEventListener('input', renderProducts);
+            document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
+            const ref = getUrlParams().ref;
+            if (ref) {
+                const r = window.users.find(u => u.referralCode === ref);
+                if (r) showSuccessMessage(`🎉 Реферал от ${r.name}`);
+            }
         });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const refCode = urlParams.get('ref');
-        if (refCode) {
-            localStorage.setItem('referrerCode', refCode);
-        }
+        document.addEventListener('click', (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); });
     </script>
-
-    <footer>
-        <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
-    </footer>
 </body>
 </html>
