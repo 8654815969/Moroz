@@ -2021,7 +2021,7 @@ window.renderVerifiedProducts = function() {
             if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
             document.getElementById('requestProductOptions').innerHTML = `
                 <div class="payment-option"><h4>💳 Оформить карту</h4><button class="btn btn-primary" onclick="submitProductRequest('${id}', 'card')">Выбрать</button></div>
-                <div class="payment-option"><h4>⏰ Оплатить позже</h4><button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button></div>`;
+                <div class="payment-option"><h4>⏰ Оплата через 3 дня</h4><button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button></div>`;
             document.getElementById('requestProductModal').classList.add('active');
         };
 
