@@ -221,7 +221,8 @@ window.firebaseCRUD = {
     async deleteReview(id) { return await deleteCollectionDoc('reviews', id); },
     async deleteCommission(id) { return await deleteCollectionDoc('commissions', id); }
 };
-</script><script>
+</script>
+
 // ========== UI-ПЕРЕКЛЮЧЕНИЯ ==========
 window.showSection = async function(sectionId) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
