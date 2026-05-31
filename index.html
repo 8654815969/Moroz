@@ -2279,7 +2279,13 @@ window.rejectReview = async function(id) {
         showErrorMessage('Ошибка: ' + err.message);
     }
 };
-        window.switchAdminTab = (name) => {
+               window.switchTab = (name) => {
+            document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(name).classList.add('active');
+        };
+        
+ window.switchAdminTab = (name) => {
             document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(name + '-admin').classList.add('active');
