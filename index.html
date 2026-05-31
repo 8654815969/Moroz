@@ -241,7 +241,27 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
+@keyframes fadeOutToast {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
         /* Grid */
         .grid {
             display: grid;
@@ -1618,9 +1638,42 @@
 }
  };
         window.approveRequest = async function(requestId) {
-            await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
-            showSuccessMessage('Запрос одобрен!');
-        };
+    // 1. Находим заявку
+    const request = window.productRequests.find(r => r.id === requestId);
+    if (!request) {
+        showErrorMessage('Запрос не найден');
+        return;
+    }
+
+    // 2. Защита от повторного одобрения
+    if (request.status === 'approved') {
+        showErrorMessage('Запрос уже одобрен');
+        return;
+    }
+
+    // 3. Находим товар
+    const product = window.products.find(p => p.id === request.productId);
+    if (!product) {
+        showErrorMessage('Товар не найден');
+        return;
+    }
+
+    // 4. Проверяем, есть ли товар на складе
+    if ((product.stock ?? 0) <= 0) {
+        showErrorMessage('Товара нет на складе!');
+        return;
+    }
+
+    // 5. Уменьшаем склад товара на 1
+    await updateDoc(doc(db, "products", request.productId), {
+        stock: increment(-1)
+    });
+
+    // 6. Меняем статус заявки на "одобрено"
+    await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
+
+    showSuccessMessage('✅ Запрос одобрен! Склад уменьшен на 1.');
+};
 
         window.rejectRequest = async function(requestId) {
             await updateDoc(doc(db, "productRequests", requestId), { status: 'rejected' });
@@ -1967,17 +2020,56 @@ window.renderVerifiedProducts = function() {
             showSuccessMessage('Скопировано!');
         };
 
-        window.showSuccessMessage = (msg) => {
-            const a = document.createElement('div'); a.className = 'alert alert-success'; a.textContent = msg;
-            a.style = 'position:fixed; top:80px; right:20px; z-index:2000;'; document.body.appendChild(a);
-            setTimeout(() => a.remove(), 3000);
-        };
+       window.showSuccessMessage = (msg) => {
+    const a = document.createElement('div');
+    a.textContent = msg;
+    a.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 2000;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 360px;
+        animation: slideInRight 0.4s ease, fadeOutToast 0.4s ease 2.6s;
+    `;
+    a.innerHTML = `<span style="font-size:1.3rem;">✅</span><span>${msg}</span>`;
+    document.body.appendChild(a);
+    setTimeout(() => a.remove(), 3000);
+};
 
-        window.showErrorMessage = (msg) => {
-            const a = document.createElement('div'); a.className = 'alert alert-error'; a.textContent = msg;
-            a.style = 'position:fixed; top:80px; right:20px; z-index:2000;'; document.body.appendChild(a);
-            setTimeout(() => a.remove(), 3000);
-        };
+window.showErrorMessage = (msg) => {
+    const a = document.createElement('div');
+    a.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 2000;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 360px;
+        animation: slideInRight 0.4s ease, fadeOutToast 0.4s ease 2.6s;
+    `;
+    a.innerHTML = `<span style="font-size:1.3rem;">⚠️</span><span>${msg}</span>`;
+    document.body.appendChild(a);
+    setTimeout(() => a.remove(), 3000);
+};
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('searchInput')?.addEventListener('input', renderProducts);
