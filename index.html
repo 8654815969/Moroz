@@ -2050,18 +2050,6 @@ window.handleReviewSubmit = async function(e) {
                     <div><h4 class="card-title">${u.name}</h4><p class="text-muted">${u.email}</p></div>
                     <span class="badge badge-primary">${u.role}</span>
                 </div>`).join('');
-            
-            document.getElementById('adminRequestsList').innerHTML = window.productRequests.length === 0 ? '<p class="text-muted">Нет запросов</p>' : window.productRequests.map(r => `
-                <div class="card mb-2 flex-between">
-                    <div>
-                        <h4 class="card-title">${window.products.find(p => p.id === r.productId)?.name}</h4>
-                        <p class="text-muted">От: ${window.users.find(u => u.id === r.userId)?.name}</p>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-success btn-small" onclick="approveRequest('${r.id}')">✅</button>
-                        <button class="btn btn-danger btn-small" onclick="rejectRequest('${r.id}')">❌</button>
-                    </div>
-                </div>`).join('');
 
             document.getElementById('adminProductsList').innerHTML = window.products.map(p => `
                 <div class="card mb-2 flex-between">
@@ -2080,13 +2068,39 @@ window.handleReviewSubmit = async function(e) {
                         <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">🗑️</button>
                     </div>
                 </div>`).join('');
+// === Отзывы на проверку ===
+const adminReviewsList = document.getElementById('adminReviewsList');
+if (adminReviewsList) {
+    const pendingReviews = window.reviews.filter(r => r.status === 'pending');
 
-            document.getElementById('adminReviewsList').innerHTML = window.reviews.map(r => `
-                <div class="card mb-2 flex-between">
-                    <div><h4 class="card-title">${window.verifiedProducts.find(p => p.id === r.productId)?.name || 'Товар'}</h4><p class="text-muted">От: ${window.users.find(u => u.id === r.userId)?.name}</p></div>
-                    <button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">Одобрить</button>
-                </div>`).join('');
+    adminReviewsList.innerHTML = pendingReviews.length === 0
+        ? '<p class="text-muted">Нет отзывов на проверку</p>'
+        : pendingReviews.map(r => {
+            const user = window.users.find(u => u.id === r.userId);
+            const product = window.products.find(p => p.id === r.productId);
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
 
+            return `
+            <div class="card mb-2">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="card-title">${product?.name || 'Товар'}</h4>
+                        <p class="text-muted">👤 ${user?.name || 'Пользователь'} • ${r.date}</p>
+                        <p style="color: gold; font-size: 1.2rem;">${stars}</p>
+                    </div>
+                </div>
+                <p class="card-content">${r.text}</p>
+                <div class="flex" style="gap: 10px; flex-wrap: wrap;">
+                    ${r.receiptImage ? `<div><small>Чек:</small><br><img src="${r.receiptImage}" style="max-width: 150px; border-radius: 8px; cursor: pointer;" onclick="window.open('${r.receiptImage}')"></div>` : ''}
+                    ${r.screenshotImage ? `<div><small>Скриншот отзыва:</small><br><img src="${r.screenshotImage}" style="max-width: 150px; border-radius: 8px; cursor: pointer;" onclick="window.open('${r.screenshotImage}')"></div>` : ''}
+                </div>
+                <div class="card-footer" style="gap: 10px;">
+                    <button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">✅ Одобрить</button>
+                    <button class="btn btn-danger btn-small" onclick="rejectReview('${r.id}')">❌ Отклонить</button>
+                </div>
+            </div>`;
+        }).join('');
+}
                        // === СТАТИСТИКА КОМИССИЙ ===
             const totalComm = window.commissions.reduce((sum, c) => sum + c.amount, 0);
             const paidComm = window.commissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
@@ -2245,12 +2259,26 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editVerifiedProductModal').classList.add('active');
         };
 
-        window.approveReview = (id) => showSuccessMessage('Отзыв одобрен!');
-        window.switchTab = (name) => {
-            document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(name).classList.add('active');
-        };
+       window.approveReview = async function(id) {
+    try {
+        await updateDoc(doc(db, "reviews", id), { status: 'approved' });
+        showSuccessMessage('✅ Отзыв одобрен!');
+    } catch (err) {
+        console.error('❌ Ошибка одобрения:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+
+window.rejectReview = async function(id) {
+    if (!confirm("Удалить этот отзыв?")) return;
+    try {
+        await deleteDoc(doc(db, "reviews", id));
+        showSuccessMessage('❌ Отзыв отклонён и удалён.');
+    } catch (err) {
+        console.error('❌ Ошибка отклонения:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
         window.switchAdminTab = (name) => {
             document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
