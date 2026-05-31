@@ -1500,80 +1500,49 @@
         };
 
         // Admin CRUD
-         window.handleAddVerifiedProduct = async function(e) {
-            e.preventDefault();
-            const imageFile = document.getElementById('verifiedProductImage').files[0];
-            let imageData = null;
+       window.handleAddVerifiedProduct = async function(e) {
+    e.preventDefault();
+    const imageFile = document.getElementById('verifiedProductImage').files[0];
+    let imageData = null;
 
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    imageData = event.target.result;
-                    await saveProduct(imageData);
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                await saveProduct(null);
-            }
-
-            async function saveProduct(image) {
-                const newProduct = {
-                    name: document.getElementById('verifiedProductName').value,
-                    category: document.getElementById('verifiedProductCategory').value,
-                    description: document.getElementById('verifiedProductDescription').value,
-                    price: parseFloat(document.getElementById('verifiedProductPrice').value),
-                    stock: parseInt(document.getElementById('verifiedProductStock').value),
-                    url: document.getElementById('verifiedProductUrl').value,
-                    image: image,
-                    rating: 0,
-                    reviews: 0
-                };
-                await addDoc(collection(db, "verifiedProducts"), newProduct);
-                toggleAddVerifiedProductModal();
-                showSuccessMessage('Проверенный товар успешно добавлен!');
-                document.querySelector('#addVerifiedProductModal form').reset();
-            }
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            await saveProduct(event.target.result);
         };
+        reader.readAsDataURL(imageFile);
+    } else {
+        await saveProduct(null);
+    }
 
-        window.handleEditVerifiedProduct = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('editVerifiedProductId').value;
-            const imageFile = document.getElementById('editVerifiedProductImage').files[0];
-            
-            const updateData = {
-                name: document.getElementById('editVerifiedProductName').value,
-                description: document.getElementById('editVerifiedProductDescription').value,
-                category: document.getElementById('editVerifiedProductCategory').value,
-                price: parseFloat(document.getElementById('editVerifiedProductPrice').value),
-                stock: parseInt(document.getElementById('editVerifiedProductStock').value),
-                url: document.getElementById('editVerifiedProductUrl').value
+    async function saveProduct(image) {
+        try {
+            console.log('1️⃣ Старт');
+            const newProduct = {
+                name: document.getElementById('verifiedProductName').value,
+                category: document.getElementById('verifiedProductCategory').value,
+                description: document.getElementById('verifiedProductDescription').value,
+                price: parseFloat(document.getElementById('verifiedProductPrice').value),
+                stock: parseInt(document.getElementById('verifiedProductStock').value),
+                url: document.getElementById('verifiedProductUrl').value,
+                image: image,
+                rating: 0,
+                reviews: 0
             };
+            console.log('2️⃣ Данные:', newProduct);
 
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    updateData.image = event.target.result;
-                    await updateDoc(doc(db, "verifiedProducts", id), updateData);
-                    finish();
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                await updateDoc(doc(db, "verifiedProducts", id), updateData);
-                finish();
-            }
+            const docRef = await addDoc(collection(db, "verifiedProducts"), newProduct);
+            console.log('3️⃣ ✅ СОХРАНЕНО, ID:', docRef.id);
 
-            function finish() {
-                closeEditVerifiedProductModal();
-                showSuccessMessage('Товар успешно обновлён!');
-            }
-        };
-
-        window.deleteVerifiedProduct = async function(id) {
-            if (confirm('Вы уверены?')) {
-                await deleteDoc(doc(db, "verifiedProducts", id));
-                showSuccessMessage('Товар удалён');
-            }
-        };
+            toggleAddVerifiedProductModal();
+            showSuccessMessage('Товар добавлен!');
+            document.querySelector('#addVerifiedProductModal form').reset();
+        } catch (err) {
+            console.error('❌ ОШИБКА:', err);
+            showErrorMessage('Ошибка: ' + err.message);
+        }
+    }
+};
 
         // Interaction Functions
         window.submitProductRequest = async function(productId, paymentMethod) {
