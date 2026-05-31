@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
     <style>
-        * {margin: 0; padding: 0; box-sizing: border-box;}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #2563eb;
             --primary-dark: #1e40af;
@@ -21,476 +26,1447 @@
             --text-muted: #6b7280;
             --radius: 12px;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: var(--surface);
             color: var(--text);
             line-height: 1.6;
         }
-        header {background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 1rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;}
-        .header-container {max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;}
-        .logo {font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem;}
-        .logo-icon {width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;}
-        nav {display: flex; gap: 2rem; align-items: center;}
-        nav a {color: white; text-decoration: none; cursor: pointer; transition: opacity 0.3s; font-size: 0.95rem;}
-        nav a:hover {opacity: 0.8;}
-        .auth-buttons {display: flex; gap: 1rem;}
-        .btn {padding: 0.75rem 1.5rem; border: none; border-radius: var(--radius); cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: all 0.3s; text-decoration: none; display: inline-block;}
-        .btn-primary {background: var(--primary); color: white;}
-        .btn-primary:hover {background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);}
-        .btn-secondary {background: white; color: var(--primary); border: 2px solid var(--primary);}
-        .btn-secondary:hover {background: var(--primary); color: white;}
-        .btn-outline {background: transparent; color: white; border: 2px solid white;}
-        .btn-outline:hover {background: rgba(255,255,255,0.1);}
-        .btn-small {padding: 0.5rem 1rem; font-size: 0.85rem;}
-        .btn-danger {background: var(--danger); color: white;}
-        .btn-danger:hover {background: #dc2626;}
-        .btn-success {background: var(--success); color: white;}
-        .btn-success:hover {background: #059669;}
-        .btn-warning {background: var(--warning); color: white;}
-        .btn-warning:hover {background: #d97706;}
-        /* Container */
-        .container {max-width: 1200px; margin: 0 auto; padding: 0 2rem;}
-        /* Hero Section */
-        .hero {background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden;}
-        .hero::before {content: ''; position: absolute; top: -50%; right: -50%; width: 500px; height: 500px; background: rgba(255,255,255,0.1); border-radius: 50%;}
-        .hero-content {position: relative; z-index: 1;}
-        .hero h1 {font-size: 3rem; margin-bottom: 1rem; font-weight: 700;}
-        .hero p {font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.95;}
-        .hero-buttons {display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;}
-        main {padding: 3rem 0;}
-        .section {display: none;}
-        .section.active {display: block; animation: fadeIn 0.3s ease-in;}
-        @keyframes fadeIn {from { opacity: 0; } to { opacity: 1; }}
-        .grid {display: grid; gap: 2rem; margin-bottom: 2rem;}
-        .grid-2 {grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));}
-        .grid-3 {grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));}
-        .grid-4 {grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));}
-        .card {background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s; border: 1px solid var(--border);}
-        .card:hover {box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-4px);}
-        .badge {display: inline-block; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;}
-        .badge-primary {background: rgba(37, 99, 235, 0.1); color: var(--primary);}
-        .badge-success {background: rgba(16, 185, 129, 0.1); color: var(--success);}
-        .badge-warning {background: rgba(245, 158, 11, 0.1); color: var(--warning);}
-        .badge-danger {background: rgba(239, 68, 68, 0.1); color: var(--danger);}
-        .rating {display: flex; gap: 0.25rem; font-size: 1.2rem;}
-        .star {cursor: pointer; transition: color 0.2s; color: #d1d5db;}
-        .star.filled {color: #fbbf24;}
-        .form-group {margin-bottom: 1.5rem;}
-        label {display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text);}
-        input, textarea, select {width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 0.95rem; transition: border-color 0.3s;}
-        input:focus, textarea:focus, select:focus {outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);}
-        textarea {resize: vertical; min-height: 100px;}
-        .modal {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto;}
-        .modal.active {display: flex;}
-        .modal-content {background: white; border-radius: var(--radius); padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 20px 25px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; margin: auto;}
-        .alert {padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; display: flex; gap: 1rem; align-items: start;}
-        .alert-success {background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--success); color: #047857;}
-        .alert-error {background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); color: #991b1b;}
-        .alert-info {background: rgba(37, 99, 235, 0.1); border-left: 4px solid var(--primary); color: #1e40af;}
-        footer {background: var(--text); color: white; padding: 2rem; text-align: center; margin-top: 3rem;}
-        .user-info {background: white; padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border);}
-        .user-avatar {width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;}
-        /* ... весь твой CSS оставлять ... */
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        main {
+            padding: 3rem 0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .close-btn:hover {
+            color: var(--text);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            color: #047857;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 4px solid var(--primary);
+            color: #1e40af;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .referral-link-box {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .referral-link-input {
+            background: white;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.75rem;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-3 { margin-top: 1.5rem; }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gap-2 { gap: 1rem; }
+
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, getDoc, doc, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">⭐</div>
+                <span>Честный Отзыв</span>
+            </div>
+            <nav>
+                <a onclick="showSection('home')">Главная</a>
+                <a onclick="showSection('verified')">Проверенные товары</a>
+                <a onclick="showSection('catalog')">Каталог</a>
+                <a onclick="showSection('cabinet')" id="cabinetLink" style="display: none;">Кабинет</a>
+                <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-secondary btn-small" id="loginBtn" onclick="toggleLoginModal()">Вход</button>
+                <button class="btn btn-primary btn-small" id="registerBtn" onclick="toggleRegisterModal()">Регистрация</button>
+                <button class="btn btn-danger btn-small" id="logoutBtn" onclick="logout()" style="display: none;">Выход</button>
+            </div>
+        </div>
+    </header>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-  authDomain: "saintmarketology.firebaseapp.com",
-  projectId: "saintmarketology",
-  storageBucket: "saintmarketology.firebasestorage.app",
-  messagingSenderId: "1098681326401",
-  appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
-  measurementId: "G-S52HDR9550"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
+                    <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-secondary" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
+                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров</button>
+                    </div>
+                </div>
+            </div>
 
-// Экспортим Firebase с нужными методами наружу (для второго скрипта)
-window.firebase = {
-    auth, db,
-    collection, getDocs, addDoc, setDoc, getDoc, doc, query, where, updateDoc, deleteDoc,
-    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
-};
+            <div style="margin-top: 3rem;">
+                <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📝</div>
+                        <h3 class="card-title">1. Выберите товар</h3>
+                        <p class="card-content">Просмотрите каталог товаров и выберите интересующий вас продукт для тестирования.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📦</div>
+                        <h3 class="card-title">2. Получите товар</h3>
+                        <p class="card-content">Мы отправим вам товар на тестирование совершенно бесплатно.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">⭐</div>
+                        <h3 class="card-title">3. Оставьте отзыв</h3>
+                        <p class="card-content">Поделитесь своим честным мнением и помогите другим выбрать качественные товары.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-// ========== COMMON UTILS ==============
-export async function getCollectionSnapshot(collName) {
-    const ref = collection(db, collName);
-    const snap = await getDocs(ref);
-    return snap.docs.map(doc => ({...doc.data(), _docId: doc.id}));
-}
-export async function addCollectionDoc(collName, obj) {
-    return await addDoc(collection(db, collName), obj);
-}
-export async function setCollectionDoc(collName, id, obj, merge = false) {
-    return await setDoc(doc(db, collName, id), obj, {merge});
-}
-export async function updateCollectionDoc(collName, id, obj) {
-    return await updateDoc(doc(db, collName, id), obj);
-}
-export async function deleteCollectionDoc(collName, id) {
-    return await deleteDoc(doc(db, collName, id));
-}
-window.firebaseUtils = {
-    getCollectionSnapshot, addCollectionDoc, setCollectionDoc, updateCollectionDoc, deleteCollectionDoc
-};
+        <!-- Verified Products Section -->
+        <section id="verified" class="section">
+            <h1 style="margin-bottom: 2rem;">✅ Проверенные товары для покупки</h1>
+            <div style="margin-bottom: 2rem;">
+                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            </div>
+            <div class="grid grid-3" id="verifiedProductGrid">
+                <div class="text-center text-muted">Товары загружаются...</div>
+            </div>
+        </section>
 
-// =========== АВТОРИЗАЦИЯ И ПОЛЬЗОВАТЕЛИ ===========
+        <!-- Catalog Section -->
+        <section id="catalog" class="section">
+            <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
+            <div style="margin-bottom: 2rem;">
+                <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            </div>
+            <div class="grid grid-3" id="productGrid">
+                <div class="text-center text-muted">Товары загружаются...</div>
+            </div>
+        </section>
 
-// Sync currentUser переменная (чтобы UI скрипт её знал)
-onAuthStateChanged(auth, async (user) => {
-    window.currentUser = user;
-    if (user) {
-        // Получить полные данные юзера (name/email/role/referralCode/т.д.)
-        const userDocs = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
-        if (!userDocs.empty) {
-            window.currentUserData = userDocs.docs[0].data();
-            window.currentUserData._docId = userDocs.docs[0].id;
+        <!-- Cabinet Section -->
+        <section id="cabinet" class="section">
+            <h1 style="margin-bottom: 2rem;">👤 Личный кабинет</h1>
+            
+            <div id="notLoggedInMessage" class="alert alert-info">
+                <span>Пожалуйста, авторизуйтесь, чтобы увидеть ваш личный кабинет</span>
+            </div>
+
+            <div id="cabinetContent" style="display: none;">
+                <div class="user-info">
+                    <div class="flex gap-2">
+                        <div class="user-avatar" id="userAvatar">У</div>
+                        <div>
+                            <div style="font-weight: 600;" id="userName">Пользователь</div>
+                            <div class="text-muted" style="font-size: 0.9rem;" id="userEmail">email@example.com</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('referral')">Реферральная программа</button>
+                    <button class="tab" onclick="switchTab('reviews')">Мои отзывы</button>
+                    <button class="tab" onclick="switchTab('requests')">Мои запросы</button>
+                </div>
+
+                <!-- Referral Tab -->
+                <div id="referral" class="tab-content active">
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-label">👥 Приглашено друзей</div>
+                            <div class="stat-value" id="referralCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">📦 Получено товаров</div>
+                            <div class="stat-value" id="productsCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">⭐ Написано отзывов</div>
+                            <div class="stat-value" id="reviewsCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">🎁 Баллов</div>
+                            <div class="stat-value" id="pointsCount">0</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title mb-2">Ваша реферральная ссылка</h3>
+                        <p class="text-muted mb-2">Поделитесь этой ссылкой с друзьями. Они автоматически зарегистрируются как ваши рефералы!</p>
+                        <div class="referral-link-box">
+                            <div class="referral-link-input" id="referralLink">https://example.com/?ref=REF123456</div>
+                            <button class="btn btn-primary" onclick="copyReferralLink()" style="width: 100%;">📋 Копировать ссылку</button>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <h3 class="card-title mb-2">Приглашённые пользователи</h3>
+                        <div id="referralsList">
+                            <p class="text-muted">Вы ещё никого не пригласили</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Tab -->
+                <div id="reviews" class="tab-content">
+                    <div id="reviewsList">
+                        <p class="text-muted">Вы ещё не оставляли отзывов</p>
+                    </div>
+                </div>
+
+                <!-- Requests Tab -->
+                <div id="requests" class="tab-content">
+                    <div id="requestsList">
+                        <p class="text-muted">Вы ещё не запрашивали товары</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin" class="section">
+            <h1 style="margin-bottom: 2rem;">⚙️ Админ панель</h1>
+            
+            <div id="adminNotification" class="alert alert-info">
+                <span>Только администраторы могут получить доступ к этому разделу</span>
+            </div>
+
+            <div id="adminContent" style="display: none;">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchAdminTab('products')">Товары для тестирования</button>
+                    <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
+                    <button class="tab" onclick="switchAdminTab('users')">Пользователи</button>
+                </div>
+
+                <!-- Products Tab -->
+                <div id="products-admin" class="tab-content active">
+                    <button class="btn btn-primary mb-2" onclick="toggleAddProductModal()">+ Добавить товар</button>
+                    <div class="card">
+                        <h3 class="card-title mb-2">Товары для тестирования</h3>
+                        <div id="adminProductsList">
+                            <p class="text-muted">Нет товаров</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verified Products Tab -->
+                <div id="verified-admin" class="tab-content">
+                    <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
+                    <div class="card">
+                        <h3 class="card-title mb-2">Проверенные товары</h3>
+                        <div id="adminVerifiedProductsList">
+                            <p class="text-muted">Нет проверенных товаров</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="users-admin" class="tab-content">
+                    <div class="card">
+                        <h3 class="card-title mb-2">Список пользователей</h3>
+                        <div id="usersList">
+                            <p class="text-muted">Нет пользователей</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Вход</h2>
+                <button class="close-btn" onclick="toggleLoginModal()">×</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Регистрация</h2>
+                <button class="close-btn" onclick="toggleRegisterModal()">×</button>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Имя</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Реферальный код (опционально)</label>
+                    <input type="text" id="referralCode" placeholder="Введите код реферера">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить товар для тестирования</h2>
+                <button class="close-btn" onclick="toggleAddProductModal()">×</button>
+            </div>
+            <form onsubmit="handleAddProduct(event)">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="productDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="productCategory" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="electronics">Электроника</option>
+                        <option value="home">Товары для дома</option>
+                        <option value="beauty">Красота и уход</option>
+                        <option value="sports">Спорт и фитнес</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на товар</label>
+                    <input type="url" id="productUrl" required>
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе (шт.)</label>
+                    <input type="number" id="productStock" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Verified Product Modal -->
+    <div id="addVerifiedProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить проверенный товар</h2>
+                <button class="close-btn" onclick="toggleAddVerifiedProductModal()">×</button>
+            </div>
+            <form onsubmit="handleAddVerifiedProduct(event)">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="verifiedProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="verifiedProductDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="verifiedProductCategory" required>
+                        <option value="">Выберите категорию</option>
+                        <option value="electronics">Электроника</option>
+                        <option value="home">Товары для дома</option>
+                        <option value="beauty">Красота и уход</option>
+                        <option value="sports">Спорт и фитнес</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Цена ($)</label>
+                    <input type="number" id="verifiedProductPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе (шт.)</label>
+                    <input type="number" id="verifiedProductStock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на товар</label>
+                    <input type="url" id="verifiedProductUrl" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, addDoc, onSnapshot, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.firebasestorage.app",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
+            measurementId: "G-S52HDR9550"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        window.firebase = {
+            auth,
+            db,
+            collection,
+            getDocs,
+            setDoc,
+            doc,
+            addDoc,
+            onSnapshot,
+            query,
+            where,
+            updateDoc,
+            deleteDoc,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        };
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Listen to auth state
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            updateAuthUI();
+            if (user) {
+                await loadUserData();
+                loadProducts();
+            }
+        });
+
+        // Load user data
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            try {
+                const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', currentUser.uid)));
+                if (!userDoc.empty) {
+                    currentUserData = userDoc.docs[0].data();
+                    updateCabinetUI(currentUserData);
+                } else {
+                    const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                    const userData = {
+                        uid: currentUser.uid,
+                        email: currentUser.email,
+                        name: currentUser.displayName || 'Пользователь',
+                        referralCode: newReferralCode,
+                        referrerCode: localStorage.getItem('referrerCode') || null,
+                        referralCount: 0,
+                        referralPoints: 0,
+                        productsCount: 0,
+                        reviewsCount: 0,
+                        role: 'user',
+                        createdAt: new Date()
+                    };
+                    await setDoc(doc(db, 'users', currentUser.uid), userData);
+                    currentUserData = userData;
+                    updateCabinetUI(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
-    } else {
-        window.currentUserData = null;
-    }
-});
 
-// Функция регистрации нового пользователя (с поддержкой рефералов)
-window.firebaseRegister = async function({name, email, password, referralCode}) {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    await setDoc(doc(db, 'users', userCred.user.uid), {
-        uid: userCred.user.uid,
-        name, email,
-        referralCode: newReferralCode,
-        referrerCode: referralCode || null,
-        role: 'user', points: 0, reviews: 0, products: 0, 
-        createdAt: new Date(), updatedAt: new Date()
-    });
-    // Если есть referral, обновить баллы пригласившему
-    if (referralCode) {
-        const refq = query(collection(db, 'users'), where('referralCode', '==', referralCode));
-        const refDocs = await getDocs(refq);
-        if (!refDocs.empty) {
-            const docId = refDocs.docs[0].id;
-            const refData = refDocs.docs[0].data();
-            await updateDoc(doc(db, 'users', docId), {
-                points: (refData.points || 0) + 50,
-                updatedAt: new Date()
+        // Update cabinet UI
+        function updateCabinetUI(userData) {
+            document.getElementById('userName').textContent = userData.name || 'Пользователь';
+            document.getElementById('userEmail').textContent = userData.email || '';
+            document.getElementById('userAvatar').textContent = (userData.name || 'У')[0].toUpperCase();
+            document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${userData.referralCode}`;
+            document.getElementById('referralCount').textContent = userData.referralCount || 0;
+            document.getElementById('referralPoints').textContent = userData.referralPoints || 0;
+            document.getElementById('productsCount').textContent = userData.productsCount || 0;
+            document.getElementById('reviewsCount').textContent = userData.reviewsCount || 0;
+            document.getElementById('pointsCount').textContent = userData.referralPoints || 0;
+
+            loadReferralsList(userData.referralCode);
+        }
+
+        // Load referrals list
+        async function loadReferralsList(referralCode) {
+            try {
+                const referrals = await getDocs(query(collection(db, 'users'), where('referrerCode', '==', referralCode)));
+                const container = document.getElementById('referralsList');
+                
+                if (referrals.empty) {
+                    container.innerHTML = '<p class="text-muted">Вы ещё никого не пригласили</p>';
+                } else {
+                    container.innerHTML = referrals.docs.map(doc => {
+                        const data = doc.data();
+                        return `
+                            <div class="card mb-2">
+                                <div class="flex-between">
+                                    <div>
+                                        <div style="font-weight: 600;">${data.name}</div>
+                                        <div class="text-muted" style="font-size: 0.9rem;">${data.email}</div>
+                                    </div>
+                                    <div class="badge badge-success">Активен</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading referrals:', error);
+            }
+        }
+
+        // Load products
+        async function loadProducts() {
+            try {
+                const productsSnap = await getDocs(collection(db, 'products'));
+                const verifiedSnap = await getDocs(collection(db, 'verifiedProducts'));
+                
+                const catalogGrid = document.getElementById('productGrid');
+                const verifiedGrid = document.getElementById('verifiedProductGrid');
+                const adminProductsList = document.getElementById('adminProductsList');
+                const adminVerifiedList = document.getElementById('adminVerifiedProductsList');
+
+                const products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const verified = verifiedSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (products.length === 0) {
+                    catalogGrid.innerHTML = '<div class="text-center text-muted">Товары еще не добавлены</div>';
+                    adminProductsList.innerHTML = '<p class="text-muted">Нет товаров</p>';
+                } else {
+                    catalogGrid.innerHTML = products.map(p => `
+                        <div class="card">
+                            <div class="product-image">📦</div>
+                            <h3 class="card-title">${p.name}</h3>
+                            <p class="card-content">${p.description}</p>
+                            <div class="card-footer">
+                                <span class="badge badge-success">${p.category}</span>
+                                <span class="text-muted" style="font-size: 0.9rem;">Осталось: ${p.stock}</span>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    adminProductsList.innerHTML = products.map(p => `
+                        <div class="card mb-2">
+                            <div class="flex-between">
+                                <div>
+                                    <div style="font-weight: 600;">${p.name}</div>
+                                    <div class="text-muted" style="font-size: 0.9rem;">${p.description}</div>
+                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Осталось: ${p.stock}</div>
+                                </div>
+                                <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">Удалить</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                if (verified.length === 0) {
+                    verifiedGrid.innerHTML = '<div class="text-center text-muted">Товары еще не добавлены</div>';
+                    adminVerifiedList.innerHTML = '<p class="text-muted">Нет проверенных товаров</p>';
+                } else {
+                    verifiedGrid.innerHTML = verified.map(p => `
+                        <div class="card">
+                            <div class="product-image">✅</div>
+                            <h3 class="card-title">${p.name}</h3>
+                            <p class="card-content">${p.description}</p>
+                            <div class="card-footer">
+                                <span class="badge badge-success">Проверено</span>
+                                <span style="font-weight: 600;">$${p.price}</span>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    adminVerifiedList.innerHTML = verified.map(p => `
+                        <div class="card mb-2">
+                            <div class="flex-between">
+                                <div>
+                                    <div style="font-weight: 600;">${p.name}</div>
+                                    <div class="text-muted" style="font-size: 0.9rem;">$${p.price}</div>
+                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Осталось: ${p.stock}</div>
+                                </div>
+                                <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">Удалить</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Load users for admin
+        async function loadUsers() {
+            try {
+                const usersSnap = await getDocs(collection(db, 'users'));
+                const usersList = document.getElementById('usersList');
+                const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (users.length === 0) {
+                    usersList.innerHTML = '<p class="text-muted">Нет пользователей</p>';
+                } else {
+                    usersList.innerHTML = users.map(u => `
+                        <div class="card mb-2">
+                            <div class="flex-between">
+                                <div>
+                                    <div style="font-weight: 600;">${u.name}</div>
+                                    <div class="text-muted" style="font-size: 0.9rem;">${u.email}</div>
+                                    <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Рефералов: ${u.referralCount || 0}</div>
+                                </div>
+                                <div class="badge badge-success">${u.role}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // Handle login
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                toggleLoginModal();
+                alert('Успешный вход!');
+            } catch (error) {
+                alert('Ошибка входа: ' + error.message);
+            }
+        };
+
+        // Handle register
+        window.handleRegister = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const referralCode = document.getElementById('referralCode').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                const newReferralCode = 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    referralCode: newReferralCode,
+                    referrerCode: referralCode || null,
+                    referralCount: 0,
+                    referralPoints: 0,
+                    productsCount: 0,
+                    reviewsCount: 0,
+                    role: 'user',
+                    createdAt: new Date()
+                });
+
+                if (referralCode) {
+                    const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', referralCode));
+                    const referrerDocs = await getDocs(referrerQuery);
+                    
+                    if (!referrerDocs.empty) {
+                        const referrerDoc = referrerDocs.docs[0];
+                        const referrerData = referrerDoc.data();
+                        await updateDoc(doc(db, 'users', referrerDoc.id), {
+                            referralCount: (referrerData.referralCount || 0) + 1,
+                            referralPoints: (referrerData.referralPoints || 0) + 50
+                        });
+                    }
+                }
+
+                toggleRegisterModal();
+                alert('Успешная регистрация!');
+            } catch (error) {
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        };
+
+        // Handle add product
+        window.handleAddProduct = async function(event) {
+            event.preventDefault();
+            
+            const product = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value,
+                category: document.getElementById('productCategory').value,
+                url: document.getElementById('productUrl').value,
+                stock: parseInt(document.getElementById('productStock').value),
+                createdAt: new Date()
+            };
+
+            try {
+                await addDoc(collection(db, 'products'), product);
+                toggleAddProductModal();
+                alert('Товар добавлен!');
+                loadProducts();
+                document.getElementById('addProductModal').querySelector('form').reset();
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        };
+
+        // Handle add verified product
+        window.handleAddVerifiedProduct = async function(event) {
+            event.preventDefault();
+            
+            const product = {
+                name: document.getElementById('verifiedProductName').value,
+                description: document.getElementById('verifiedProductDescription').value,
+                category: document.getElementById('verifiedProductCategory').value,
+                price: parseFloat(document.getElementById('verifiedProductPrice').value),
+                stock: parseInt(document.getElementById('verifiedProductStock').value),
+                url: document.getElementById('verifiedProductUrl').value,
+                createdAt: new Date()
+            };
+
+            try {
+                await addDoc(collection(db, 'verifiedProducts'), product);
+                toggleAddVerifiedProductModal();
+                alert('Проверенный товар добавлен!');
+                loadProducts();
+                document.getElementById('addVerifiedProductModal').querySelector('form').reset();
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        };
+
+        // Delete product
+        window.deleteProduct = async function(productId) {
+            if (confirm('Вы уверены?')) {
+                try {
+                    await deleteDoc(doc(db, 'products', productId));
+                    alert('Товар удален!');
+                    loadProducts();
+                } catch (error) {
+                    alert('Ошибка: ' + error.message);
+                }
+            }
+        };
+
+        // Delete verified product
+        window.deleteVerifiedProduct = async function(productId) {
+            if (confirm('Вы уверены?')) {
+                try {
+                    await deleteDoc(doc(db, 'verifiedProducts', productId));
+                    alert('Товар удален!');
+                    loadProducts();
+                } catch (error) {
+                    alert('Ошибка: ' + error.message);
+                }
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                currentUser = null;
+                currentUserData = null;
+                updateAuthUI();
+                showSection('home');
+                alert('Вы вышли из аккаунта');
+            } catch (error) {
+                alert('Ошибка выхода: ' + error.message);
+            }
+        };
+
+        // Update auth UI
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const cabinetLink = document.getElementById('cabinetLink');
+            const adminLink = document.getElementById('adminNavLink');
+            const notLoggedInMessage = document.getElementById('notLoggedInMessage');
+            const cabinetContent = document.getElementById('cabinetContent');
+            const adminNotification = document.getElementById('adminNotification');
+            const adminContent = document.getElementById('adminContent');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                cabinetLink.style.display = 'block';
+                notLoggedInMessage.style.display = 'none';
+                cabinetContent.style.display = 'block';
+
+                // Check if admin
+                if (currentUserData && currentUserData.role === 'admin') {
+                    adminLink.style.display = 'block';
+                    adminNotification.style.display = 'none';
+                    adminContent.style.display = 'block';
+                    loadUsers();
+                } else {
+                    adminLink.style.display = 'none';
+                }
+            } else {
+                loginBtn.style.display = 'block';
+                registerBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                cabinetLink.style.display = 'none';
+                adminLink.style.display = 'none';
+                notLoggedInMessage.style.display = 'flex';
+                cabinetContent.style.display = 'none';
+                adminNotification.style.display = 'flex';
+                adminContent.style.display = 'none';
+            }
+        }
+    </script>
+
+    <!-- Local Functions -->
+    <script>
+        function showSection(sectionId) {
+            if ((sectionId === 'cabinet' || sectionId === 'admin') && !window.currentUser) {
+                alert('Пожалуйста, авторизуйтесь');
+                return;
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function toggleLoginModal() {
+            document.getElementById('loginModal').classList.toggle('active');
+        }
+
+        function toggleRegisterModal() {
+            document.getElementById('registerModal').classList.toggle('active');
+        }
+
+        function toggleAddProductModal() {
+            document.getElementById('addProductModal').classList.toggle('active');
+        }
+
+        function toggleAddVerifiedProductModal() {
+            document.getElementById('addVerifiedProductModal').classList.toggle('active');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName + '-admin').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function copyReferralLink() {
+            const link = document.getElementById('referralLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована!');
             });
         }
-    }
-};
 
-window.firebaseLogin = async function({email, password}) {
-    await signInWithEmailAndPassword(auth, email, password);
-};
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
 
-window.firebaseLogout = async function() {
-    await signOut(auth);
-};
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            localStorage.setItem('referrerCode', refCode);
+        }
+    </script>
 
-// CRUD для users, products, verified_products, requests, reviews, commissions
-window.firebaseCRUD = {
-    async getAllUsers()   { return await getCollectionSnapshot('users'); },
-    async getAllProducts(){ return await getCollectionSnapshot('products'); },
-    async getAllVerifiedProducts(){ return await getCollectionSnapshot('verified_products'); },
-    async getAllRequests(){ return await getCollectionSnapshot('requests'); },
-    async getAllReviews(){ return await getCollectionSnapshot('reviews'); },
-    async getAllCommissions(){ return await getCollectionSnapshot('commissions'); },
-    async addUser(obj) { return await addCollectionDoc('users', obj); },
-    async addProduct(obj) { return await addCollectionDoc('products', obj); },
-    async addVerifiedProduct(obj) { return await addCollectionDoc('verified_products', obj); },
-    async addRequest(obj) { return await addCollectionDoc('requests', obj); },
-    async addReview(obj) { return await addCollectionDoc('reviews', obj); },
-    async addCommission(obj) { return await addCollectionDoc('commissions', obj); },
-    async updateUser(id, obj) { return await updateCollectionDoc('users', id, obj); },
-    async updateProduct(id, obj) { return await updateCollectionDoc('products', id, obj); },
-    async updateVerifiedProduct(id, obj) { return await updateCollectionDoc('verified_products', id, obj); },
-    async updateRequest(id, obj) { return await updateCollectionDoc('requests', id, obj); },
-    async updateReview(id, obj) { return await updateCollectionDoc('reviews', id, obj); },
-    async updateCommission(id, obj) { return await updateCollectionDoc('commissions', id, obj); },
-    async deleteUser(id) { return await deleteCollectionDoc('users', id); },
-    async deleteProduct(id) { return await deleteCollectionDoc('products', id); },
-    async deleteVerifiedProduct(id) { return await deleteCollectionDoc('verified_products', id); },
-    async deleteRequest(id) { return await deleteCollectionDoc('requests', id); },
-    async deleteReview(id) { return await deleteCollectionDoc('reviews', id); },
-    async deleteCommission(id) { return await deleteCollectionDoc('commissions', id); }
-};
-</script>
-
-// ========== UI-ПЕРЕКЛЮЧЕНИЯ ==========
-window.showSection = async function(sectionId) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-
-    // Авто-обновление данных в разделе
-    if (sectionId === 'catalog') renderProducts();
-    if (sectionId === 'verified') renderVerifiedProducts();
-    if (sectionId === 'cabinet') await updateCabinet();
-    if (sectionId === 'admin') await updateAdminPanel();
-}
-window.toggleLoginModal = function() {document.getElementById('loginModal').classList.toggle('active');};
-window.toggleRegisterModal = function() {document.getElementById('registerModal').classList.toggle('active');};
-window.toggleAddProductModal = function() {document.getElementById('addProductModal').classList.toggle('active');};
-window.toggleAddVerifiedProductModal = function() {document.getElementById('addVerifiedProductModal').classList.toggle('active');};
-window.closeEditProductModal = function() {document.getElementById('editProductModal').classList.remove('active');};
-window.closeEditVerifiedProductModal = function() {document.getElementById('editVerifiedProductModal').classList.remove('active');};
-window.closePaymentModal = function() {document.getElementById('paymentModal').classList.remove('active');};
-window.closeRequestProductModal = function() {document.getElementById('requestProductModal').classList.remove('active');};
-// Копировать ссылку (та же)
-window.copyReferralLink = function() {
-    const link = document.getElementById('referralLink').textContent;
-    navigator.clipboard.writeText(link).then(() => alert('Ссылка скопирована!'));
-};
-
-// =========== ЛОГИН ===============
-window.handleLogin = async function(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    try {
-        await window.firebaseLogin({email, password});
-        toggleLoginModal();
-        showSection('cabinet');
-    } catch (error) {
-        alert('Ошибка входа: ' + error.message);
-    }
-};
-
-// =========== РЕГИСТРАЦИЯ ============
-window.handleRegister = async function(event) {
-    event.preventDefault();
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    // referralCode берём из ?ref или поля в форме
-    let referralCode = '';
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('ref')) referralCode = urlParams.get('ref');
-    try {
-        await window.firebaseRegister({name, email, password, referralCode});
-        toggleRegisterModal();
-        showSection('cabinet');
-    } catch (error) {
-        alert('Ошибка регистрации: ' + error.message);
-    }
-};
-
-// =========== ВЫХОД ===========
-window.logout = async function() {
-    await window.firebaseLogout();
-    showSection('home');
-    alert('Вы вышли из аккаунта!');
-};
-
-// =============== ПРОДУКТЫ КАТАЛОГА ==============
-async function renderProducts() {
-    const grid = document.getElementById('productGrid');
-    let products = await window.firebaseCRUD.getAllProducts();
-    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    if (searchTerm) products = products.filter(p => (p.name||'').toLowerCase().includes(searchTerm));
-    grid.innerHTML = products.map(p => `
-        <div class="card position-relative">
-            ${(p.stock<=5? `<div class="stock-badge ${p.stock==0?'out':'low'}">${p.stock==0?'Нет на складе':'Осталось: '+p.stock}</div>` : `<div class="stock-badge">В наличии: ${p.stock}</div>`)}
-            <div class="product-image">${p.imageData?`<img src="${p.imageData}" alt="">`:'📦'}</div>
-            <h3 class="card-title">${p.name}</h3>
-            <p class="card-content">${p.description}</p>
-            <div class="card-footer">
-                <a class="btn btn-outline btn-small" href="${p.url}" target="_blank">Купить/Опис.</a>
-                ${p.stock>0? `<button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')">Запросить</button>` :''}
-            </div>
-        </div>
-    `).join('');
-}
-
-async function renderVerifiedProducts() {
-    const grid = document.getElementById('verifiedProductGrid');
-    let products = await window.firebaseCRUD.getAllVerifiedProducts();
-    const searchTerm = (document.getElementById('verifiedSearchInput')?.value || '').toLowerCase();
-    if (searchTerm) products = products.filter(p => (p.name||'').toLowerCase().includes(searchTerm));
-    grid.innerHTML = products.map(p => `
-        <div class="card position-relative">
-            <div class="product-image">${p.imageData?`<img src="${p.imageData}" alt="">`:'✅'}</div>
-            <h3 class="card-title">${p.name}<span class="verified-badge">Проверено</span></h3>
-            <p class="card-content">${p.description}</p>
-            <div style="font-size:1.5rem;font-weight:bold;color:var(--primary);margin:1rem 0;">$${p.price}</div>
-            <div class="card-footer">
-                <a class="btn btn-outline btn-small" href="${p.url}" target="_blank">Подробнее</a>
-            </div>
-        </div>
-    `).join('');
-}
-
-document.getElementById('searchInput').addEventListener('input', renderProducts);
-document.getElementById('verifiedSearchInput').addEventListener('input', renderVerifiedProducts);
-
-// ========== ЛИЧНЫЙ КАБИНЕТ =============
-async function updateCabinet() {
-    // Показывай данные пользователя из window.currentUserData
-    if (!window.currentUserData) {
-        document.getElementById('notLoggedInMessage').style.display = 'block';
-        document.getElementById('cabinetContent').style.display = 'none';
-        return;
-    }
-    document.getElementById('notLoggedInMessage').style.display = 'none';
-    document.getElementById('cabinetContent').style.display = 'block';
-    document.getElementById('userName').textContent = window.currentUserData.name ?? '';
-    document.getElementById('userEmail').textContent = window.currentUserData.email ?? '';
-    document.getElementById('userAvatar').textContent = (window.currentUserData.name||'У')[0] || 'У';
-    document.getElementById('referralLink').textContent = `${window.location.origin}?ref=${window.currentUserData.referralCode}`;
-    document.getElementById('referralCount').textContent = window.currentUserData.referralCount || 0;
-    document.getElementById('referralPoints').textContent = window.currentUserData.referralPoints || 0;
-    document.getElementById('conversionRate').textContent = (window.currentUserData.referralCount||0)>0?'100%':'0%';
-    // Можно добавить loadReferralTree по желанию
-}
-
-// ========== АДМИН-ПАНЕЛЬ ==============
-async function updateAdminPanel() {
-    if (!window.currentUserData || window.currentUserData.role !== 'admin') {
-        document.getElementById('adminNotification').style.display = 'block';
-        document.getElementById('adminContent').style.display = 'none';
-        return;
-    }
-    document.getElementById('adminNotification').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
-    loadAdminUsers();
-    loadAdminProducts();
-    loadAdminVerifiedProducts();
-    // loadAdminRequests, loadAdminReviews — по желанию
-}
-async function loadAdminUsers() {
-    const users = await window.firebaseCRUD.getAllUsers();
-    document.getElementById('usersList').innerHTML = users.map(u =>
-        `<div class="card mb-2">
-            <div class="flex-between">
-                <div><h4 class="card-title">${u.name}</h4><p class="text-muted">${u.email}</p></div>
-                <div>
-                    <button class="btn btn-warning btn-small" onclick="editUser('${u._docId}')">✏️</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteUser('${u._docId}')">🗑️</button>
-                </div>
-            </div>
-        </div>`
-    ).join('');
-}
-window.editUser = function(userId) {alert('Редактирование пользователя пока не реализовано.');}
-window.deleteUser = async function(userId) {
-    if (confirm('Удалить пользователя?')) {
-        await window.firebaseCRUD.deleteUser(userId);
-        alert('Пользователь удалён!');
-        loadAdminUsers();
-    }
-}
-
-// ========== CRUD ПРОДУКТОВ =============
-window.handleAddProduct = async function(event) {
-    event.preventDefault();
-    const name = document.getElementById('productName').value;
-    const description = document.getElementById('productDescription').value;
-    const category = document.getElementById('productCategory').value;
-    const url = document.getElementById('productUrl').value;
-    const stock = Number(document.getElementById('productStock').value);
-    const imageInput = document.getElementById('productImage');
-    let imageData = null;
-    if (imageInput.files.length > 0) {
-        imageData = await readFileAsDataURL(imageInput.files[0]);
-    }
-    await window.firebaseCRUD.addProduct({name, description, category, url, stock, imageData, createdAt: new Date()});
-    document.getElementById('addProductModal').classList.remove('active');
-    event.target.reset();
-    loadAdminProducts();
-    alert('Товар добавлен!');
-};
-async function loadAdminProducts() {
-    const products = await window.firebaseCRUD.getAllProducts();
-    const productsList = document.getElementById('adminProductsList');
-    productsList.innerHTML = products.map(p => `
-        <div class="card mb-2">
-            <div class="flex-between">
-                <div>
-                    <h4 class="card-title">${p.name||'(Без названия)'}</h4>
-                    <div style="font-size:0.95em; color:#888;">${p.category||''}</div>
-                    ${p.imageData ? `<img src="${p.imageData}" style="max-width:100px;max-height:60px;border-radius:8px;margin-top:6px;" alt="">` : ''}
-                </div>
-                <div>
-                    <button class="btn btn-warning btn-small" onclick="editProduct('${p._docId}')">✏️</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteProduct('${p._docId}')">🗑️</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-window.editProduct = async function(productId) {alert('Реализуй редактирование по аналогии — загрузи данные через window.firebaseCRUD, отобрази в форме!');}
-window.deleteProduct = async function(productId) {
-    if (confirm('Удалить товар?')) {
-        await window.firebaseCRUD.deleteProduct(productId);
-        loadAdminProducts();
-        alert('Товар помечен как удалённый');
-    }
-}
-
-// ======= CRUD ДЛЯ ПРОВЕРЕННЫХ ТОВАРОВ =========
-window.handleAddVerifiedProduct = async function(event) {
-    event.preventDefault();
-    const name = document.getElementById('verifiedProductName').value;
-    const description = document.getElementById('verifiedProductDescription').value;
-    const category = document.getElementById('verifiedProductCategory').value;
-    const url = document.getElementById('verifiedProductUrl').value;
-    const stock = Number(document.getElementById('verifiedProductStock').value);
-    const price = Number(document.getElementById('verifiedProductPrice').value);
-    const imageInput = document.getElementById('verifiedProductImage');
-    let imageData = null;
-    if (imageInput.files.length > 0) {
-        imageData = await readFileAsDataURL(imageInput.files[0]);
-    }
-    await window.firebaseCRUD.addVerifiedProduct({name, description, category, url, stock, price, imageData, createdAt: new Date()});
-    document.getElementById('addVerifiedProductModal').classList.remove('active');
-    event.target.reset();
-    loadAdminVerifiedProducts();
-    alert('Проверенный товар добавлен!');
-};
-async function loadAdminVerifiedProducts() {
-    const products = await window.firebaseCRUD.getAllVerifiedProducts();
-    const productsList = document.getElementById('adminVerifiedProductsList');
-    productsList.innerHTML = products.map(p => `
-        <div class="card mb-2">
-            <div class="flex-between">
-                <div>
-                    <h4 class="card-title">${p.name||'(Без названия)'}</h4>
-                    <div style="font-size:0.95em; color:#888;">${p.category||''}</div>
-                    <div style="font-size:1.0em; color:#1e293b;">${p.price ? 'Цена: $' + p.price : ''}</div>
-                    ${p.imageData ? `<img src="${p.imageData}" style="max-width:100px;max-height:60px;border-radius:8px;margin-top:6px;" alt="">` : ''}
-                </div>
-                <div>
-                    <button class="btn btn-warning btn-small" onclick="editVerifiedProduct('${p._docId}')">✏️</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p._docId}')">🗑️</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-window.editVerifiedProduct = function(productId){
-    alert('Реализуй редактирование по аналогии — загрузи данные из firebaseCRUD.getAllVerifiedProducts, отобрази в форме!');
-};
-window.deleteVerifiedProduct = async function(productId){
-    if (confirm('Удалить товар?')) {
-        await window.firebaseCRUD.deleteVerifiedProduct(productId);
-        loadAdminVerifiedProducts();
-        alert('Проверенный товар помечен как удалённый');
-    }
-}
-
-// ========== HELPERS ==========
-function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-</script>
+    <footer>
+        <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
+    </footer>
+</body>
+</html>
