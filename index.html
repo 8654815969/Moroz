@@ -1676,10 +1676,18 @@
         window.closePaymentModal = () => document.getElementById('paymentModal').classList.remove('active');
         window.closeRequestProductModal = () => document.getElementById('requestProductModal').classList.remove('active');
 
-        window.updateHeader = function() {
+                window.updateHeader = function() {
             const authButtons = document.querySelector('.auth-buttons');
             const adminNavLink = document.getElementById('adminNavLink');
-             const heroRegisterBtn = document.getElementById('heroRegisterBtn');
+
+            // Ищем кнопку "Зарегистрироваться →" по тексту
+            let heroRegisterBtn = null;
+            document.querySelectorAll('button').forEach(b => {
+                if (b.textContent.trim() === 'Зарегистрироваться →') {
+                    heroRegisterBtn = b;
+                }
+            });
+
             if (window.currentUser) {
                 authButtons.innerHTML = `
                     <div class="flex gap-2" style="align-items: center;">
@@ -1687,11 +1695,13 @@
                         <span style="color: white;">${window.currentUser.name}</span>
                     </div>`;
                 adminNavLink.style.display = window.currentUser.role === 'admin' ? 'block' : 'none';
+                if (heroRegisterBtn) heroRegisterBtn.style.display = 'none';
             } else {
                 authButtons.innerHTML = `
                     <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
                     <button class="btn btn-primary btn-small" onclick="toggleRegisterModal()">Регистрация</button>`;
                 adminNavLink.style.display = 'none';
+                if (heroRegisterBtn) heroRegisterBtn.style.display = 'inline-block';
             }
         };
 
