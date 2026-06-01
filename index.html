@@ -657,21 +657,45 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-    #partnerFloatBtn {
-        right: 50% !important;
-        transform: translateX(50%) !important;
-        z-index: 90 !important;
-        padding: 10px 18px !important;
-        font-size: 0.9rem !important;
-    }
-
-    #partnerFloatBtn:hover {
-        transform: translateX(50%) scale(1.05) !important;
-    }
+                @media (max-width: 768px) {
+            #partnerFloatBtn {
+                right: 50% !important;
+                transform: translateX(50%) !important;
+                z-index: 90 !important;
+                padding: 10px 18px !important;
+                font-size: 0.9rem !important;
+            }
 
             #partnerFloatBtn:hover {
                 transform: translateX(50%) scale(1.05) !important;
+            }
+
+            /* 📱 Компактное меню на телефоне */
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px !important;
+                width: 100%;
+            }
+
+            nav a {
+                font-size: 0.8rem !important;
+                padding: 8px 12px !important;
+                background: rgba(37, 99, 235, 0.1);
+                border-radius: 8px;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            nav a:hover {
+                background: rgba(37, 99, 235, 0.2);
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 12px;
+                padding: 10px;
             }
 
             .hero h1 {
@@ -680,19 +704,6 @@
 
             .hero p {
                 font-size: 1rem;
-            }
-
-            nav {
-                gap: 1rem;
-            }
-
-            nav a {
-                font-size: 0.85rem;
-            }
-
-            .header-container {
-                flex-direction: column;
-                gap: 1rem;
             }
 
             .grid-2, .grid-3, .grid-4 {
@@ -949,7 +960,7 @@
 /* 📱 На телефоне — кнопка по центру внизу */
 @media (max-width: 768px) {
     #partnerFloatBtn {
-        top: auto !important;
+        top: 15px !important;
         bottom: 20px !important;
         right: 50% !important;
         transform: translateX(50%) !important;
