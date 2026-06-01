@@ -882,6 +882,7 @@
                 <a onclick="showSection('verified')">Проверенные товары</a>
                 <a onclick="showSection('catalog')">Каталог</a>
                 <a onclick="showSection('cabinet')">Личный кабинет</a>
+                <a href="#" onclick="showReviewsPage(); return false;">⭐ Отзывы</a>
                 <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
             </nav>
             <div class="auth-buttons">
@@ -901,7 +902,7 @@
                     <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
                                       <div class="hero-buttons">
                         <button class="btn btn-secondary" id="heroRegisterBtn" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
-                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров на тест</button>
+                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров на тест</button>                       
                     </div>
                 </div>
             </div>
@@ -953,6 +954,13 @@
         </section>
 
         <!-- Catalog Section -->
+        <section id="reviews-page" class="section" style="display: none;">
+    <div class="container">
+        <h2 class="section-title">⭐ Отзывы покупателей</h2>
+        <p class="text-muted text-center mb-3">Реальные отзывы от проверенных покупателей</p>
+        <div id="publicReviewsList"></div>
+    </div>
+</section>
         <section id="catalog" class="section">
             <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
             
@@ -2068,17 +2076,21 @@ window.handleReviewSubmit = async function(e) {
                         <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">🗑️</button>
                     </div>
                 </div>`).join('');
-// === Отзывы на проверку ===
+// === Отзывы (все: на проверке + одобренные) ===
 const adminReviewsList = document.getElementById('adminReviewsList');
 if (adminReviewsList) {
-    const pendingReviews = window.reviews.filter(r => r.status === 'pending');
+    const allReviews = window.reviews;
 
-    adminReviewsList.innerHTML = pendingReviews.length === 0
-        ? '<p class="text-muted">Нет отзывов на проверку</p>'
-        : pendingReviews.map(r => {
+    adminReviewsList.innerHTML = allReviews.length === 0
+        ? '<p class="text-muted">Нет отзывов</p>'
+        : allReviews.map(r => {
             const user = window.users.find(u => u.id === r.userId);
-            const product = window.products.find(p => p.id === r.productId);
+            const product = window.products.find(p => p.id === r.productId)
+                         || window.verifiedProducts.find(p => p.id === r.productId);
             const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            const statusBadge = r.status === 'approved'
+                ? '<span class="badge badge-success">✅ Одобрен</span>'
+                : '<span class="badge badge-warning">⏳ На проверке</span>';
 
             return `
             <div class="card mb-2">
@@ -2088,6 +2100,7 @@ if (adminReviewsList) {
                         <p class="text-muted">👤 ${user?.name || 'Пользователь'} • ${r.date}</p>
                         <p style="color: gold; font-size: 1.2rem;">${stars}</p>
                     </div>
+                    <div>${statusBadge}</div>
                 </div>
                 <p class="card-content">${r.text}</p>
                 <div class="flex" style="gap: 10px; flex-wrap: wrap;">
@@ -2095,8 +2108,10 @@ if (adminReviewsList) {
                     ${r.screenshotImage ? `<div><small>Скриншот отзыва:</small><br><img src="${r.screenshotImage}" style="max-width: 150px; border-radius: 8px; cursor: pointer;" onclick="window.open('${r.screenshotImage}')"></div>` : ''}
                 </div>
                 <div class="card-footer" style="gap: 10px;">
-                    <button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">✅ Одобрить</button>
-                    <button class="btn btn-danger btn-small" onclick="rejectReview('${r.id}')">❌ Отклонить</button>
+                    ${r.status === 'pending'
+                        ? `<button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">✅ Одобрить</button>`
+                        : `<button class="btn btn-warning btn-small" onclick="unapproveReview('${r.id}')">↩️ Снять одобрение</button>`}
+                    <button class="btn btn-danger btn-small" onclick="rejectReview('${r.id}')">🗑️ Удалить</button>
                 </div>
             </div>`;
         }).join('');
@@ -2279,12 +2294,82 @@ window.rejectReview = async function(id) {
         showErrorMessage('Ошибка: ' + err.message);
     }
 };
+        window.unapproveReview = async function(id) {
+    try {
+        await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+        showSuccessMessage('↩️ Одобрение снято, отзыв снова на проверке.');
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
                window.switchTab = (name) => {
             document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(name).classList.add('active');
+        };        
+        window.showPublicReviews = () => {
+            const container = document.getElementById('publicReviewsList');
+            if (!container) return;
+
+            const approved = window.reviews.filter(r => r.status === 'approved');
+
+            if (approved.length === 0) {
+                container.innerHTML = '<p class="text-muted">Пока нет отзывов</p>';
+                return;
+            }
+
+            const byProduct = {};
+            approved.forEach(r => {
+                if (!byProduct[r.productId]) byProduct[r.productId] = [];
+                byProduct[r.productId].push(r);
+            });
+
+            container.innerHTML = Object.keys(byProduct).map(pid => {
+                const product = window.products.find(p => p.id === pid)
+                             || window.verifiedProducts.find(p => p.id === pid);
+                const list = byProduct[pid];
+                const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1);
+                const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+
+                const reviewsHtml = list.map(r => {
+                    const user = window.users.find(u => u.id === r.userId);
+                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    const name = user?.name ? user.name : 'Покупатель';
+                    return `
+                        <div class="card mb-2" style="background: rgba(255,255,255,0.03);">
+                            <div class="flex-between">
+                                <strong>👤 ${name}</strong>
+                                <span style="color: gold;">${stars}</span>
+                            </div>
+                            <p class="text-muted mt-2">${r.text}</p>
+                            <small class="text-muted">${r.date || ''}</small>
+                        </div>`;
+                }).join('');
+
+                return `
+                    <div class="card mb-3">
+                        <div class="flex-between">
+                            <h3 class="card-title">${product?.name || 'Товар'}</h3>
+                            <div style="text-align: right;">
+                                <span style="color: gold; font-size: 1.3rem;">${avgStars}</span>
+                                <div class="text-muted">${avg} / 5 • ${list.length} отзыв(ов)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">${reviewsHtml}</div>
+                    </div>`;
+            }).join('');
         };
-        
+
+                window.showReviewsPage = () => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const page = document.getElementById('reviews-page');
+            if (page) {
+                page.classList.add('active');
+                page.style.display = 'block';
+            }
+            window.showPublicReviews();
+        };
+           
  window.switchAdminTab = (name) => {
             document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
