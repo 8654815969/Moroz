@@ -1678,6 +1678,74 @@
         };
 
         // Admin CRUD
+        // === ТОВАР ДЛЯ ТЕСТИРОВАНИЯ ===
+window.handleAddProduct = async function(e) {
+    e.preventDefault();
+    const imageFile = document.getElementById('productImage').files[0];
+    const image = await compressImage(imageFile);
+    try {
+        const newProduct = {
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            category: document.getElementById('productCategory').value,
+            url: document.getElementById('productUrl').value,
+            stock: parseInt(document.getElementById('productStock').value),
+            image: image
+        };
+        await addDoc(collection(db, "products"), newProduct);
+        toggleAddProductModal();
+        showSuccessMessage('✅ Товар для тестирования добавлен!');
+        document.querySelector('#addProductModal form').reset();
+    } catch (err) {
+        console.error('❌ ОШИБКА:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+
+window.handleEditProduct = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editProductId').value;
+    const imageFile = document.getElementById('editProductImage').files[0];
+    try {
+        const updateData = {
+            name: document.getElementById('editProductName').value,
+            description: document.getElementById('editProductDescription').value,
+            category: document.getElementById('editProductCategory').value,
+            url: document.getElementById('editProductUrl').value,
+            stock: parseInt(document.getElementById('editProductStock').value)
+        };
+        if (imageFile) updateData.image = await compressImage(imageFile);
+        await updateDoc(doc(db, "products", id), updateData);
+        closeEditProductModal();
+        showSuccessMessage('✅ Товар обновлён!');
+    } catch (err) {
+        console.error('❌ ОШИБКА:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+
+window.handleEditVerifiedProduct = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editVerifiedProductId').value;
+    const imageFile = document.getElementById('editVerifiedProductImage').files[0];
+    try {
+        const updateData = {
+            name: document.getElementById('editVerifiedProductName').value,
+            description: document.getElementById('editVerifiedProductDescription').value,
+            category: document.getElementById('editVerifiedProductCategory').value,
+            price: parseFloat(document.getElementById('editVerifiedProductPrice').value),
+            stock: parseInt(document.getElementById('editVerifiedProductStock').value),
+            url: document.getElementById('editVerifiedProductUrl').value
+        };
+        if (imageFile) updateData.image = await compressImage(imageFile);
+        await updateDoc(doc(db, "verifiedProducts", id), updateData);
+        closeEditVerifiedProductModal();
+        showSuccessMessage('✅ Проверенный товар обновлён!');
+    } catch (err) {
+        console.error('❌ ОШИБКА:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
      window.handleAddVerifiedProduct = async function(e) {
     e.preventDefault();
     const imageFile = document.getElementById('verifiedProductImage').files[0];
