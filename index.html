@@ -35,6 +35,7 @@
         }
 
         /* Header */
+                /* Header */
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -43,8 +44,13 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: transform 0.3s ease;
         }
 
+        /* 🔼 Скрытая шапка (уехала вверх) */
+        header.header-hidden {
+            transform: translateY(-100%);
+        }
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -659,7 +665,7 @@
         /* Responsive */
                 @media (max-width: 768px) {
             #partnerFloatBtn {
-                top: 280px !important;
+                top: 230px !important;
                 right: 50% !important;
                 transform: translateX(50%) !important;
                 z-index: 90 !important;
@@ -2935,7 +2941,31 @@ window.showErrorMessage = (msg) => {
             // Не закрываем поздравительное окно по клику на фон
             if (e.target.classList.contains('modal') && e.target.id !== 'congratsModal') {
                 e.target.classList.remove('active'); 
+            }            
+        });
+                // 🔼🔽 УМНАЯ ШАПКА — прячется при скролле вниз, появляется при скролле вверх
+        let lastScrollTop = 0;
+        const header = document.querySelector('header');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Если у самого верха (< 100px) — всегда показываем
+            if (currentScroll < 100) {
+                header.classList.remove('header-hidden');
+                lastScrollTop = currentScroll;
+                return;
             }
+
+            if (currentScroll > lastScrollTop) {
+                // 🔽 Листаем ВНИЗ — прячем шапку
+                header.classList.add('header-hidden');
+            } else {
+                // 🔼 Листаем ВВЕРХ — показываем шапку
+                header.classList.remove('header-hidden');
+            }
+
+            lastScrollTop = currentScroll;
         });
 </script>
 </body>
