@@ -887,7 +887,6 @@
                 <a onclick="showSection('verified')">Проверенные товары</a>
                 <a onclick="showSection('catalog')">Каталог</a>
                 <a onclick="showSection('cabinet')">Личный кабинет</a>
-                <a href="#" onclick="showReviewsPage(); return false;">⭐ Отзывы</a>
                 <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
             </nav>
             <div class="auth-buttons">
@@ -905,12 +904,11 @@
                 <div class="hero-content">
                     <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
                     <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
-                                      <div class="hero-buttons">
+                                                                            <div class="hero-buttons">
                         <button class="btn btn-secondary" id="heroRegisterBtn" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
-                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров на тест</button>                       
+                        <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров на тест</button>
+                        <button class="btn btn-outline" onclick="showReviewsPage()">⭐ Отзывы покупателей</button>
                     </div>
-                </div>
-            </div>
 
             <div style="margin-top: 3rem;">
                 <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
@@ -2380,7 +2378,7 @@ window.rejectReview = async function(id) {
             event.target.classList.add('active');
             document.getElementById(name).classList.add('active');
         };        
-        window.showPublicReviews = () => {
+                window.showPublicReviews = () => {
             const container = document.getElementById('publicReviewsList');
             if (!container) return;
 
@@ -2409,7 +2407,7 @@ window.rejectReview = async function(id) {
                     const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
                     const name = user?.name ? user.name : 'Покупатель';
                     return `
-                        <div class="card mb-2" style="background: rgba(255,255,255,0.03);">
+                        <div class="card mb-2" style="background: var(--surface);">
                             <div class="flex-between">
                                 <strong>👤 ${name}</strong>
                                 <span style="color: gold;">${stars}</span>
@@ -2418,6 +2416,28 @@ window.rejectReview = async function(id) {
                             <small class="text-muted">${r.date || ''}</small>
                         </div>`;
                 }).join('');
+
+                // === КАРТИНКА ТОВАРА ===
+                const productImage = product?.image
+                    ? `<img src="${product.image}" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;">`
+                    : `<div style="width: 80px; height: 80px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">📦</div>`;
+
+                return `
+                    <div class="card mb-3">
+                        <div class="flex-between" style="gap: 15px;">
+                            <div class="flex gap-2" style="align-items: center;">
+                                ${productImage}
+                                <h3 class="card-title">${product?.name || 'Товар'}</h3>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="color: gold; font-size: 1.3rem;">${avgStars}</span>
+                                <div class="text-muted">${avg} / 5 • ${list.length} отзыв(ов)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">${reviewsHtml}</div>
+                    </div>`;
+            }).join('');
+        };
 
                 return `
                     <div class="card mb-3">
