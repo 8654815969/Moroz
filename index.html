@@ -587,23 +587,24 @@
             height: 100%;
             object-fit: cover;
         }
-/* === Картинка по размеру (без пустых полей) === */
+/* === Компактная картинка одинакового размера === */
 .verified-image {
     width: 100%;
-    background: #f9fafb;
+    height: 180px;             /* фиксированная высота для всех */
+    background: #f9fafb;       /* светлый фон */
     border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 1rem;
     overflow: hidden;
     font-size: 3rem;
-    text-align: center;
-    line-height: 200px;        /* для эмодзи если нет фото */
 }
 
 .verified-image img {
-    width: 100%;               /* фото на всю ширину */
-    height: auto;              /* высота подстраивается */
-    display: block;            /* убирает лишний отступ снизу */
-    border-radius: var(--radius);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;       /* фото целиком, не обрезается */
 }
         /* Stock Badge */
         .stock-badge {
