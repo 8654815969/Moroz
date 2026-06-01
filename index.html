@@ -95,7 +95,37 @@
         nav a:hover {
             opacity: 0.8;
         }
+        /* 🍔 Кнопка бургер (скрыта на ПК) */
+        .burger-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 101;
+        }
 
+        .burger-btn span {
+            display: block;
+            width: 26px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* Анимация бургера в крестик */
+        .burger-btn.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .burger-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .burger-btn.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
         .auth-buttons {
             display: flex;
             gap: 1rem;
@@ -663,7 +693,8 @@
         }
 
         /* Responsive */
-                @media (max-width: 768px) {
+                        /* Responsive */
+        @media (max-width: 768px) {
             #partnerFloatBtn {
                 top: 230px !important;
                 right: 50% !important;
@@ -678,37 +709,7 @@
                 transform: translateX(50%) scale(1.05) !important;
             }
 
-            /* 📱 Компактное меню на телефоне */
-            nav {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px !important;
-                width: 100%;
-            }
-
-             nav a {
-                font-size: 0.75rem !important;
-                padding: 6px 10px !important;
-                background: rgba(37, 99, 235, 0.1);
-                border-radius: 8px;
-                white-space: nowrap;
-                text-align: center;
-            }
-
-            nav a:hover {
-                background: rgba(37, 99, 235, 0.2);
-            }
-
-            .header-container {
-                flex-direction: column;
-                gap: 8px;
-                padding: 8px;
-            }
-            .hero h1 {
-                font-size: 2rem;
-            }
-logo {
+            .logo {
                 font-size: 1.1rem;
             }
 
@@ -716,6 +717,62 @@ logo {
                 width: 26px;
                 height: 26px;
             }
+
+            /* 🍔 Показываем бургер на телефоне */
+            .burger-btn {
+                display: flex;
+                position: absolute;
+                top: 18px;
+                right: 18px;
+            }
+
+            /* 📱 Меню по умолчанию СКРЫТО */
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 8px !important;
+                margin-top: 10px;
+            }
+
+            /* Меню ОТКРЫТО (по клику на бургер) */
+            nav.mobile-open {
+                display: flex;
+            }
+
+            nav a {
+                font-size: 0.9rem !important;
+                padding: 12px !important;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                white-space: nowrap;
+                text-align: center;
+                color: white;
+            }
+
+            nav a:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .header-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                position: relative;
+            }
+
+            .auth-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
             .hero p {
                 font-size: 1rem;
             }
@@ -741,6 +798,7 @@ logo {
                 text-align: center;
             }
         }
+        
 
         /* Utility */
         .text-center {
@@ -925,12 +983,6 @@ logo {
     font-size: 0.9rem;
     line-height: 1.5;
 }
-
-@media (max-width: 768px) {
-    .features {
-        grid-template-columns: 1fr;
-    }
-}
         	/* === Боковые картинки === */
 .side-image {
     position: fixed;
@@ -973,7 +1025,7 @@ logo {
 </style>
     <!-- Header -->
     <header>
-        <div class="header-container">
+                <div class="header-container">
            <div class="logo">
     <div class="logo-icon" style="background: #2563eb; padding: 4px;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="#ff3300">
@@ -982,12 +1034,20 @@ logo {
     </div>
     <span>Честный Отзыв</span>
 </div>
-            <nav>
-                <a onclick="showSection('home')">Главная</a>
-                <a onclick="showSection('verified')">Проверенные товары</a>
-                <a onclick="showSection('catalog')">Каталог</a>
-                <a onclick="showSection('cabinet')">Личный кабинет</a>
-                <a id="adminNavLink" onclick="showSection('admin')" style="display: none;">Админ</a>
+
+            <!-- 🍔 Кнопка бургер (видна только на телефоне) -->
+            <button class="burger-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="mainNav">
+                <a onclick="showSection('home'); closeMobileMenu()">Главная</a>
+                <a onclick="showSection('verified'); closeMobileMenu()">Проверенные товары</a>
+                <a onclick="showSection('catalog'); closeMobileMenu()">Каталог</a>
+                <a onclick="showSection('cabinet'); closeMobileMenu()">Личный кабинет</a>
+                <a id="adminNavLink" onclick="showSection('admin'); closeMobileMenu()" style="display: none;">Админ</a>
             </nav>
             <div class="auth-buttons">
                 <button class="btn btn-secondary btn-small" onclick="toggleLoginModal()">Вход</button>
@@ -2967,6 +3027,20 @@ window.showErrorMessage = (msg) => {
 
             lastScrollTop = currentScroll;
         });
+                // 🍔 БУРГЕР-МЕНЮ
+        window.toggleMobileMenu = function() {
+            const nav = document.getElementById('mainNav');
+            const burger = document.querySelector('.burger-btn');
+            nav.classList.toggle('mobile-open');
+            burger.classList.toggle('open');
+        };
+
+        window.closeMobileMenu = function() {
+            const nav = document.getElementById('mainNav');
+            const burger = document.querySelector('.burger-btn');
+            nav.classList.remove('mobile-open');
+            burger.classList.remove('open');
+        };
 </script>
 </body>
 </html>
