@@ -929,6 +929,21 @@
     70%  { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
     100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
 }
+
+/* 📱 На телефоне — кнопка по центру внизу */
+@media (max-width: 768px) {
+    #partnerFloatBtn {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 50% !important;
+        transform: translateX(50%) !important;
+        z-index: 999 !important;
+    }
+    /* Чтобы анимация не сбивала позицию */
+    #partnerFloatBtn:hover {
+        transform: translateX(50%) scale(1.05) !important;
+    }
+}
 </style>
     <!-- Header -->
     <header>
