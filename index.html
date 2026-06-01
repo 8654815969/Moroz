@@ -719,12 +719,40 @@
                 height: 26px;
             }
 
-            /* 🍔 Показываем бургер на телефоне */
+                        /* 🍔 Бургер слева в углу + красивая обводка */
             .burger-btn {
                 display: flex;
                 position: absolute;
-                top: 18px;
-                right: 18px;
+                top: 50%;
+                left: 12px;
+                right: auto;
+                transform: translateY(-50%);
+                width: 44px;
+                height: 44px;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+            }
+
+            /* 🎯 БОНУС 1: Нажатие — "сжимается" */
+            .burger-btn:active {
+                transform: translateY(-50%) scale(0.9);
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            /* 🎯 БОНУС 2: Пульсация — привлекает внимание */
+            .burger-btn {
+                animation: burgerPulse 2.5s ease-in-out infinite;
+            }
+
+            @keyframes burgerPulse {
+                0%, 100% { box-shadow: 0 2px 8px rgba(255,255,255,0.2); }
+                50% { box-shadow: 0 2px 16px rgba(255,255,255,0.6); }
             }
 
             /* 📱 Меню по умолчанию СКРЫТО */
@@ -770,9 +798,17 @@
                 margin: 0 auto;
             }
 
-            .auth-buttons {
+                        .auth-buttons {
                 width: 100%;
                 justify-content: center;
+                gap: 8px;
+            }
+
+            /* 🎯 БОНУС: компактные кнопки Вход/Регистрация */
+            .auth-buttons .btn-small {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                width: auto !important;
             }
 
             .hero h1 {
