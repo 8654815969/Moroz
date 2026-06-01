@@ -658,15 +658,17 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            #partnerFloatBtn {
-                top: auto !important;
-                bottom: 20px !important;
-                right: 50% !important;
-                transform: translateX(50%) !important;
-                z-index: 999 !important;
-                padding: 10px 18px !important;
-                font-size: 0.9rem !important;
-            }
+    #partnerFloatBtn {
+        right: 50% !important;
+        transform: translateX(50%) !important;
+        z-index: 90 !important;
+        padding: 10px 18px !important;
+        font-size: 0.9rem !important;
+    }
+
+    #partnerFloatBtn:hover {
+        transform: translateX(50%) scale(1.05) !important;
+    }
 
             #partnerFloatBtn:hover {
                 transform: translateX(50%) scale(1.05) !important;
@@ -985,7 +987,7 @@
     </header>
 <!-- Плавающая кнопка Сотрудничество -->
 <button onclick="openPartnerModal()" id="partnerFloatBtn" style="
-    position: fixed;
+    position: absolute;
     top: 90px;
     right: 20px;
     z-index: 90;
@@ -2253,7 +2255,7 @@ window.handleReviewSubmit = async function(e) {
             return { ref: params.get('ref') };
         };
 
-        window.showSection = function(sectionId) {
+       window.showSection = function(sectionId) {
     // 🔒 ЗАКРЫТЫЕ РАЗДЕЛЫ — только после регистрации
     const lockedSections = ['catalog', 'verified'];
     if (lockedSections.includes(sectionId) && !window.currentUser) {
@@ -2271,11 +2273,18 @@ window.handleReviewSubmit = async function(e) {
     const target = document.getElementById(sectionId);
     target.classList.add('active');
     target.style.display = 'block';
+
+    // 🤝 КНОПКА СОТРУДНИЧЕСТВО — только на главной
+    const partnerBtn = document.getElementById('partnerFloatBtn');
+    if (partnerBtn) {
+        partnerBtn.style.display = (sectionId === 'home') ? 'flex' : 'none';
+    }
+
     if (sectionId === 'catalog') renderProducts();
     else if (sectionId === 'verified') renderVerifiedProducts();
     else if (sectionId === 'cabinet') updateCabinet();
     else if (sectionId === 'admin') updateAdmin();
-               window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
         window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
@@ -2895,31 +2904,35 @@ window.showErrorMessage = (msg) => {
     setTimeout(() => a.remove(), 3000);
 };
 
-        document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('searchInput')?.addEventListener('input', renderProducts);
-    document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
+         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchInput')?.addEventListener('input', renderProducts);
+            document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
 
-    // Клик по звёздам отзыва
-    document.querySelectorAll('#reviewStars .star').forEach(star => {
-        star.addEventListener('click', () => {
-            window.selectedRating = parseInt(star.dataset.value);
-            updateReviewStars();
+            // Клик по звёздам отзыва
+            document.querySelectorAll('#reviewStars .star').forEach(star => {
+                star.addEventListener('click', () => {
+                    window.selectedRating = parseInt(star.dataset.value);
+                    updateReviewStars();
+                });
+            });
+
+            const ref = getUrlParams().ref;
+            if (ref) {
+                localStorage.setItem('pendingRef', ref);
+                console.log('💾 Реферальный код сохранён:', ref);
+            }
+
+            // 🤝 Показать кнопку Сотрудничество на старте (главная активна)
+            const partnerBtn = document.getElementById('partnerFloatBtn');
+            if (partnerBtn) partnerBtn.style.display = 'flex';
         });
-    });
-
-    const ref = getUrlParams().ref;
-if (ref) {
-    localStorage.setItem('pendingRef', ref);  // 💾 сохраняем сразу
-    console.log('💾 Реферальный код сохранён:', ref);
-}
-});
 
         document.addEventListener('click', (e) => { 
-    // Не закрываем поздравительное окно по клику на фон
-    if (e.target.classList.contains('modal') && e.target.id !== 'congratsModal') {
-        e.target.classList.remove('active'); 
-    }
-});         
+            // Не закрываем поздравительное окно по клику на фон
+            if (e.target.classList.contains('modal') && e.target.id !== 'congratsModal') {
+                e.target.classList.remove('active'); 
+            }
+        });
 </script>
 </body>
 </html>
