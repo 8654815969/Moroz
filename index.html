@@ -2438,21 +2438,6 @@ window.rejectReview = async function(id) {
                     </div>`;
             }).join('');
         };
-
-                return `
-                    <div class="card mb-3">
-                        <div class="flex-between">
-                            <h3 class="card-title">${product?.name || 'Товар'}</h3>
-                            <div style="text-align: right;">
-                                <span style="color: gold; font-size: 1.3rem;">${avgStars}</span>
-                                <div class="text-muted">${avg} / 5 • ${list.length} отзыв(ов)</div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 15px;">${reviewsHtml}</div>
-                    </div>`;
-            }).join('');
-        };
-
                 window.showReviewsPage = () => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             const page = document.getElementById('reviews-page');
