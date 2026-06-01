@@ -1462,10 +1462,6 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Цена ($)</label>
-                    <input type="number" id="editVerifiedProductPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="editVerifiedProductStock" min="0" required>
                 </div>
@@ -1821,7 +1817,6 @@ window.handleEditVerifiedProduct = async function(e) {
             name: document.getElementById('editVerifiedProductName').value,
             description: document.getElementById('editVerifiedProductDescription').value,
             category: document.getElementById('editVerifiedProductCategory').value,
-            price: parseFloat(document.getElementById('editVerifiedProductPrice').value),
             stock: parseInt(document.getElementById('editVerifiedProductStock').value),
             url: document.getElementById('editVerifiedProductUrl').value
         };
@@ -2531,7 +2526,6 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editVerifiedProductName').value = p.name;
             document.getElementById('editVerifiedProductDescription').value = p.description;
             document.getElementById('editVerifiedProductCategory').value = p.category;
-            document.getElementById('editVerifiedProductPrice').value = p.price;
             document.getElementById('editVerifiedProductStock').value = p.stock;
             document.getElementById('editVerifiedProductUrl').value = p.url;
             document.getElementById('editVerifiedProductModal').classList.add('active');
