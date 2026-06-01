@@ -1321,7 +1321,13 @@
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="productStock" min="0" required>
                 </div>
-                <div class="form-group">
+              <div class="form-group">
+    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <input type="checkbox" id="productShippingOnly" style="width: auto;">
+        🚚 Только оплата доставки (товар за счёт проекта)
+    </label>
+</div>
+                  <div class="form-group">  
                     <label>Изображение товара</label>
                     <div class="file-input-wrapper">
                         <input type="file" id="productImage" accept="image/*">
@@ -1369,6 +1375,12 @@
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="editProductStock" min="0" required>
                 </div>
+                <div class="form-group">
+    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <input type="checkbox" id="editProductShippingOnly" style="width: auto;">
+        🚚 Только оплата доставки (товар за счёт проекта)
+    </label>
+</div>
                 <div class="form-group">
                     <label>Изображение товара</label>
                     <div class="file-input-wrapper">
@@ -1774,6 +1786,7 @@ window.handleAddProduct = async function(e) {
             category: document.getElementById('productCategory').value,
             url: document.getElementById('productUrl').value,
             stock: parseInt(document.getElementById('productStock').value),
+            shippingOnly: document.getElementById('productShippingOnly').checked,
             image: image
         };
         await addDoc(collection(db, "products"), newProduct);
@@ -1797,6 +1810,7 @@ window.handleEditProduct = async function(e) {
             category: document.getElementById('editProductCategory').value,
             url: document.getElementById('editProductUrl').value,
             stock: parseInt(document.getElementById('editProductStock').value)
+            shippingOnly: document.getElementById('editProductShippingOnly').checked 
         };
         if (imageFile) updateData.image = await compressImage(imageFile);
         await updateDoc(doc(db, "products", id), updateData);
@@ -2463,7 +2477,8 @@ if (adminReviewsList) {
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
             <div class="verified-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-            <h3 class="card-title">${p.name || 'Без названия'}</h3>
+           <h3 class="card-title">${p.name || 'Без названия'}</h3>
+${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
             <p class="card-content">${p.description || ''}</p>
             <div class="card-footer">
                 <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 || requested ? 'disabled' : ''}>
@@ -2499,13 +2514,26 @@ window.renderVerifiedProducts = function() {
         </div>`).join('');
 };
 
-        window.showRequestProductOptions = function(id) {
-            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
-            document.getElementById('requestProductOptions').innerHTML = `
-                <div class="payment-option"><h4>💳 Оформить карту</h4><button class="btn btn-primary" onclick="submitProductRequest('${id}', 'card')">Выбрать</button></div>
-                <div class="payment-option"><h4>⏰ Кэшбэк через 3 дня</h4><button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button></div>`;
-            document.getElementById('requestProductModal').classList.add('active');
-        };
+       window.showRequestProductOptions = function(id) {
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+    
+    const product = window.products.find(p => p.id === id);
+    
+    // 🚚 Предупреждение про доставку (если включено для товара)
+    let shippingWarning = '';
+    if (product && product.shippingOnly) {
+        shippingWarning = `
+            <div class="alert" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); color: #92400e; margin-bottom: 1rem;">
+                <span style="font-size: 1.5rem;">🚚</span>
+                <span><strong>Внимание!</strong> По этому товару вы оплачиваете <strong>только доставку</strong>. Сам товар достаётся вам <strong>за счёт проекта!</strong> 🎁</span>
+            </div>`;
+    }
+    
+    document.getElementById('requestProductOptions').innerHTML = shippingWarning + `
+        <div class="payment-option"><h4>💳 Оформить карту</h4><button class="btn btn-primary" onclick="submitProductRequest('${id}', 'card')">Выбрать</button></div>
+        <div class="payment-option"><h4>⏰ Кэшбэк через 3 дня</h4><button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button></div>`;
+    document.getElementById('requestProductModal').classList.add('active');
+};
 
         window.showPaymentOptions = function(id) {
             if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
@@ -2524,6 +2552,7 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editProductCategory').value = p.category;
             document.getElementById('editProductUrl').value = p.url;
             document.getElementById('editProductStock').value = p.stock;
+            document.getElementById('editProductShippingOnly').checked = p.shippingOnly || false;
             document.getElementById('editProductModal').classList.add('active');
         };
 
