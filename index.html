@@ -1845,15 +1845,18 @@ window.handleEditVerifiedProduct = async function(e) {
         date: new Date().toLocaleDateString('ru-RU')
     };
     
-    await addDoc(collection(db, "productRequests"), request);
+   await addDoc(collection(db, "productRequests"), request);
     await updateDoc(doc(db, "users", window.currentUser.id), {
         products: increment(1)
     });
     
-        closeRequestProductModal();
+    closeRequestProductModal();
     
-    // 🎉 Показываем крутое поздравительное окно сразу!
-    document.getElementById('congratsModal').classList.add('active');
+    // 🎉 Показываем поздравительное окно с задержкой
+    setTimeout(() => {
+        document.getElementById('congratsModal').classList.add('active');
+        console.log('🎉 Окно поздравления должно появиться!');
+    }, 300);
 };
 
                window.processPayment = async function(productId, method) {
