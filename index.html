@@ -587,7 +587,25 @@
             height: 100%;
             object-fit: cover;
         }
+/* === Компактная картинка для Проверенных товаров === */
+.verified-image {
+    width: 100%;
+    height: 180px;              /* компактная высота */
+    background: #f9fafb;        /* светлый фон по бокам */
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    font-size: 3rem;
+}
 
+.verified-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;        /* ← картинка ЦЕЛИКОМ, не обрезается! */
+}
         /* Stock Badge */
         .stock-badge {
             position: absolute;
@@ -2420,7 +2438,7 @@ if (adminReviewsList) {
         return `
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
-            <div class="product-image">${p.image ? `<img src="${p.image}">` : '📦'}</div>
+            <div class="verified-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
             <h3 class="card-title">${p.name || 'Без названия'}</h3>
             <p class="card-content">${p.description || ''}</p>
             <div class="card-footer">
