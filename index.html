@@ -872,6 +872,35 @@
         grid-template-columns: 1fr;
     }
 }
+        * === Боковые картинки === */
+.side-image {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 240px;
+    z-index: 10;
+}
+
+.side-image img {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.side-left {
+    left: 20px;
+}
+
+.side-right {
+    right: 20px;
+}
+
+/* На узких экранах — прячем, чтобы не мешали */
+@media (max-width: 1400px) {
+    .side-image {
+        display: none;
+    }
+}
     </style>
 </head>
 <body>
