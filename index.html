@@ -664,6 +664,7 @@
                 z-index: 90 !important;
                 padding: 10px 18px !important;
                 font-size: 0.9rem !important;
+                width: auto !important;
             }
 
             #partnerFloatBtn:hover {
@@ -722,7 +723,7 @@
                 flex-direction: column;
             }
 
-            .btn {
+            .btn:not(#partnerFloatBtn) {
                 width: 100%;
                 text-align: center;
             }
@@ -955,21 +956,6 @@
     0%   { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6); }
     70%  { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
     100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-}
-
-/* 📱 На телефоне — кнопка по центру внизу */
-@media (max-width: 768px) {
-    #partnerFloatBtn {
-        top: 15px !important;
-        bottom: 20px !important;
-        right: 50% !important;
-        transform: translateX(50%) !important;
-        z-index: 999 !important;
-    }
-    /* Чтобы анимация не сбивала позицию */
-    #partnerFloatBtn:hover {
-        transform: translateX(50%) scale(1.05) !important;
-    }
 }
 </style>
     <!-- Header -->
