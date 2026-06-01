@@ -691,28 +691,22 @@
             border-color: var(--primary);
             background: rgba(37, 99, 235, 0.05);
         }
-        
-                    #partnerFloatBtn {
+
+        /* Responsive */
+                        /* Responsive */
+        @media (max-width: 768px) {
+            #partnerFloatBtn {
                 top: 230px !important;
-                left: 50% !important;
-                right: auto !important;
-                transform: translateX(-50%) !important;
+                right: 50% !important;
+                transform: translateX(50%) !important;
                 z-index: 90 !important;
                 padding: 10px 18px !important;
                 font-size: 0.9rem !important;
                 width: auto !important;
-                animation: pulseMobile 1.8s infinite !important;
             }
 
             #partnerFloatBtn:hover {
-                transform: translateX(-50%) scale(1.05) !important;
-            }
-
-            /* 📱 Пульсация для телефона (с центрированием) */
-            @keyframes pulseMobile {
-                0%   { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6); }
-                70%  { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+                transform: translateX(50%) scale(1.05) !important;
             }
 
             .logo {
@@ -1064,7 +1058,7 @@
 <!-- Плавающая кнопка Сотрудничество -->
 <button onclick="openPartnerModal()" id="partnerFloatBtn" style="
     position: absolute;
-    top: 300px;
+    top: 160px;
     right: 20px;
     z-index: 90;
     background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
