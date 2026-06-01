@@ -2147,8 +2147,15 @@ window.handleReviewSubmit = async function(e) {
         return;
     }
 
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
+    // 🔑 Прячем ВСЕ секции (и убираем inline display)
+    document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
+    
+    const target = document.getElementById(sectionId);
+    target.classList.add('active');
+    target.style.display = 'block';
     if (sectionId === 'catalog') renderProducts();
     else if (sectionId === 'verified') renderVerifiedProducts();
     else if (sectionId === 'cabinet') updateCabinet();
@@ -2626,15 +2633,19 @@ window.rejectReview = async function(id) {
             }).join('');
         };
                 window.showReviewsPage = () => {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            const page = document.getElementById('reviews-page');
-            if (page) {
-                page.classList.add('active');
-                page.style.display = 'block';
-            }
-            window.showPublicReviews();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+    // 🔑 Прячем ВСЕ секции
+    document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
+    const page = document.getElementById('reviews-page');
+    if (page) {
+        page.classList.add('active');
+        page.style.display = 'block';
+    }
+    window.showPublicReviews();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
            
  window.switchAdminTab = (name) => {
             document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
