@@ -2620,8 +2620,12 @@ window.showErrorMessage = (msg) => {
     }
 });
 
-        document.addEventListener('click', (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); });
-    </script>
+        document.addEventListener('click', (e) => { 
+    // Не закрываем поздравительное окно по клику на фон
+    if (e.target.classList.contains('modal') && e.target.id !== 'congratsModal') {
+        e.target.classList.remove('active'); 
+    }
+});
 
 </body>
 </html>
