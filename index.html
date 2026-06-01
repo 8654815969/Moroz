@@ -1830,10 +1830,13 @@ window.handleEditVerifiedProduct = async function(e) {
         r.userId === window.currentUser.id && r.productId === productId
     );
     
-    if (alreadyRequested) {
-        showErrorMessage(`Вы уже запрашивали товар "${product.name}"!`);
+    i    if (alreadyRequested) {
         closeRequestProductModal();
-        return; // СТОП — дальше не выполняем
+        // Всё равно показываем окно поздравления
+        setTimeout(() => {
+            document.getElementById('congratsModal').classList.add('active');
+        }, 300);
+        return;
     }
     
     const request = {
