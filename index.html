@@ -954,7 +954,32 @@
             </div>
         </div>
     </header>
-
+<!-- Плавающая кнопка Сотрудничество -->
+<button onclick="openPartnerModal()" id="partnerFloatBtn" style="
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 90;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulse 1.8s infinite;
+    transition: transform 0.2s;
+" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff3300">
+        <path d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+    </svg>
+    Сотрудничество
+</button>
     <!-- Main Content -->
     <main class="container">
         <!-- Home Section -->
@@ -1156,6 +1181,7 @@
             <div id="adminContent" style="display: none;">
                 <div class="tabs">
                     <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
+                    <button class="tab" onclick="switchAdminTab('partners')">🤝 Сотрудничество</button>
                     <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
                     <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
                     <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
@@ -1172,7 +1198,15 @@
                         </div>
                     </div>
                 </div>
-
+<!-- Partners Tab -->
+<div id="partners-admin" class="tab-content">
+    <div class="card">
+        <h3 class="card-title mb-2">🤝 Заявки на сотрудничество</h3>
+        <div id="adminPartnersList">
+            <p class="text-muted">Нет заявок</p>
+        </div>
+    </div>
+</div>
                 <!-- Requests Tab -->
                 <div id="requests-admin" class="tab-content">
                     <div class="card">
@@ -1227,7 +1261,32 @@
             </div>
         </section>
     </main>
-
+<!-- Partner Modal -->
+<div id="partnerModal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff3300" style="vertical-align: middle;">
+                    <path d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+                </svg>
+                Сотрудничество
+            </h2>
+            <button class="close-btn" onclick="closePartnerModal()">×</button>
+        </div>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text);">
+            🤝 Если вы <strong>производитель</strong> или <strong>блогер</strong>, введите номер телефона — и мы начнём! 🚀
+        </p>
+        <form onsubmit="submitPartnerRequest(event)">
+            <div class="form-group">
+                <input type="tel" id="partnerPhone" placeholder="+7 (___) ___-__-__" required 
+                    style="text-align: center; font-size: 1.1rem; padding: 1rem;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.05rem; padding: 1rem;">
+                ✅ Отправить заявку
+            </button>
+        </form>
+    </div>
+</div>
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
@@ -1683,6 +1742,10 @@
                 updateAdmin();
                 renderProducts();
             });
+            onSnapshot(collection(db, "partnerRequests"), (snapshot) => {
+    window.partnerRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    updateAdmin();
+});
         }
 
         // Initialize App
@@ -2361,8 +2424,26 @@ window.handleReviewSubmit = async function(e) {
                                 <button class="btn btn-danger btn-small" onclick="rejectRequest('${r.id}')">❌ Отклонить</button>
                             </div>` : ''}
                         </div>`;
-                    }).join('');
+                                        }).join('');
             }
+
+// === ЗАЯВКИ НА СОТРУДНИЧЕСТВО ===
+const partnersList = document.getElementById('adminPartnersList');
+if (partnersList) {
+    partnersList.innerHTML = (window.partnerRequests && window.partnerRequests.length > 0)
+        ? window.partnerRequests.map(p => `
+            <div class="card mb-2 flex-between">
+                <div>
+                    <h4 class="card-title">📞 ${p.phone}</h4>
+                    <p class="text-muted">📅 ${p.date || ''}</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="tel:${p.phone}" class="btn btn-success btn-small" style="text-decoration:none;">📞 Позвонить</a>
+                    <button class="btn btn-danger btn-small" onclick="deletePartnerRequest('${p.id}')">🗑️</button>
+                </div>
+            </div>`).join('')
+        : '<p class="text-muted">Нет заявок</p>';
+}
 // === Отзывы (все: на проверке + одобренные) ===
 const adminReviewsList = document.getElementById('adminReviewsList');
 if (adminReviewsList) {
@@ -2700,6 +2781,37 @@ window.togglePassword = function(inputId, icon) {
     } else {
         input.type = 'password';  // скрываем пароль
         icon.textContent = '👁️';  // возвращаем значок
+    }
+};
+        window.openPartnerModal = () => document.getElementById('partnerModal').classList.add('active');
+window.closePartnerModal = () => document.getElementById('partnerModal').classList.remove('active');
+
+window.submitPartnerRequest = async function(e) {
+    e.preventDefault();
+    const phone = document.getElementById('partnerPhone').value.trim();
+    if (!phone) { showErrorMessage('Введите номер телефона!'); return; }
+    
+    try {
+        await addDoc(collection(db, "partnerRequests"), {
+            phone: phone,
+            status: 'new',
+            date: new Date().toLocaleString('ru-RU')
+        });
+        closePartnerModal();
+        showSuccessMessage('✅ Заявка отправлена! Мы скоро свяжемся! 🤝');
+        document.getElementById('partnerPhone').value = '';
+    } catch (err) {
+        console.error('❌ Ошибка:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+        window.deletePartnerRequest = async function(id) {
+    if (!confirm("Удалить заявку?")) return;
+    try {
+        await deleteDoc(doc(db, "partnerRequests", id));
+        showSuccessMessage('Заявка удалена!');
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
     }
 };
        window.showSuccessMessage = (msg) => {
