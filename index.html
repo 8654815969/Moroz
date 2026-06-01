@@ -2161,6 +2161,7 @@ window.handleReviewSubmit = async function(e) {
     else if (sectionId === 'verified') renderVerifiedProducts();
     else if (sectionId === 'cabinet') updateCabinet();
     else if (sectionId === 'admin') updateAdmin();
+               window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
         window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
@@ -2571,6 +2572,7 @@ window.rejectReview = async function(id) {
             document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(name).classList.add('active');
+            document.getElementById(name).scrollIntoView({ behavior: 'smooth', block: 'start' });
         };        
                 window.showPublicReviews = () => {
             const container = document.getElementById('publicReviewsList');
@@ -2640,6 +2642,7 @@ window.rejectReview = async function(id) {
                 page.style.display = 'block';
             }
             window.showPublicReviews();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
            
  window.switchAdminTab = (name) => {
