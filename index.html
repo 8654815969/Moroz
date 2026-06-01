@@ -262,6 +262,11 @@
         transform: translateX(100%);
     }
 }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
         /* Grid */
         .grid {
             display: grid;
@@ -1469,6 +1474,37 @@
         </form>
     </div>
 </div>
+        <!-- Congratulations Modal -->
+    <div id="congratsModal" class="modal">
+        <div class="modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; max-width: 480px; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; font-size: 6rem; opacity: 0.15;">🎉</div>
+            <div style="position: absolute; bottom: -30px; left: -30px; font-size: 6rem; opacity: 0.15;">🎁</div>
+            
+            <button class="close-btn" onclick="closeCongratsModal()" style="position: absolute; top: 15px; right: 15px; color: white; z-index: 2;">×</button>
+            
+            <div style="position: relative; z-index: 1;">
+                <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 1s infinite;">🎉</div>
+                <h2 style="font-size: 1.8rem; margin-bottom: 1rem; font-weight: 700;">Поздравляем!</h2>
+                <p style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 1.5rem; opacity: 0.95;">
+                    После того как вы оставите отзыв и загрузите скрин чека и отзыва, 
+                    <strong style="color: #ffd700;">в течение 3 дней</strong> мы переведём вам 
+                    <strong style="color: #ffd700;">полную сумму товара!</strong> 🤑
+                </p>
+                <p style="font-size: 1rem; margin-bottom: 1rem; font-weight: 600;">
+                    💳 Укажите номер, куда перевести средства:
+                </p>
+                
+                <form onsubmit="savePaymentNumber(event)">
+                    <input type="text" id="paymentNumberInput" placeholder="Номер карты или телефона" required 
+                        style="text-align: center; font-size: 1.1rem; padding: 1rem; border: none; border-radius: 12px; margin-bottom: 1rem; color: #333; font-weight: 600;">
+                    <button type="submit" class="btn" 
+                        style="width: 100%; background: #ffd700; color: #333; font-weight: 700; font-size: 1.05rem; padding: 1rem;">
+                        ✅ Сохранить номер
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Payment Modal -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
@@ -1783,7 +1819,7 @@
     await addDoc(collection(db, "commissions"), commission);
 }
  };
-        window.approveRequest = async function(requestId) {
+                window.approveRequest = async function(requestId) {
     // 1. Находим заявку
     const request = window.productRequests.find(r => r.id === requestId);
     if (!request) {
@@ -1820,6 +1856,28 @@
 
     showSuccessMessage('✅ Запрос одобрен! Склад уменьшен на 1.');
 };
+                // === ПОЗДРАВИТЕЛЬНОЕ ОКНО ===
+        window.closeCongratsModal = function() {
+            document.getElementById('congratsModal').classList.remove('active');
+        };
+
+        window.savePaymentNumber = async function(e) {
+            e.preventDefault();
+            const number = document.getElementById('paymentNumberInput').value.trim();
+            if (!number) { showErrorMessage('Введите номер!'); return; }
+            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+
+            try {
+                await updateDoc(doc(db, "users", window.currentUser.id), {
+                    paymentNumber: number
+                });
+                closeCongratsModal();
+                showSuccessMessage('✅ Номер сохранён! Спасибо!');
+                document.getElementById('paymentNumberInput').value = '';
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
 
         window.rejectRequest = async function(requestId) {
             await updateDoc(doc(db, "productRequests", requestId), { status: 'rejected' });
@@ -1970,11 +2028,22 @@ window.handleReviewSubmit = async function(e) {
             }
         };
 
-        window.updateCabinet = function() {
+                window.updateCabinet = function() {
             if (!window.currentUser) {
                 document.getElementById('notLoggedInMessage').style.display = 'block';
                 document.getElementById('cabinetContent').style.display = 'none';
                 return;
+            }
+
+            // Показываем поздравление, если есть одобренный запрос и номер ещё не введён
+            const hasApproved = window.productRequests.some(r => 
+                r.userId === window.currentUser.id && r.status === 'approved'
+            );
+            if (hasApproved && !window.currentUser.paymentNumber && !sessionStorage.getItem('congratsShown')) {
+                sessionStorage.setItem('congratsShown', 'yes');
+                setTimeout(() => {
+                    document.getElementById('congratsModal').classList.add('active');
+                }, 1000);
             }
             document.getElementById('notLoggedInMessage').style.display = 'none';
             document.getElementById('cabinetContent').style.display = 'block';
@@ -2053,9 +2122,13 @@ window.handleReviewSubmit = async function(e) {
             document.getElementById('adminNotification').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
             
-            document.getElementById('usersList').innerHTML = window.users.map(u => `
+                       document.getElementById('usersList').innerHTML = window.users.map(u => `
                 <div class="card mb-2 flex-between">
-                    <div><h4 class="card-title">${u.name}</h4><p class="text-muted">${u.email}</p></div>
+                    <div>
+                        <h4 class="card-title">${u.name}</h4>
+                        <p class="text-muted">${u.email}</p>
+                        ${u.paymentNumber ? `<p style="color: var(--success); font-weight: 600;">💳 ${u.paymentNumber}</p>` : '<p class="text-muted">💳 номер не указан</p>'}
+                    </div>
                     <span class="badge badge-primary">${u.role}</span>
                 </div>`).join('');
 
