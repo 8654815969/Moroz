@@ -1083,9 +1083,93 @@
         display: none;
     }
 }
+                /* 👉 Подсказка для свайпа в каталоге */
+        .swipe-hint {
+            display: none;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            animation: swipeMove 1.5s ease-in-out infinite;
+        }
+
+        @keyframes swipeMove {
+            0%, 100% { transform: translateX(0); opacity: 0.6; }
+            50% { transform: translateX(15px); opacity: 1; }
+        }
+
+        /* Показываем только на телефоне */
+        @media (max-width: 768px) {
+            .swipe-hint {
+                display: block;
+            }
+        }
+                /* 🍔 Фиксированный бургер — всегда на экране */
+        #fixedBurger {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 9999;
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s;
+        }
+
+        #fixedBurger:active {
+            transform: scale(0.9);
+        }
+
+        #fixedBurger span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        #fixedBurger.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        #fixedBurger.open span:nth-child(2) {
+            opacity: 0;
+        }
+        #fixedBurger.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Показываем только на телефоне */
+        @media (max-width: 768px) {
+            #fixedBurger {
+                display: flex;
+            }
+            /* Прячем старый бургер */
+            .burger-btn {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- ⬅️ Кнопка Назад -->
+<button id="backBtn" onclick="goBack()">⬅️ Назад</button>
+    <!-- 🍔 Фиксированный бургер -->
+<button id="fixedBurger" onclick="toggleMobileMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
 <!-- Анимация пульсации для кнопки -->
 <style>
 @keyframes pulse {
@@ -1100,6 +1184,30 @@
     70%  { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
     100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
+            /* ⬅️ Кнопка Назад */
+        #backBtn {
+            display: none;
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 9999;
+            padding: 10px 18px;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+
+        #backBtn:active {
+            transform: scale(0.92);
+            background: var(--primary);
+            color: white;
+        }
 </style>
     <!-- Header -->
     <header>
@@ -1218,7 +1326,8 @@
             <div style="margin-bottom: 2rem;">
                 <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
-
+            <!-- 👉 Подсказка свайпа -->
+            <div class="swipe-hint">👈 Листайте товары вбок 👉</div>
             <div class="grid grid-3" id="verifiedProductGrid">
                 <!-- Verified products will be inserted here -->
             </div>
@@ -1238,7 +1347,8 @@
             <div style="margin-bottom: 2rem;">
                 <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
-
+            <!-- 👉 Подсказка свайпа -->
+            <div class="swipe-hint">👈 Листайте товары вбок 👉</div>
             <div class="grid grid-3" id="productGrid">
                 <!-- Products will be inserted here -->
             </div>
@@ -2404,6 +2514,13 @@ window.handleReviewSubmit = async function(e) {
         };
 
        window.showSection = function(sectionId) {
+               // 📚 Запоминаем историю переходов
+    if (!window.navHistory) window.navHistory = [];
+    const currentActive = document.querySelector('.section.active');
+    if (currentActive && currentActive.id !== sectionId) {
+        window.navHistory.push(currentActive.id);
+    }
+    updateBackButton();
     // 🔒 ЗАКРЫТЫЕ РАЗДЕЛЫ — только после регистрации
     const lockedSections = ['catalog', 'verified'];
     if (lockedSections.includes(sectionId) && !window.currentUser) {
@@ -3105,20 +3222,94 @@ window.showErrorMessage = (msg) => {
 
             lastScrollTop = currentScroll;
         });
+                // ⬅️ КНОПКА НАЗАД
+        window.goBack = function() {
+            if (window.navHistory && window.navHistory.length > 0) {
+                const prevSection = window.navHistory.pop();
+                // показываем без записи в историю
+                document.querySelectorAll('.section').forEach(s => {
+                    s.classList.remove('active');
+                    s.style.display = 'none';
+                });
+                const target = document.getElementById(prevSection);
+                if (target) {
+                    target.classList.add('active');
+                    target.style.display = 'block';
+                }
+                // Кнопка сотрудничества
+                const partnerBtn = document.getElementById('partnerFloatBtn');
+                if (partnerBtn) {
+                    partnerBtn.style.display = (prevSection === 'home') ? 'flex' : 'none';
+                }
+                if (prevSection === 'catalog') renderProducts();
+                else if (prevSection === 'verified') renderVerifiedProducts();
+                else if (prevSection === 'cabinet') updateCabinet();
+                else if (prevSection === 'admin') updateAdmin();
+
+                updateBackButton();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        // Показывать кнопку "Назад" только если НЕ на главной
+        window.updateBackButton = function() {
+            const backBtn = document.getElementById('backBtn');
+            const homeActive = document.getElementById('home').classList.contains('active');
+            // Показываем кнопку, если есть куда возвращаться И мы не на главной
+            if (backBtn) {
+                backBtn.style.display = (!homeActive && window.navHistory && window.navHistory.length > 0) ? 'block' : 'none';
+            }
+        };
                 // 🍔 БУРГЕР-МЕНЮ
-        window.toggleMobileMenu = function() {
+                window.toggleMobileMenu = function() {
             const nav = document.getElementById('mainNav');
-            const burger = document.querySelector('.burger-btn');
+            const fixedBurger = document.getElementById('fixedBurger');
             nav.classList.toggle('mobile-open');
-            burger.classList.toggle('open');
+            fixedBurger.classList.toggle('open');
+            // 📱 Шапка появляется при открытии меню
+            if (nav.classList.contains('mobile-open')) {
+                document.querySelector('header').classList.remove('header-hidden');
+            }
         };
 
         window.closeMobileMenu = function() {
             const nav = document.getElementById('mainNav');
-            const burger = document.querySelector('.burger-btn');
+            const fixedBurger = document.getElementById('fixedBurger');
             nav.classList.remove('mobile-open');
-            burger.classList.remove('open');
+            fixedBurger.classList.remove('open');
         };
+                // 👆 СВАЙП ВЛЕВО/ВПРАВО = НАЗАД
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = Math.abs(touchEndY - touchStartY);
+// 👉 Если свайпнули внутри каталога — прячем подсказку (юзер понял!)
+            if (e.target.closest('#productGrid') && Math.abs(diffX) > 30) {
+                document.querySelectorAll('.swipe-hint').forEach(h => h.style.display = 'none');
+                return;
+            }
+            // 🛑 Не реагируем на свайп внутри каталога (там горизонтальная прокрутка)
+            if (e.target.closest('#productGrid')) return;
+
+            // Свайп должен быть горизонтальным (не вертикальным)
+            if (diffY > 80) return;
+
+            // 👉 Свайп ВПРАВО (палец слева направо) = Назад
+            if (diffX > 100) {
+                // 📳 Лёгкая вибрация (если поддерживается)
+                if (navigator.vibrate) navigator.vibrate(30);
+                goBack();
+            }
+        }, { passive: true });
 </script>
 </body>
 </html>
