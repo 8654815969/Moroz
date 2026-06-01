@@ -1240,10 +1240,14 @@
                     <label>Email</label>
                     <input type="email" id="loginEmail" required>
                 </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
+               <div class="form-group">
+    <label>Пароль</label>
+    <div style="position: relative;">
+        <input type="password" id="loginPassword" required style="padding-right: 45px;">
+        <span onclick="togglePassword('loginPassword', this)" 
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.3rem; user-select: none;">👁️</span>
+    </div>
+</div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
             </form>
         </div>
@@ -1265,10 +1269,14 @@
                     <label>Email</label>
                     <input type="email" id="registerEmail" required>
                 </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="registerPassword" required>
-                </div>
+               <div class="form-group">
+    <label>Пароль</label>
+    <div style="position: relative;">
+        <input type="password" id="registerPassword" required style="padding-right: 45px;">
+        <span onclick="togglePassword('registerPassword', this)" 
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.3rem; user-select: none;">👁️</span>
+    </div>
+</div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
             </form>
         </div>
@@ -2684,7 +2692,16 @@ window.rejectReview = async function(id) {
             navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
             showSuccessMessage('Скопировано!');
         };
-
+window.togglePassword = function(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';      // показываем пароль
+        icon.textContent = '🙈';  // меняем значок
+    } else {
+        input.type = 'password';  // скрываем пароль
+        icon.textContent = '👁️';  // возвращаем значок
+    }
+};
        window.showSuccessMessage = (msg) => {
     const a = document.createElement('div');
     a.textContent = msg;
