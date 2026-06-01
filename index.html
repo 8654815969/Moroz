@@ -1809,7 +1809,7 @@ window.handleEditProduct = async function(e) {
             description: document.getElementById('editProductDescription').value,
             category: document.getElementById('editProductCategory').value,
             url: document.getElementById('editProductUrl').value,
-            stock: parseInt(document.getElementById('editProductStock').value)
+            stock: parseInt(document.getElementById('editProductStock').value),
             shippingOnly: document.getElementById('editProductShippingOnly').checked 
         };
         if (imageFile) updateData.image = await compressImage(imageFile);
