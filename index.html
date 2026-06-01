@@ -2105,13 +2105,21 @@ window.handleReviewSubmit = async function(e) {
         };
 
         window.showSection = function(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            if (sectionId === 'catalog') renderProducts();
-            else if (sectionId === 'verified') renderVerifiedProducts();
-            else if (sectionId === 'cabinet') updateCabinet();
-            else if (sectionId === 'admin') updateAdmin();
-        };
+    // 🔒 ЗАКРЫТЫЕ РАЗДЕЛЫ — только после регистрации
+    const lockedSections = ['catalog', 'verified'];
+    if (lockedSections.includes(sectionId) && !window.currentUser) {
+        showErrorMessage('🔒 Сначала зарегистрируйтесь!');
+        toggleRegisterModal();
+        return;
+    }
+
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    if (sectionId === 'catalog') renderProducts();
+    else if (sectionId === 'verified') renderVerifiedProducts();
+    else if (sectionId === 'cabinet') updateCabinet();
+    else if (sectionId === 'admin') updateAdmin();
+};
 
         window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
         window.toggleRegisterModal = () => document.getElementById('registerModal').classList.toggle('active');
