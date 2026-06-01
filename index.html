@@ -783,7 +783,7 @@
                 font-size: 1rem;
             }
 
-            .grid-2, .grid-3, .grid-4 {
+            .grid-2, .grid-3, .grid-4, .features {
                 grid-template-columns: 1fr;
             }
 
@@ -959,7 +959,34 @@
     gap: 1.5rem;
     margin: 2rem 0;
 }
+        /* 📦 Горизонтальная прокрутка товаров в каталоге */
+        #productGrid {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
 
+        #productGrid .card {
+            flex: 0 0 280px;       /* фиксированная ширина карточки */
+            scroll-snap-align: start;
+        }
+
+        /* Красивый скроллбар */
+        #productGrid::-webkit-scrollbar {
+            height: 8px;
+        }
+        #productGrid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        #productGrid::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
 .feature {
     background: #fff;
     padding: 2rem 1.5rem;
