@@ -1850,8 +1850,10 @@ window.handleEditVerifiedProduct = async function(e) {
         products: increment(1)
     });
     
-    closeRequestProductModal();
-    showSuccessMessage(`✅ Запрос на товар "${product.name}" успешно отправлен!`);
+        closeRequestProductModal();
+    
+    // 🎉 Показываем крутое поздравительное окно сразу!
+    document.getElementById('congratsModal').classList.add('active');
 };
 
                window.processPayment = async function(productId, method) {
@@ -2101,16 +2103,6 @@ window.handleReviewSubmit = async function(e) {
                 return;
             }
 
-            // Показываем поздравление, если есть одобренный запрос и номер ещё не введён
-            const hasApproved = window.productRequests.some(r => 
-                r.userId === window.currentUser.id && r.status === 'approved'
-            );
-            if (hasApproved && !window.currentUser.paymentNumber && !sessionStorage.getItem('congratsShown')) {
-                sessionStorage.setItem('congratsShown', 'yes');
-                setTimeout(() => {
-                    document.getElementById('congratsModal').classList.add('active');
-                }, 1000);
-            }
             document.getElementById('notLoggedInMessage').style.display = 'none';
             document.getElementById('cabinetContent').style.display = 'block';
             
