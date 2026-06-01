@@ -2598,30 +2598,6 @@ window.showErrorMessage = (msg) => {
 
         document.addEventListener('click', (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); });
     </script>
-        <!-- ===== FIREBASE — НАЧАЛО ===== -->
-    <script type="module">
-        // Подключаем Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        // ТВОИ данные ✅
-        const firebaseConfig = {
-            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
-            authDomain: "saintmarketology.firebaseapp.com",
-            projectId: "saintmarketology",
-            storageBucket: "saintmarketology.firebasestorage.app",
-            messagingSenderId: "1098681326401",
-            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
-            measurementId: "G-S52HDR9550"
-        };
-
-        // Запускаем Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db; // чтобы пользоваться в других скриптах
-
-        console.log("✅ Firebase подключён!");
-    </script>
-    <!-- ===== FIREBASE — КОНЕЦ ===== -->
 </body>
 </html>
