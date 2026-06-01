@@ -1695,47 +1695,71 @@
         };
 
         window.handleRegister = async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            
-            if (window.users.find(u => u.email === email)) {
-                showErrorMessage('Пользователь с таким email уже существует');
-                return;
+    e.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    
+    if (window.users.find(u => u.email === email)) {
+        showErrorMessage('Пользователь с таким email уже существует');
+        return;
+    }
+    
+    // 🔑 Берём реф-код из URL или из localStorage
+    const refCode = getUrlParams().ref || localStorage.getItem('pendingRef');
+    console.log('🔍 Реферальный код:', refCode);
+    
+    // 🔥 ИЩЕМ РЕФЕРЕРА ПРЯМО В FIREBASE (не в window.users!)
+    let referrer = null;
+    if (refCode) {
+        try {
+            const q = query(collection(db, "users"), where("referralCode", "==", refCode));
+            const snapshot = await getDocs(q);
+            if (!snapshot.empty) {
+                const refDoc = snapshot.docs[0];
+                referrer = { id: refDoc.id, ...refDoc.data() };
+                console.log('✅ Реферер найден в Firebase:', referrer.name, '| ID:', referrer.id);
+            } else {
+                console.log('❌ Реферер с таким кодом не найден');
             }
-            
-            const urlParams = getUrlParams();
-            const referrer = urlParams.ref ? window.users.find(u => u.referralCode === urlParams.ref) : null;
-            
-            const newUser = {
-                name,
-                email,
-                password,
-                role: email === 'Moris59@mail.ru' ? 'admin' : 'user',
-                referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                points: 0,
-                reviews: 0,
-                products: 0,
-                referrer: referrer ? referrer.id : null
-            };
-            
-            try {
-                const docRef = await addDoc(collection(db, "users"), newUser);
-                window.currentUser = { id: docRef.id, ...newUser };
-                
-                if (referrer) {
-                    showSuccessMessage(`✅ Вы зарегистрировались по реферальной ссылке от ${referrer.name}!`);
-                }
-                
-                toggleRegisterModal();
-                updateHeader();
-                showSuccessMessage('Вы успешно зарегистрировались!');
-                document.querySelector('#registerModal form').reset();
-            } catch (error) {
-                showErrorMessage('Ошибка регистрации');
-            }
-        };
+        } catch (err) {
+            console.error('❌ Ошибка поиска реферера:', err);
+        }
+    }
+    
+    const newUser = {
+        name,
+        email,
+        password,
+        role: email === 'Moris59@mail.ru' ? 'admin' : 'user',
+        referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        points: 0,
+        reviews: 0,
+        products: 0,
+        referrer: referrer ? referrer.id : null
+    };
+    
+    console.log('💾 Сохраняю пользователя с referrer:', newUser.referrer);
+    
+    try {
+        const docRef = await addDoc(collection(db, "users"), newUser);
+        window.currentUser = { id: docRef.id, ...newUser };
+        localStorage.setItem('currentUserId', docRef.id);
+        
+        if (referrer) {
+            showSuccessMessage(`✅ Вы зарегистрировались по ссылке от ${referrer.name}!`);
+            localStorage.removeItem('pendingRef');  // 🧹 очищаем код
+        }
+        
+        toggleRegisterModal();
+        updateHeader();
+        showSuccessMessage('Вы успешно зарегистрировались!');
+        document.querySelector('#registerModal form').reset();
+    } catch (error) {
+        console.error('❌ Ошибка регистрации:', error);
+        showErrorMessage('Ошибка регистрации');
+    }
+};
 
         window.logout = function() {
             window.currentUser = null;
@@ -2692,10 +2716,10 @@ window.showErrorMessage = (msg) => {
     });
 
     const ref = getUrlParams().ref;
-    if (ref) {
-        const r = window.users.find(u => u.referralCode === ref);
-        if (r) showSuccessMessage(`🎉 Реферал от ${r.name}`);
-    }
+if (ref) {
+    localStorage.setItem('pendingRef', ref);  // 💾 сохраняем сразу
+    console.log('💾 Реферальный код сохранён:', ref);
+}
 });
 
         document.addEventListener('click', (e) => { 
