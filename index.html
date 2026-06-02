@@ -3712,14 +3712,12 @@ window.showErrorMessage = (msg) => {
 
             console.log(`👆 ТАЧ КОНЕЦ | diffX: ${Math.round(diffX)} | diffY: ${Math.round(diffY)} | время: ${elapsed}мс`);
 
-            // 🛑 Не реагируем внутри каталога
-            if (e.target.closest('#productGrid')) {
-                console.log('🛑 Свайп внутри каталога — игнор');
-                return;
-            }
+                        // 🛑 Внутри каталога нужен ОЧЕНЬ длинный свайп (чтобы не мешать прокрутке товаров)
+            const inCatalog = e.target.closest('#productGrid');
+            const minSwipe = inCatalog ? 120 : 50;  // в каталоге 120px, везде 50px
 
             // 👈 Свайп ВЛЕВО
-            if (diffX < -60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+            if (diffX < -minSwipe && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
                 console.log('✅ СВАЙП ВЛЕВО ЗАСЧИТАН!');
                 console.log('📚 История:', window.navHistory);
 
