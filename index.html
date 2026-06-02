@@ -1444,6 +1444,27 @@ html, body {
         max-width: 100%;
     }
 }
+        /* ⭐ Крутящаяся двухсторонняя звезда */
+.spinning-star {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    transform-style: preserve-3d;
+    animation: starSpin 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes starSpin {
+    /* 1-й резкий прокрут */
+    0%   { transform: rotateY(0deg); }
+    12%  { transform: rotateY(360deg); }
+    /* 2-й резкий прокрут */
+    24%  { transform: rotateY(720deg); }
+    /* плавное замедление */
+    40%  { transform: rotateY(810deg); }
+    /* пауза (стоит на месте) */
+    100% { transform: rotateY(810deg); }
+}
     </style>
 </head>
 <body>
@@ -1739,8 +1760,21 @@ html, body {
         <section id="home" class="section active">
     <div class="hero">
     <div class="hero-content">
-        <div class="hero-title-plate">
-            <h1>⭐ Станьте экспертом по выбору лучших товаров России</h1>
+                <div class="hero-title-plate">
+            <h1>
+                <span class="spinning-star">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                        <defs>
+                            <linearGradient id="starGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="50%" stop-color="#ffd700"/>
+                                <stop offset="50%" stop-color="#a8c5f0"/>
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#starGold)" d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+                    </svg>
+                </span>
+                Станьте экспертом по выбору лучших товаров России
+            </h1>
         </div>
         <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
     </div>
