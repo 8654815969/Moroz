@@ -772,12 +772,23 @@
 }
         @media (max-width: 768px) {
                        #partnerFloatBtn {
-    position: static !important;
-    margin: 30px auto 20px !important;
+    position: static !important;      /* обычное место в потоке страницы */
+    display: block !important;
+    margin: 30px auto 20px !important; /* по центру + отступы */
     top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
     right: auto !important;
+    transform: none !important;
+    z-index: 1 !important;
+    padding: 14px 28px !important;
+    font-size: 1rem !important;
     width: fit-content !important;
-    justify-content: center !important;
+    animation: pulseWhite 1.8s infinite !important;
+}
+
+#partnerFloatBtn:hover {
+    transform: scale(1.05) !important;
 }
 
 #partnerFloatBtn:hover {
