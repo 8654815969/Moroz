@@ -2640,11 +2640,18 @@ html, body {
                 updateAdmin();
             });
 
-            onSnapshot(collection(db, "productRequests"), (snapshot) => {
+                        onSnapshot(collection(db, "productRequests"), (snapshot) => {
                 window.productRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateCabinet();
                 updateAdmin();
                 renderProducts();
+                // 🔔 Проверяем — есть ли новые одобрения для текущего пользователя
+                if (typeof checkApprovalNotifications === 'function') {
+                    checkApprovalNotifications();
+                }
+                if (typeof updateRequestsBadge === 'function') {
+                    updateRequestsBadge();
+                }
             });
             onSnapshot(collection(db, "partnerRequests"), (snapshot) => {
     window.partnerRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -3012,7 +3019,10 @@ image: image,
     });
 
     // 6. Меняем статус заявки на "одобрено"
-    await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
+    await updateDoc(doc(db, "productRequests", requestId), { 
+        status: 'approved',
+        notified: false   // 🔔 Флаг: пользователь ещё не видел уведомление
+    });
 
     showSuccessMessage('✅ Запрос одобрен! Склад уменьшен на 1.');
 };
@@ -4316,7 +4326,136 @@ window.showErrorMessage = (msg) => {
                 </div>`).join('');
             box.scrollTop = box.scrollHeight;
         };
+        // ========== 🔔 СИСТЕМА УВЕДОМЛЕНИЙ ==========
 
+        // 🔔 Проверяем — есть ли НОВЫЕ одобрения для пользователя
+        window.checkApprovalNotifications = async function() {
+            if (!window.currentUser) return;
+
+            // Находим одобренные заявки, о которых пользователь ещё не знает
+            const newApprovals = window.productRequests.filter(r =>
+                r.userId === window.currentUser.id &&
+                r.status === 'approved' &&
+                r.notified === false
+            );
+
+            if (newApprovals.length === 0) return;
+
+            // Показываем красивое уведомление для каждой
+            newApprovals.forEach((req, index) => {
+                const product = window.products.find(p => p.id === req.productId);
+                const productName = product?.name || 'Товар';
+
+                // Задержка между уведомлениями (если их несколько)
+                setTimeout(() => {
+                    showApprovalToast(productName);
+                }, index * 800);
+
+                // Помечаем как «уведомлён»
+                updateDoc(doc(db, "productRequests", req.id), { notified: true });
+            });
+        };
+
+        // 🎉 Красивое всплывающее уведомление об одобрении
+        window.showApprovalToast = function(productName) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                z-index: 9999;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 1.2rem 1.5rem;
+                border-radius: 16px;
+                box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+                max-width: 340px;
+                animation: slideInRight 0.5s ease, fadeOutToast 0.5s ease 5.5s forwards;
+                cursor: pointer;
+            `;
+            toast.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="font-size:2.5rem;">🎉</div>
+                    <div>
+                        <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">Заявка одобрена!</div>
+                        <div style="font-size:0.9rem; opacity:0.95;">Товар <b>«${productName}»</b> ваш! 🎁</div>
+                        <div style="font-size:0.8rem; margin-top:6px; opacity:0.85;">👉 Нажмите, чтобы открыть</div>
+                    </div>
+                </div>
+            `;
+            toast.onclick = () => {
+                showSection('cabinet');
+                switchTabProgrammatically('requests');
+                toast.remove();
+            };
+            document.body.appendChild(toast);
+
+            // Вибрация на телефоне
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            // 🎊 Конфетти
+            if (typeof launchSuperConfetti === 'function') {
+                setTimeout(() => launchSuperConfetti(), 200);
+            }
+
+            // Убираем через 6 секунд
+            setTimeout(() => toast.remove(), 6000);
+        };
+
+        // 🔴 Красный кружок на вкладке «Мои запросы»
+        window.updateRequestsBadge = function() {
+            if (!window.currentUser) return;
+
+            const newCount = window.productRequests.filter(r =>
+                r.userId === window.currentUser.id &&
+                r.status === 'approved' &&
+                r.notified === false
+            ).length;
+
+            // Ищем кнопку вкладки «Мои запросы»
+            const tabs = document.querySelectorAll('#cabinet .tab');
+            tabs.forEach(t => {
+                if (t.textContent.includes('Мои запросы')) {
+                    // Убираем старый бейдж
+                    const oldBadge = t.querySelector('.notif-badge');
+                    if (oldBadge) oldBadge.remove();
+
+                    // Добавляем новый, если есть новые
+                    if (newCount > 0) {
+                        const badge = document.createElement('span');
+                        badge.className = 'notif-badge';
+                        badge.textContent = newCount;
+                        badge.style.cssText = `
+                            display:inline-block;
+                            background:#ef4444;
+                            color:white;
+                            border-radius:50%;
+                            min-width:20px;
+                            height:20px;
+                            font-size:0.75rem;
+                            font-weight:700;
+                            text-align:center;
+                            line-height:20px;
+                            margin-left:6px;
+                            padding:0 6px;
+                            animation: pulse 1.5s infinite;
+                        `;
+                        t.appendChild(badge);
+                    }
+                }
+            });
+        };
+
+        // 🔧 Программное переключение вкладки (без события клика)
+        window.switchTabProgrammatically = function(tabName) {
+            document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
+            const targetTab = Array.from(document.querySelectorAll('#cabinet .tab')).find(t => 
+                t.getAttribute('onclick')?.includes(`'${tabName}'`)
+            );
+            if (targetTab) targetTab.classList.add('active');
+            const targetContent = document.getElementById(tabName);
+            if (targetContent) targetContent.classList.add('active');
+        };
         // 💬 Показываем переписку ТЕБЕ (админу) — сгруппировано по людям
         window.renderAdminMessages = function() {
             const box = document.getElementById('adminMessagesList');
