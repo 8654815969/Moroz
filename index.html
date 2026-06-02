@@ -2061,6 +2061,10 @@ html, body {
                     <label>Ссылка на товар</label>
                     <input type="url" id="productUrl" required>
                 </div>
+                                <div class="form-group">
+                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+                    <input type="url" id="productVideo" placeholder="https://youtube.com/...">
+                </div>
                 <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="productStock" min="0" required>
@@ -2096,7 +2100,7 @@ html, body {
                 <input type="hidden" id="editProductId">
                 <div class="form-group">
                     <label>Название товара</label>
-                    <input type="text" id="editProductName" required>
+                    <input type="text" id="editProductName" 
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
@@ -2114,6 +2118,10 @@ html, body {
                 <div class="form-group">
                     <label>Ссылка на товар</label>
                     <input type="url" id="editProductUrl" required>
+                </div>
+                                <div class="form-group">
+                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+                    <input type="url" id="editProductVideo" placeholder="https://youtube.com/...">
                 </div>
                 <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
@@ -2210,11 +2218,11 @@ html, body {
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
-                    <textarea id="editVerifiedProductDescription" required></textarea>
+                    <textarea id="editVerifiedProductDescription" </textarea>
                 </div>
                 <div class="form-group">
                     <label>Категория</label>
-                    <select id="editVerifiedProductCategory" required>
+                    <select id="editVerifiedProductCategory" 
                         <option value="electronics">Электроника</option>
                         <option value="home">Товары для дома</option>
                         <option value="beauty">Красота и уход</option>
@@ -2223,11 +2231,15 @@ html, body {
                 </div>
                 <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="editVerifiedProductStock" min="0" required>
+                    <input type="number" id="editVerifiedProductStock" min="0" 
                 </div>
                 <div class="form-group">
                     <label>Ссылка на товар</label>
-                    <input type="url" id="editVerifiedProductUrl" required>
+                    <input type="url" id="editVerifiedProductUrl"
+                </div>
+                                <div class="form-group">
+                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+                    <input type="url" id="editVerifiedProductVideo" placeholder="https://youtube.com/...">
                 </div>
                 <div class="form-group">
                     <label>Изображение товара</label>
@@ -2545,7 +2557,8 @@ window.handleAddProduct = async function(e) {
             name: document.getElementById('productName').value,
             description: document.getElementById('productDescription').value,
             category: document.getElementById('productCategory').value,
-            url: document.getElementById('productUrl').value,
+                       url: document.getElementById('productUrl').value,
+            videoUrl: document.getElementById('productVideo').value || null,
             stock: parseInt(document.getElementById('productStock').value),
             shippingOnly: document.getElementById('productShippingOnly').checked,
             image: image
@@ -2569,7 +2582,8 @@ window.handleEditProduct = async function(e) {
             name: document.getElementById('editProductName').value,
             description: document.getElementById('editProductDescription').value,
             category: document.getElementById('editProductCategory').value,
-            url: document.getElementById('editProductUrl').value,
+                       url: document.getElementById('editProductUrl').value,
+            videoUrl: document.getElementById('editProductVideo').value || null,
             stock: parseInt(document.getElementById('editProductStock').value),
             shippingOnly: document.getElementById('editProductShippingOnly').checked 
         };
@@ -2593,7 +2607,8 @@ window.handleEditVerifiedProduct = async function(e) {
             description: document.getElementById('editVerifiedProductDescription').value,
             category: document.getElementById('editVerifiedProductCategory').value,
             stock: parseInt(document.getElementById('editVerifiedProductStock').value),
-            url: document.getElementById('editVerifiedProductUrl').value
+                       url: document.getElementById('editVerifiedProductUrl').value,
+            videoUrl: document.getElementById('editVerifiedProductVideo').value || null
         };
         if (imageFile) updateData.image = await compressImage(imageFile);
         await updateDoc(doc(db, "verifiedProducts", id), updateData);
@@ -3314,8 +3329,8 @@ if (adminReviewsList) {
         return `
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
-            <div class="verified-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-           <h3 class="card-title">${p.name || 'Без названия'}</h3>
+                        <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
 ${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
             <p class="card-content">${p.description || ''}</p>
             <div class="card-footer">
@@ -3386,7 +3401,8 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editProductName').value = p.name;
             document.getElementById('editProductDescription').value = p.description;
             document.getElementById('editProductCategory').value = p.category;
-            document.getElementById('editProductUrl').value = p.url;
+                       document.getElementById('editProductUrl').value = p.url;
+            document.getElementById('editProductVideo').value = p.videoUrl || '';
             document.getElementById('editProductStock').value = p.stock;
             document.getElementById('editProductShippingOnly').checked = p.shippingOnly || false;
             document.getElementById('editProductModal').classList.add('active');
@@ -3399,10 +3415,9 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editVerifiedProductDescription').value = p.description;
             document.getElementById('editVerifiedProductCategory').value = p.category;
             document.getElementById('editVerifiedProductStock').value = p.stock;
-            document.getElementById('editVerifiedProductUrl').value = p.url;
+                        document.getElementById('editVerifiedProductUrl').value = p.url;
+            document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
             document.getElementById('editVerifiedProductModal').classList.add('active');
-        };
-
        window.approveReview = async function(id) {
     try {
         await updateDoc(doc(db, "reviews", id), { status: 'approved' });
