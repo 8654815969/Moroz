@@ -3019,10 +3019,22 @@ image: image,
     });
 
     // 6. Меняем статус заявки на "одобрено"
-    await updateDoc(doc(db, "productRequests", requestId), { 
-        status: 'approved',
-        notified: false   // 🔔 Флаг: пользователь ещё не видел уведомление
-    });
+    await updateDoc(doc(db, "productRequests", requestId), { status: 'approved' });
+
+    // 7. 📨 Отправляем пользователю оповещение в чат
+    try {
+        await addDoc(collection(db, "messages"), {
+            userId: request.userId,
+            text: `🎉 Отличные новости! Ваша заявка на товар «${product.name}» ОДОБРЕНА! ✅ Скоро мы свяжемся с вами по доставке.`,
+            fromAdmin: true,
+            date: new Date().toLocaleString('ru-RU')
+        });
+    } catch (err) {
+        console.error('Ошибка отправки оповещения:', err);
+    }
+
+    showSuccessMessage('✅ Запрос одобрен! Пользователю отправлено оповещение 📨');
+};
 
     showSuccessMessage('✅ Запрос одобрен! Склад уменьшен на 1.');
 };
