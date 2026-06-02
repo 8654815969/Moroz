@@ -1744,6 +1744,38 @@ html, body {
         background: var(--primary);
         color: white;
     }
+                    /* 🎉 ПОЛНОЭКРАННОЕ УВЕДОМЛЕНИЕ */
+#fullscreenNotify {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(37,99,235,0.97), rgba(30,64,175,0.97));
+    z-index: 99997;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+#fullscreenNotify.show { display: flex; }
+#fullscreenNotify .notify-icon { font-size: 6rem; margin-bottom: 1rem; }
+#fullscreenNotify .notify-title {
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    color: white; font-weight: 900; margin-bottom: 1rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+#fullscreenNotify .notify-text {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 2rem; max-width: 600px; line-height: 1.5;
+}
+#fullscreenNotify .notify-btn {
+    background: white; color: #2563eb; border: none;
+    padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700;
+    border-radius: 50px; cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
 </style>
     <!-- Header -->
     <header>
