@@ -2178,6 +2178,10 @@ html, body {
                     <input type="url" id="verifiedProductUrl" required>
                 </div>
                 <div class="form-group">
+    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+    <input type="url" id="verifiedProductVideo" placeholder="https://youtube.com/...">
+</div>
+                <div class="form-group">
                     <label>Изображение товара</label>
                     <div class="file-input-wrapper">
                         <input type="file" id="verifiedProductImage" accept="image/*">
@@ -2331,7 +2335,13 @@ html, body {
             </div>
         </div>
     </div>
-
+<!-- 🛍 СТРАНИЦА ОДНОГО ТОВАРА -->
+<section id="product-page" class="section" style="display: none;">
+    <div class="container">
+        <button class="btn btn-secondary mb-3" onclick="goBack()">⬅️ Назад к каталогу</button>
+        <div id="productPageContent"></div>
+    </div>
+</section>
     <!-- Footer -->
     <footer>
         <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
@@ -2631,7 +2641,8 @@ window.handleEditVerifiedProduct = async function(e) {
                 price: parseFloat(document.getElementById('verifiedProductPrice').value),
                 stock: parseInt(document.getElementById('verifiedProductStock').value),
                 url: document.getElementById('verifiedProductUrl').value,
-                image: image,
+videoUrl: document.getElementById('verifiedProductVideo').value || null,
+image: image,
                 rating: 0,
                 reviews: 0
             };
@@ -3331,9 +3342,8 @@ window.renderVerifiedProducts = function() {
 
     grid.innerHTML = filtered.map(p => `
         <div class="card position-relative">
-            <div class="verified-image">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-            <h3 class="card-title">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
-            <p class="card-content">${p.description || ''}</p>
+           <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
             <div class="card-footer">
     <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
             </div>
@@ -3487,6 +3497,112 @@ window.rejectReview = async function(id) {
                     </div>`;
             }).join('');
         };
+        // 🛍 ОТКРЫТЬ СТРАНИЦУ ТОВАРА
+window.openProductPage = function(productId, isVerified = false) {
+    // запоминаем историю для кнопки "Назад"
+    if (!window.navHistory) window.navHistory = [];
+    const currentActive = document.querySelector('.section.active');
+    if (currentActive && currentActive.id !== 'product-page') {
+        window.navHistory.push(currentActive.id);
+    }
+
+    // ищем товар
+    const product = isVerified
+        ? window.verifiedProducts.find(p => p.id === productId)
+        : window.products.find(p => p.id === productId);
+    if (!product) { showErrorMessage('Товар не найден'); return; }
+
+    // отзывы этого товара (только одобренные)
+    const productReviews = window.reviews.filter(r => r.productId === productId && r.status === 'approved');
+    const avg = productReviews.length > 0
+        ? (productReviews.reduce((s, r) => s + r.rating, 0) / productReviews.length).toFixed(1)
+        : '0';
+    const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+
+    // блок видеообзора (если есть ссылка)
+    let videoBlock = '';
+    if (product.videoUrl) {
+        videoBlock = `
+            <div class="card mb-3">
+                <h3 class="card-title mb-2">🎬 Видеообзор</h3>
+                <a href="${product.videoUrl}" target="_blank" rel="noopener" 
+                   class="btn btn-primary" style="text-decoration:none; display:inline-block;">
+                    ▶️ Смотреть видеообзор
+                </a>
+            </div>`;
+    }
+
+    // блок отзывов
+    let reviewsBlock = '';
+    if (productReviews.length > 0) {
+        reviewsBlock = productReviews.map(r => {
+            const user = window.users.find(u => u.id === r.userId);
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            return `
+                <div class="card mb-2" style="background: var(--surface);">
+                    <div class="flex-between">
+                        <strong>👤 ${user?.name || 'Покупатель'}</strong>
+                        <span style="color: gold;">${stars}</span>
+                    </div>
+                    <p class="text-muted mt-2">${r.text}</p>
+                    <small class="text-muted">${r.date || ''}</small>
+                </div>`;
+        }).join('');
+    } else {
+        reviewsBlock = '<p class="text-muted">Пока нет отзывов об этом товаре</p>';
+    }
+
+    // картинка
+    const imageHtml = product.image
+        ? `<img src="${product.image}" style="width:100%; max-height:400px; object-fit:contain; border-radius:16px;">`
+        : `<div style="height:300px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:5rem; color:white;">📦</div>`;
+
+    // кнопка действия
+    const actionBtn = isVerified
+        ? `<a href="${product.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none; font-size:1.1rem; padding:1rem 2rem;">🛒 Купить →</a>`
+        : `<button class="btn btn-primary" style="font-size:1.1rem; padding:1rem 2rem;" onclick="showRequestProductOptions('${product.id}')">📦 Запросить на тест</button>`;
+
+    // собираем страницу
+    document.getElementById('productPageContent').innerHTML = `
+        <div class="grid grid-2" style="align-items:start;">
+            <div>${imageHtml}</div>
+            <div>
+                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'}</h1>
+                <div style="margin-bottom:1rem;">
+                    <span style="color:gold; font-size:1.5rem;">${avgStars}</span>
+                    <span class="text-muted">${avg} / 5 • ${productReviews.length} отзыв(ов)</span>
+                </div>
+                ${product.price ? `<div style="font-size:2rem; font-weight:700; color:var(--primary); margin-bottom:1rem;">$${product.price}</div>` : ''}
+                <p class="card-content" style="font-size:1.05rem; margin-bottom:1.5rem;">${product.description || ''}</p>
+                ${actionBtn}
+            </div>
+        </div>
+
+        ${videoBlock}
+
+        <div class="card mt-3">
+            <h2 class="card-title mb-3">⭐ Отзывы покупателей (${productReviews.length})</h2>
+            ${reviewsBlock}
+        </div>
+    `;
+
+    // показываем секцию
+    document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
+    const page = document.getElementById('product-page');
+    page.classList.add('active');
+    page.style.display = 'block';
+
+    // прячем кнопку сотрудничества
+    const partnerBtn = document.getElementById('partnerFloatBtn');
+    if (partnerBtn) partnerBtn.style.display = 'none';
+
+    updateBackButton();
+    closeMobileMenu();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
                                 window.showReviewsPage = () => {
     // 📚 Запоминаем историю переходов (для кнопки Назад и свайпа)
     if (!window.navHistory) window.navHistory = [];
