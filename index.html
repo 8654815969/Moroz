@@ -870,10 +870,12 @@
                 grid-template-columns: 1fr;
             }
             
-            /* 📱 На телефоне — 2 карточки в ряд */
+                        /* 📱 На телефоне — 2 карточки в ряд */
             .features {
+                display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 0.8rem !important;
+                margin: 1.5rem 0 !important;
             }
             
             /* Делаем карточки компактнее */
@@ -1414,37 +1416,34 @@
     <a href="https://youtube.com/channel/UCswYXCbTsO8uyiknMDlqGGw?si=ZugsK3CNpuTHTz1n" target="_blank" style="display: inline-block; background: #2563eb; color: #fff; font-weight: 700; padding: 10px 24px; border-radius: 10px; text-decoration: none; cursor: pointer; animation: pulse 1.5s infinite;">⭐ Амбассадор 👆</a>
 </div>
     </div>                
-            <div style="margin-top: 3rem;">
+                       <div style="margin-top: 3rem;">
                 <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
-                <div class="features-grid">
-    <div class="features">
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🎁</div>
+                        <h3>Реферальная система</h3>
+                        <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
+                    </div>
 
-    <div class="feature">
-        <div class="feature-icon">🎁</div>
-        <h3>Реферальная система</h3>
-        <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
-    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✅</div>
+                        <h3>Проверенные товары</h3>
+                        <p>Все товары проходят проверку качества перед публикацией</p>
+                    </div>
 
-    <div class="feature">
-        <div class="feature-icon">✅</div>
-        <h3>Проверенные товары</h3>
-        <p>Все товары проходят проверку качества перед публикацией</p>
-    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⭐</div>
+                        <h3>Система отзывов</h3>
+                        <p>Честные отзывы от реальных покупателей</p>
+                    </div>
 
-    <div class="feature">
-        <div class="feature-icon">⭐</div>
-        <h3>Система отзывов</h3>
-        <p>Честные отзывы от реальных покупателей</p>
-    </div>
-
-    <div class="feature">
-        <div class="feature-icon">🔒</div>
-        <h3>Безопасность</h3>
-        <p>Защищённые платежи и надёжная доставка</p>
-    </div>
-</div>
+                    <div class="feature">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Безопасность</h3>
+                        <p>Защищённые платежи и надёжная доставка</p>
+                    </div>
                 </div>
-                
+            </div>
         </section>
 
         <!-- Verified Products Section -->
