@@ -870,30 +870,57 @@
                 grid-template-columns: 1fr;
             }
             
-                        /* 📱 На телефоне — 2 карточки в ряд */
+                              /* 📱 На телефоне — 2 карточки в ряд, по центру */
             .features {
                 display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 0.8rem !important;
-                margin: 1.5rem 0 !important;
+                margin: 1.5rem auto !important;
+                max-width: 100% !important;
+                justify-content: center !important;
             }
             
-            /* Делаем карточки компактнее */
+            /* 🔵 Синие карточки (в тон фону) */
             .feature {
                 padding: 1.2rem 0.8rem !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
             }
             .feature-icon {
                 font-size: 2rem !important;
                 margin-bottom: 0.5rem !important;
             }
+            /* Текст белый — на синем фоне */
             .feature h3 {
                 font-size: 0.95rem !important;
+                color: white !important;
             }
             .feature p {
                 font-size: 0.8rem !important;
+                color: rgba(255, 255, 255, 0.85) !important;
             }
             #productGrid {
                 grid-template-columns: none !important;
+            }
+                        #productGrid {
+                grid-template-columns: none !important;
+            }
+
+            /* 📱 Убираем белые бока на телефоне */
+            .container {
+                padding: 0 !important;
+            }
+            
+            /* Но текстовым секциям вернём отступы (чтобы текст не прилипал) */
+            #verified, #catalog, #cabinet, #admin, #reviews-page {
+                padding: 0 1rem !important;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
             }
             .stats {
                 grid-template-columns: 1fr;
