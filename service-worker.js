@@ -1,4 +1,4 @@
-const CACHE_NAME = "chestny-otzyv-v2";
+const CACHE_NAME = "chestny-otzyv-" + new Date().getTime();
 
 // Установка — кэшируем основные файлы
 self.addEventListener("install", (e) => {
