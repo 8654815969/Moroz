@@ -3700,7 +3700,6 @@ window.showErrorMessage = (msg) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             touchStartTime = Date.now();
-            console.log('👆 ТАЧ СТАРТ X:', Math.round(touchStartX));
         }, { passive: true });
 
         document.addEventListener('touchend', (e) => {
@@ -3710,29 +3709,22 @@ window.showErrorMessage = (msg) => {
             const diffY = touchEndY - touchStartY;
             const elapsed = Date.now() - touchStartTime;
 
-            console.log(`👆 ТАЧ КОНЕЦ | diffX: ${Math.round(diffX)} | diffY: ${Math.round(diffY)} | время: ${elapsed}мс`);
 
-                        // 🛑 Внутри каталога нужен ОЧЕНЬ длинный свайп (чтобы не мешать прокрутке товаров)
+                        /// 🛑 В каталоге нужен длинный свайп (чтобы не мешать прокрутке товаров)
             const inCatalog = e.target.closest('#productGrid');
-            const minSwipe = inCatalog ? 120 : 50;  // в каталоге 120px, везде 50px
+            const minSwipe = inCatalog ? 130 : 50;  // в каталоге 130px, везде 50px
 
             // 👈 Свайп ВЛЕВО
             if (diffX < -minSwipe && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-                console.log('✅ СВАЙП ВЛЕВО ЗАСЧИТАН!');
-                console.log('📚 История:', window.navHistory);
 
                 if (window.navHistory && window.navHistory.length > 0) {
-                    console.log('⬅️ Возвращаемся назад!');
                     if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
                     launchFirework(touchEndX, touchEndY);
                     goBack();
                 } else {
-                    console.log('🚫 История пустая — некуда идти');
                     showErrorMessage('🚫 Вы на главной');
                 }
-            } else {
-                console.log('❌ Свайп не засчитан (короткий или вертикальный)');
-            }
+            } 
         }, { passive: true });
 
         // 💡 Подсказка про свайп — ТОЛЬКО при переходе с главной + 1 раз за сессию
