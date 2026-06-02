@@ -3374,7 +3374,7 @@ window.handleReviewSubmit = async function(e) {
                         <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">🗑️</button>
                     </div>
                 </div>`).join('');
-    // === ЗАПРОСЫ ТОВАРОВ В АДМИНКЕ ===
+               // === ЗАПРОСЫ ТОВАРОВ В АДМИНКЕ ===
             const adminRequestsList = document.getElementById('adminRequestsList');
             if (adminRequestsList) {
                 adminRequestsList.innerHTML = window.productRequests.length === 0
@@ -3385,6 +3385,12 @@ window.handleReviewSubmit = async function(e) {
                         const statusText = r.status === 'pending' ? '⏳ Ожидание'
                             : r.status === 'approved' ? '✅ Одобрено'
                             : '❌ Отклонено';
+
+                        // 💳 Проверяем — оставил ли пользователь номер для перевода
+                        const paymentInfo = user?.paymentNumber
+                            ? `<p style="color: var(--success); font-weight: 600; margin-top: 4px;">💳 Номер для перевода: ${user.paymentNumber}</p>`
+                            : `<p style="color: var(--danger); font-weight: 600; margin-top: 4px;">⚠️ Номер для перевода НЕ указан</p>`;
+
                         return `
                         <div class="card mb-2">
                             <div class="flex-between">
@@ -3392,6 +3398,7 @@ window.handleReviewSubmit = async function(e) {
                                     <h4 class="card-title">${product?.name || 'Товар'}</h4>
                                     <p class="text-muted">👤 ${user?.name || 'Пользователь'} (${user?.email || ''})</p>
                                     <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Позже'} • ${r.date || ''}</p>
+                                    ${paymentInfo}
                                 </div>
                                 <span class="request-status ${r.status}">${statusText}</span>
                             </div>
@@ -3401,7 +3408,7 @@ window.handleReviewSubmit = async function(e) {
                                 <button class="btn btn-danger btn-small" onclick="rejectRequest('${r.id}')">❌ Отклонить</button>
                             </div>` : ''}
                         </div>`;
-                                        }).join('');
+                    }).join('');
             }
 
 // === ЗАЯВКИ НА СОТРУДНИЧЕСТВО ===
