@@ -3714,8 +3714,8 @@ window.showErrorMessage = (msg) => {
             const inCatalog = e.target.closest('#productGrid');
             const minSwipe = inCatalog ? 130 : 50;  // в каталоге 130px, везде 50px
 
-            // 👈 Свайп ВЛЕВО
-            if (diffX < -minSwipe && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        // 👉 Свайп ВПРАВО = назад (как на телефонах)
+            if (diffX > minSwipe && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
 
                 if (window.navHistory && window.navHistory.length > 0) {
                     if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
