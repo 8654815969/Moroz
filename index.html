@@ -1704,50 +1704,56 @@ html, body {
     <main class="container">
         <!-- Home Section -->
         <section id="home" class="section active">
-            <div class="hero">
-                <div class="hero-content">
-                    <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
-                    <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
-                                                                            <div class="hero-buttons">
-    <button class="btn btn-secondary" id="heroRegisterBtn" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
-    <button class="btn btn-outline" onclick="showSection('catalog')">Каталог товаров на тест</button>
-    <button class="btn btn-outline" onclick="showReviewsPage()">⭐ Отзывы покупателей</button>
-</div>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>⭐ Станьте экспертом по выбору лучших товаров России!</h1>
+            <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
+        </div>
+    </div>
 
-<div style="margin-top: 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-    <img src="ambassador.jpg" alt="Амбассадор" style="width: 240px; max-width: 90%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
-    <a href="https://youtube.com/channel/UCswYXCbTsO8uyiknMDlqGGw?si=ZugsK3CNpuTHTz1n" target="_blank" style="display: inline-block; background: #2563eb; color: #fff; font-weight: 700; padding: 10px 24px; border-radius: 10px; text-decoration: none; cursor: pointer; animation: pulse 1.5s infinite;">⭐ Амбассадор 👆</a>
-</div>
-    </div>                
-                       <div style="margin-top: 3rem;">
-                <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
-                <div class="features">
-                    <div class="feature">
-                        <div class="feature-icon">🎁</div>
-                        <h3>Реферальная система</h3>
-                        <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
-                    </div>
-
-                    <div class="feature">
-                        <div class="feature-icon">✅</div>
-                        <h3>Проверенные товары</h3>
-                        <p>Все товары проходят проверку качества перед публикацией</p>
-                    </div>
-
-                    <div class="feature">
-                        <div class="feature-icon">⭐</div>
-                        <h3>Система отзывов</h3>
-                        <p>Честные отзывы от реальных покупателей</p>
-                    </div>
-
-                    <div class="feature">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Безопасность</h3>
-                        <p>Защищённые платежи и надёжная доставка</p>
-                    </div>
-                </div>
+    <!-- 🎁 4 блока "Как это работает?" -->
+    <div style="margin-top: 3rem;">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎁</div>
+                <h3>Реферальная система</h3>
+                <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
             </div>
-        </section>
+
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <h3>Проверенные товары</h3>
+                <p>Все товары проходят проверку качества перед публикацией</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">⭐</div>
+                <h3>Система отзывов</h3>
+                <p>Честные отзывы от реальных покупателей</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Безопасность</h3>
+                <p>Защищённые платежи и надёжная доставка</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔘 Кнопки под карточками -->
+    <div class="hero-buttons" style="margin-top: 2.5rem;">
+        <button class="btn btn-primary" id="heroRegisterBtn" onclick="toggleRegisterModal()">Зарегистрироваться →</button>
+        <button class="btn btn-secondary" onclick="showSection('verified')">✅ Каталог проверенных</button>
+        <button class="btn btn-secondary" onclick="showReviewsPage()">⭐ Отзывы покупателей</button>
+    </div>
+
+    <!-- 👤 Амбассадор — в самом низу -->
+    <div style="margin-top: 3rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+        <img src="ambassador.jpg" alt="Амбассадор" style="width: 240px; max-width: 90%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+        <a href="https://youtube.com/channel/UCswYXCbTsO8uyiknMDlqGGw?si=ZugsK3CNpuTHTz1n" target="_blank" style="display: inline-block; background: #2563eb; color: #fff; font-weight: 700; padding: 10px 24px; border-radius: 10px; text-decoration: none; cursor: pointer; animation: pulse 1.5s infinite;">⭐ Амбассадор 👆</a>
+    </div>
+</section>
 
         <!-- Verified Products Section -->
         <section id="verified" class="section">
