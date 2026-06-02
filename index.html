@@ -727,8 +727,49 @@
             background: rgba(37, 99, 235, 0.05);
         }
 
-        /* Responsive */
-                        /* Responsive */
+        /* 💙 На телефоне — главный экран полностью синий */
+@media (max-width: 768px) {
+    body:has(#home.active) {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+    }
+    
+    /* Hero сливается с фоном */
+    #home.active .hero {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 3rem 1rem 2rem !important;
+    }
+    
+    /* Убираем белый круг сверху-справа (он лишний на синем) */
+    #home.active .hero::before {
+        display: none !important;
+    }
+    
+    /* Заголовок "Как это работает?" — белым */
+    #home.active h2 {
+        color: white !important;
+    }
+    
+    /* Текст под карточками — тоже белым */
+    #home.active main,
+    #home.active section p {
+        color: rgba(255,255,255,0.95) !important;
+    }
+    
+    /* Карточки "Как это работает?" — уже стеклянные, оставляем */
+    /* Кнопки внизу — добавим белую обводку */
+    #home.active .btn-secondary {
+        background: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.4) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Футер тоже подгоним под синий */
+    body:has(#home.active) footer {
+        background: rgba(0,0,0,0.3) !important;
+    }
+}
         @media (max-width: 768px) {
                        #partnerFloatBtn {
                 top: 130px !important;
