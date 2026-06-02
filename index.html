@@ -3369,9 +3369,8 @@ if (adminReviewsList) {
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
                         <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
+           h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
 ${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
-            <p class="card-content">${p.description || ''}</p>
             <div class="card-footer">
                 <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 || requested ? 'disabled' : ''}>
                     ${requested ? '✅ Запрошено' : 'Запросить'}
