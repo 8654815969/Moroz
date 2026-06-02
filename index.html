@@ -1196,11 +1196,10 @@
             50% { transform: translateX(15px); opacity: 1; }
         }
 
-        /* Показываем только на телефоне */
-        @media (max-width: 768px) {
-            .swipe-hint {
-                display: block;
-            }
+               /* Старые подсказки в каталоге — больше не нужны */
+        .swipe-hint {
+            display: none !important;
+        }
         }
                 /* 🍔 Фиксированный бургер — всегда на экране */
         #fixedBurger {
@@ -3552,7 +3551,7 @@ window.showErrorMessage = (msg) => {
             fixedBurger.classList.remove('open');
             overlay.classList.remove('active');
         };
-                // 👆 СВАЙП ВЛЕВО/ВПРАВО = НАЗАД
+                // 👆 СВАЙП ВЛЕВО = НАЗАД
         let touchStartX = 0;
         let touchStartY = 0;
 
@@ -3566,79 +3565,72 @@ window.showErrorMessage = (msg) => {
             const touchEndY = e.changedTouches[0].screenY;
             const diffX = touchEndX - touchStartX;
             const diffY = Math.abs(touchEndY - touchStartY);
-// 👉 Если свайпнули внутри каталога — прячем подсказку (юзер понял!)
-            if (e.target.closest('#productGrid') && Math.abs(diffX) > 30) {
-                document.querySelectorAll('.swipe-hint').forEach(h => h.style.display = 'none');
-                return;
-            }
+
             // 🛑 Не реагируем на свайп внутри каталога (там горизонтальная прокрутка)
             if (e.target.closest('#productGrid')) return;
 
-            // Свайп должен быть горизонтальным (не вертикальным)
+            // Свайп должен быть горизонтальным
             if (diffY > 80) return;
 
-                        if (diffY > 80) return;
-
-            // 👉 Свайп ВЛЕВО (палец справа налево) = Назад
-            if (diffX < -100) {
-                // 📳 Лёгкая вибрация (если поддерживается)
+            // 👈 Свайп ВЛЕВО (палец справа налево) = Назад
+            if (diffX < -80) {
                 if (navigator.vibrate) navigator.vibrate(30);
-                
-                // 🎆 Фейерверк в точке, где закончился палец!
                 launchFirework(touchEndX, touchEndY);
-                
                 goBack();
             }
         }, { passive: true });
-              // 💡 Показать подсказку про свайп + 🎆 фейерверк (только ОДИН раз за сессию)
-window.showSwipeHint = () => {
-    if (window.innerWidth > 768) return;  // только телефон
-    
-    // 🔒 Проверяем — уже показывали в этой сессии?
-    if (sessionStorage.getItem('swipeHintShown')) return;
-    
-    const hint = document.getElementById('swipeHint');
-    if (!hint) return;
-    
-       hint.classList.add('show');
-    
-    // Держится 4 секунды
-    clearTimeout(window._swipeHintTimer);
-    window._swipeHintTimer = setTimeout(() => {
-        hint.classList.remove('show');
-    }, 4000);
-    
-    // ✅ Запоминаем — больше не показываем в этой сессии
-    sessionStorage.setItem('swipeHintShown', 'true');
-};
-// 🎆 Функция фейерверка
-window.launchFirework = (x, y) => {
-    const colors = ['#fbbf24', '#f97316', '#ef4444', '#10b981', '#3b82f6', '#ffffff'];
-    const count = 14;  // количество частиц
-    
-    for (let i = 0; i < count; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'firework';
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-        
-        // Случайное направление разлёта
-        const angle = (Math.PI * 2 * i) / count;
-        const distance = 40 + Math.random() * 40;
-        const fx = Math.cos(angle) * distance;
-        const fy = Math.sin(angle) * distance;
-        
-        particle.style.setProperty('--fx', fx + 'px');
-        particle.style.setProperty('--fy', fy + 'px');
-        particle.style.animation = `fireworkFly ${0.6 + Math.random() * 0.4}s ease-out forwards`;
-        
-        document.body.appendChild(particle);
-        
-        // Удаляем частицу после анимации
-        setTimeout(() => particle.remove(), 1200);
-    }
-};
+
+        // 💡 Подсказка про свайп — ТОЛЬКО при переходе с главной + 1 раз за сессию
+        window.showSwipeHint = () => {
+            if (window.innerWidth > 768) return;  // только телефон
+            if (sessionStorage.getItem('swipeHintShown')) return;  // только 1 раз
+
+            const hint = document.getElementById('swipeHint');
+            if (!hint) return;
+
+            // Показываем еле заметно (полупрозрачно)
+            hint.classList.add('show');
+            hint.style.opacity = '0.85';
+
+            // Лёгкая вибрация
+            if (navigator.vibrate) navigator.vibrate(20);
+
+            // Через 2.5 сек — взрыв конфетти + исчезновение
+            setTimeout(() => {
+                const rect = hint.getBoundingClientRect();
+                launchFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                hint.classList.remove('show');
+                hint.style.opacity = '0';
+            }, 2500);
+
+            sessionStorage.setItem('swipeHintShown', 'true');
+        };
+
+        // 🎆 Функция фейерверка / конфетти
+        window.launchFirework = (x, y) => {
+            const colors = ['#fbbf24', '#f97316', '#ef4444', '#10b981', '#3b82f6', '#ffffff', '#a855f7'];
+            const count = 18;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                const angle = (Math.PI * 2 * i) / count;
+                const distance = 50 + Math.random() * 50;
+                const fx = Math.cos(angle) * distance;
+                const fy = Math.sin(angle) * distance;
+
+                particle.style.setProperty('--fx', fx + 'px');
+                particle.style.setProperty('--fy', fy + 'px');
+                particle.style.animation = `fireworkFly ${0.6 + Math.random() * 0.4}s ease-out forwards`;
+
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1200);
+            }
+        };
 </script>
 </body>
 </html>
