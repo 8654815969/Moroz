@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <style>
         * {
             margin: 0;
@@ -3369,7 +3372,7 @@ if (adminReviewsList) {
         <div class="card position-relative">
             <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
                         <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-           h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
+           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
 ${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
             <div class="card-footer">
                 <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 || requested ? 'disabled' : ''}>
@@ -4051,6 +4054,29 @@ window.showErrorMessage = (msg) => {
                 setTimeout(() => particle.remove(), 1200);
             }
         };
+</script>
+    <script>
+  // Регистрируем Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('✅ PWA готова!'))
+        .catch(err => console.log('❌ Ошибка PWA:', err));
+    });
+  }
+
+  // Проверка интернета
+  window.addEventListener('offline', () => {
+    if (window.showErrorMessage) showErrorMessage('📡 Интернет пропал');
+  });
+  window.addEventListener('online', () => {
+    if (window.showSuccessMessage) showSuccessMessage('✅ Интернет восстановлен!');
+  });
+  window.addEventListener('load', () => {
+    if (!navigator.onLine && window.showErrorMessage) {
+      showErrorMessage('📡 Нет интернета! Проверьте подключение');
+    }
+  });
 </script>
 </body>
 </html>
