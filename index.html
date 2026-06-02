@@ -1319,7 +1319,7 @@
 <body>
     <!-- 💡 Подсказка про свайп -->
 <div id="swipeHint" class="swipe-hint">
-    <span class="swipe-arrow">←</span> Свайп вправо — назад
+    <span class="swipe-arrow">←</span> Свайп ВЛЕВО — назад
 </div>
         <!-- 🌑 Затемнение фона для меню -->
     <div id="menuOverlay" onclick="closeMobileMenu()"></div>
@@ -3577,29 +3577,38 @@ window.showErrorMessage = (msg) => {
             // Свайп должен быть горизонтальным (не вертикальным)
             if (diffY > 80) return;
 
-            // 👉 Свайп ВПРАВО (палец слева направо) = Назад
-            if (diffX > 100) {
+            /            // 👉 Свайп ВЛЕВО (палец справа налево) = Назад
+            if (diffX < -100) {
                 // 📳 Лёгкая вибрация (если поддерживается)
                 if (navigator.vibrate) navigator.vibrate(30);
+                
+                // 🎆 Фейерверк в точке, где закончился палец!
+                launchFirework(touchEndX, touchEndY);
+                
                 goBack();
             }
         }, { passive: true });
-               // 💡 Показать подсказку про свайп + 🎆 фейерверк
+              // 💡 Показать подсказку про свайп + 🎆 фейерверк (только ОДИН раз за сессию)
 window.showSwipeHint = () => {
     if (window.innerWidth > 768) return;  // только телефон
+    
+    // 🔒 Проверяем — уже показывали в этой сессии?
+    if (sessionStorage.getItem('swipeHintShown')) return;
+    
     const hint = document.getElementById('swipeHint');
     if (!hint) return;
     
-    hint.classList.add('show');
+       hint.classList.add('show');
     
-    // 🎆 Запускаем маленький фейерверк рядом с подсказкой
-    setTimeout(() => launchFirework(60, 140), 300);
-    
-    // Держится дольше — 4 секунды
+    // Держится 4 секунды
     clearTimeout(window._swipeHintTimer);
     window._swipeHintTimer = setTimeout(() => {
         hint.classList.remove('show');
     }, 4000);
+    
+    // ✅ Запоминаем — больше не показываем в этой сессии
+    sessionStorage.setItem('swipeHintShown', 'true');
+};
 };
 
 // 🎆 Функция фейерверка
