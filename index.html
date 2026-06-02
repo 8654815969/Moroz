@@ -3690,36 +3690,50 @@ window.showErrorMessage = (msg) => {
             fixedBurger.classList.remove('open');
             overlay.classList.remove('active');
         };
-                // 👆 СВАЙП ВЛЕВО = НАЗАД
+        
+        // 👆 СВАЙП ВЛЕВО = НАЗАД (с диагностикой)
         let touchStartX = 0;
         let touchStartY = 0;
+        let touchStartTime = 0;
 
         document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+            console.log('👆 ТАЧ СТАРТ X:', Math.round(touchStartX));
         }, { passive: true });
 
-               document.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].screenX;
-            const touchEndY = e.changedTouches[0].screenY;
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
+            const elapsed = Date.now() - touchStartTime;
 
-            // 🛑 Не реагируем внутри каталога (горизонтальная прокрутка)
-            if (e.target.closest('#productGrid')) return;
+            console.log(`👆 ТАЧ КОНЕЦ | diffX: ${Math.round(diffX)} | diffY: ${Math.round(diffY)} | время: ${elapsed}мс`);
 
-            // 👈 Свайп ВЛЕВО: горизонтальный, длинный, не диагональный
-            if (diffX < -70 && Math.abs(diffX) > Math.abs(diffY) * 2) {
-                console.log('👈 Свайп влево! diffX:', diffX);
+            // 🛑 Не реагируем внутри каталога
+            if (e.target.closest('#productGrid')) {
+                console.log('🛑 Свайп внутри каталога — игнор');
+                return;
+            }
 
-                // Проверяем — есть ли куда возвращаться
+            // 👈 Свайп ВЛЕВО
+            if (diffX < -60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                console.log('✅ СВАЙП ВЛЕВО ЗАСЧИТАН!');
+                console.log('📚 История:', window.navHistory);
+
                 if (window.navHistory && window.navHistory.length > 0) {
+                    console.log('⬅️ Возвращаемся назад!');
                     if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
                     launchFirework(touchEndX, touchEndY);
                     goBack();
                 } else {
-                    console.log('🚫 Некуда возвращаться (мы на главной)');
+                    console.log('🚫 История пустая — некуда идти');
+                    showErrorMessage('🚫 Вы на главной');
                 }
+            } else {
+                console.log('❌ Свайп не засчитан (короткий или вертикальный)');
             }
         }, { passive: true });
 
