@@ -1312,6 +1312,64 @@
         #menuOverlay.active {
             display: block;
         }
+        /* 🛠 ФИКС: убираем горизонтальную прокрутку везде */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* 📦 Все карточки не вылезают за край */
+.card {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* 👥 Реферальная программа — пользователи внутри карточки */
+#referralsList .card,
+#referralsList .flex-between {
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 100%;
+}
+
+#referralsList .flex {
+    min-width: 0;        /* разрешаем сжиматься */
+    flex: 1;
+}
+
+/* Email и имя — переносятся, не вылезают */
+#referralsList .card p,
+#referralsList .card h4 {
+    word-break: break-all;   /* длинный email переносится */
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* 💳 Реферальная ссылка не вылезает */
+.referral-link-input {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* 📱 На телефоне — карточки рефералов в столбик */
+@media (max-width: 768px) {
+    #referralsList .flex-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    #referralsList .badge {
+        align-self: flex-start;
+    }
+    
+    /* Личный кабинет — всё внутри экрана */
+    #cabinet, #cabinet * {
+        max-width: 100%;
+    }
+}
     </style>
 </head>
 <body>
