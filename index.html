@@ -1949,6 +1949,7 @@ html, body {
 
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('referral')">Реферральная программа</button>
+                                        <button class="tab" onclick="switchTab('messages')">💬 Сообщения</button>
                     <button class="tab" onclick="switchTab('reviews')">Мои отзывы</button>
                     <button class="tab" onclick="switchTab('requests')">Мои запросы</button>
                     <button class="tab" onclick="switchTab('commissions')">Комиссии</button>
@@ -1972,7 +1973,19 @@ html, body {
                         </div>
                     </div>
                 </div>
-
+                <!-- Messages Tab (для пользователя) -->
+                <div id="messages" class="tab-content">
+                    <div class="card">
+                        <h3 class="card-title mb-2">💬 Чат с поддержкой</h3>
+                        <div id="userMessagesList" style="max-height:400px; overflow-y:auto; margin-bottom:1rem;">
+                            <p class="text-muted">Здесь будут ваши сообщения</p>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <textarea id="userMessageText" placeholder="Напишите сообщение..."></textarea>
+                            <button class="btn btn-primary mt-2" style="width:100%;" onclick="sendUserMessage()">📨 Отправить</button>
+                        </div>
+                    </div>
+                </div>
                 <!-- Reviews Tab -->
                 <div id="reviews" class="tab-content">
                     <div id="reviewsList">
@@ -2025,6 +2038,7 @@ html, body {
                 <div class="tabs">
                     <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
                     <button class="tab" onclick="switchAdminTab('partners')">🤝 Сотрудничество</button>
+                     <button class="tab" onclick="switchAdminTab('messages')">📢 Рассылка</button>
                     <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
                     <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
                     <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
@@ -2050,6 +2064,30 @@ html, body {
         </div>
     </div>
 </div>
+                                <!-- Messages Tab (Рассылка) -->
+                <div id="messages-admin" class="tab-content">
+                    <div class="card mb-3">
+                        <h3 class="card-title mb-2">📢 Отправить сообщение</h3>
+                        <div class="form-group">
+                            <label>Кому отправить?</label>
+                            <select id="messageRecipient">
+                                <option value="all">📣 Всем пользователям</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Текст сообщения</label>
+                            <textarea id="messageText" placeholder="Напишите сообщение..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="sendBroadcast()">📨 Отправить</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title mb-2">💬 Переписка с пользователями</h3>
+                        <div id="adminMessagesList">
+                            <p class="text-muted">Пока нет сообщений</p>
+                        </div>
+                    </div>
+                </div>
                 <!-- Requests Tab -->
                 <div id="requests-admin" class="tab-content">
                     <div class="card">
@@ -2612,6 +2650,14 @@ html, body {
     window.partnerRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     updateAdmin();
 });
+                        // 📢 Сообщения (рассылка + ответы)
+            window.messages = [];
+            onSnapshot(collection(db, "messages"), (snapshot) => {
+                window.messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateAdmin();
+                updateCabinet();
+                if (typeof updateMessageBadge === 'function') updateMessageBadge();
+            });
         }
 
         // Initialize App
@@ -3293,6 +3339,7 @@ window.handleReviewSubmit = async function(e) {
                         <span class="badge ${c.paid ? 'badge-success' : 'badge-warning'}">${c.paid ? 'Выплачено' : 'Ожидание'}</span>
                     </div>
                 </div>`).join('');
+                                renderUserMessages();
         };
 
         window.updateAdmin = function() {
@@ -3460,6 +3507,7 @@ if (adminReviewsList) {
                 }).join('');
 
             document.getElementById('adminCommissionsList').innerHTML = statsHTML + listHTML;
+            renderAdminMessages();
         };
 
       window.renderProducts = function() {
@@ -4176,6 +4224,160 @@ window.showErrorMessage = (msg) => {
 
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 1200);
+            }
+        };
+                // ========== 📢 СИСТЕМА СООБЩЕНИЙ ==========
+
+        // 📨 ТЫ (админ) отправляешь сообщение
+        window.sendBroadcast = async function() {
+            const recipient = document.getElementById('messageRecipient').value;
+            const text = document.getElementById('messageText').value.trim();
+            if (!text) { showErrorMessage('Напишите текст!'); return; }
+
+            try {
+                if (recipient === 'all') {
+                    // Отправляем КАЖДОМУ пользователю (кроме админов)
+                    const targets = window.users.filter(u => u.role !== 'admin');
+                    for (const u of targets) {
+                        await addDoc(collection(db, "messages"), {
+                            userId: u.id,
+                            text: text,
+                            fromAdmin: true,
+                            date: new Date().toLocaleString('ru-RU')
+                        });
+                    }
+                    showSuccessMessage(`📣 Отправлено ${targets.length} пользователям!`);
+                } else {
+                    // Отправляем ОДНОМУ
+                    await addDoc(collection(db, "messages"), {
+                        userId: recipient,
+                        text: text,
+                        fromAdmin: true,
+                        date: new Date().toLocaleString('ru-RU')
+                    });
+                    showSuccessMessage('✅ Сообщение отправлено!');
+                }
+                document.getElementById('messageText').value = '';
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        // 📨 ПОЛЬЗОВАТЕЛЬ отправляет сообщение тебе
+        window.sendUserMessage = async function() {
+            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+            const text = document.getElementById('userMessageText').value.trim();
+            if (!text) { showErrorMessage('Напишите текст!'); return; }
+
+            try {
+                await addDoc(collection(db, "messages"), {
+                    userId: window.currentUser.id,
+                    text: text,
+                    fromAdmin: false,
+                    date: new Date().toLocaleString('ru-RU')
+                });
+                document.getElementById('userMessageText').value = '';
+                showSuccessMessage('✅ Сообщение отправлено!');
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        // 💬 Показываем переписку ПОЛЬЗОВАТЕЛЮ
+        window.renderUserMessages = function() {
+            if (!window.currentUser) return;
+            const box = document.getElementById('userMessagesList');
+            if (!box || !window.messages) return;
+
+            const myMessages = window.messages
+                .filter(m => m.userId === window.currentUser.id)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (myMessages.length === 0) {
+                box.innerHTML = '<p class="text-muted">Сообщений пока нет</p>';
+                return;
+            }
+
+            box.innerHTML = myMessages.map(m => `
+                <div style="margin-bottom:10px; text-align:${m.fromAdmin ? 'left' : 'right'};">
+                    <div style="display:inline-block; max-width:80%; padding:10px 14px; border-radius:14px;
+                        background:${m.fromAdmin ? 'var(--surface)' : 'var(--primary)'};
+                        color:${m.fromAdmin ? 'var(--text)' : 'white'};">
+                        ${m.fromAdmin ? '<b>🛡️ Поддержка:</b><br>' : ''}${m.text}
+                        <div style="font-size:0.7rem; opacity:0.7; margin-top:4px;">${m.date}</div>
+                    </div>
+                </div>`).join('');
+            box.scrollTop = box.scrollHeight;
+        };
+
+        // 💬 Показываем переписку ТЕБЕ (админу) — сгруппировано по людям
+        window.renderAdminMessages = function() {
+            const box = document.getElementById('adminMessagesList');
+            const select = document.getElementById('messageRecipient');
+            if (!box || !window.messages) return;
+
+            // Заполняем список "Кому отправить"
+            if (select) {
+                const current = select.value;
+                select.innerHTML = '<option value="all">📣 Всем пользователям</option>' +
+                    window.users.filter(u => u.role !== 'admin')
+                        .map(u => `<option value="${u.id}">👤 ${u.name} (${u.email})</option>`).join('');
+                select.value = current || 'all';
+            }
+
+            // Группируем сообщения по пользователям
+            const byUser = {};
+            window.messages.forEach(m => {
+                if (!byUser[m.userId]) byUser[m.userId] = [];
+                byUser[m.userId].push(m);
+            });
+
+            const userIds = Object.keys(byUser);
+            if (userIds.length === 0) {
+                box.innerHTML = '<p class="text-muted">Пока нет сообщений</p>';
+                return;
+            }
+
+            box.innerHTML = userIds.map(uid => {
+                const user = window.users.find(u => u.id === uid);
+                const msgs = byUser[uid].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const chat = msgs.map(m => `
+                    <div style="text-align:${m.fromAdmin ? 'right' : 'left'}; margin-bottom:6px;">
+                        <span style="display:inline-block; padding:6px 10px; border-radius:10px; font-size:0.9rem;
+                            background:${m.fromAdmin ? 'var(--primary)' : 'var(--surface)'};
+                            color:${m.fromAdmin ? 'white' : 'var(--text)'};">
+                            ${m.text}
+                        </span>
+                    </div>`).join('');
+                return `
+                    <div class="card mb-2">
+                        <h4 class="card-title">👤 ${user?.name || 'Пользователь'}</h4>
+                        <p class="text-muted" style="font-size:0.8rem;">${user?.email || ''}</p>
+                        <div style="margin:10px 0; max-height:200px; overflow-y:auto;">${chat}</div>
+                        <div class="flex gap-1">
+                            <input type="text" id="reply-${uid}" placeholder="Ответить...">
+                            <button class="btn btn-primary btn-small" onclick="replyToUser('${uid}')">📨</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        };
+
+        // 📨 Быстрый ответ конкретному человеку из переписки
+        window.replyToUser = async function(uid) {
+            const input = document.getElementById('reply-' + uid);
+            const text = input.value.trim();
+            if (!text) { showErrorMessage('Напишите текст!'); return; }
+            try {
+                await addDoc(collection(db, "messages"), {
+                    userId: uid,
+                    text: text,
+                    fromAdmin: true,
+                    date: new Date().toLocaleString('ru-RU')
+                });
+                input.value = '';
+                showSuccessMessage('✅ Отправлено!');
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
             }
         };
 </script>
