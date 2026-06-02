@@ -778,7 +778,20 @@
                 text-align: center;
                 color: white;
             }
-
+            /* 📱 ПОРЯДОК МЕНЮ ТОЛЬКО НА ТЕЛЕФОНЕ */
+            #mainNav {
+                display: none;
+                flex-direction: column;
+            }
+            #mainNav.mobile-open {
+                display: flex;
+            }
+            /* Меняем порядок (1 = первый, 2 = второй...) */
+            #mainNav a:nth-child(1) { order: 1; } /* Главная */
+            #mainNav a:nth-child(2) { order: 2; } /* Каталог */
+            #mainNav a:nth-child(3) { order: 3; } /* Товары на тест */
+            #mainNav a:nth-child(4) { order: 4; } /* Личный кабинет */
+            #mainNav a:nth-child(5) { order: 5; } /* Админ */
             nav a:hover {
                 background: rgba(255, 255, 255, 0.2);
             }
@@ -1159,6 +1172,39 @@
                 display: none !important;
             }
         }
+                /* ⭐ Отзывы — адаптив для мобильных */
+        @media (max-width: 768px) {
+            /* Шапка карточки отзыва — в столбик */
+            #publicReviewsList .card > .flex-between {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            /* Блок с товаром (картинка + название) */
+            #publicReviewsList .card > .flex-between > .flex {
+                width: 100%;
+            }
+
+            /* Блок с рейтингом (звёзды + оценка) — слева, не справа */
+            #publicReviewsList .card > .flex-between > div[style*="text-align: right"] {
+                text-align: left !important;
+                width: 100%;
+                padding-top: 8px;
+                border-top: 1px solid var(--border);
+            }
+
+            /* Звёзды чуть меньше, чтобы точно влезли */
+            #publicReviewsList .card span[style*="gold"] {
+                font-size: 1.1rem !important;
+            }
+
+            /* Название товара — перенос, не обрезается */
+            #publicReviewsList .card-title {
+                font-size: 1.05rem !important;
+                word-break: break-word;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1230,8 +1276,8 @@
 
             <nav id="mainNav">
                 <a onclick="showSection('home'); closeMobileMenu()">Главная</a>
-                <a onclick="showSection('verified'); closeMobileMenu()">Проверенные товары</a>
-                <a onclick="showSection('catalog'); closeMobileMenu()">Каталог</a>
+                <a onclick="showSection('verified'); closeMobileMenu()">Каталог</a>
+                <a onclick="showSection('catalog'); closeMobileMenu()">Товары на тест</a>
                 <a onclick="showSection('cabinet'); closeMobileMenu()">Личный кабинет</a>
                 <a id="adminNavLink" onclick="showSection('admin'); closeMobileMenu()" style="display: none;">Админ</a>
             </nav>
