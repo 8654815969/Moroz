@@ -2098,9 +2098,9 @@ html, body {
             </div>
             <form onsubmit="handleEditProduct(event)">
                 <input type="hidden" id="editProductId">
-                <div class="form-group">
+                                <div class="form-group">
                     <label>Название товара</label>
-                    <input type="text" id="editProductName" 
+                    <input type="text" id="editProductName">
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
@@ -2216,13 +2216,13 @@ html, body {
                     <label>Название товара</label>
                     <input type="text" id="editVerifiedProductName" required>
                 </div>
-                <div class="form-group">
+                                <div class="form-group">
                     <label>Описание</label>
-                    <textarea id="editVerifiedProductDescription" </textarea>
+                    <textarea id="editVerifiedProductDescription"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Категория</label>
-                    <select id="editVerifiedProductCategory" 
+                    <select id="editVerifiedProductCategory">
                         <option value="electronics">Электроника</option>
                         <option value="home">Товары для дома</option>
                         <option value="beauty">Красота и уход</option>
@@ -2231,11 +2231,11 @@ html, body {
                 </div>
                 <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="editVerifiedProductStock" min="0" 
+                    <input type="number" id="editVerifiedProductStock" min="0">
                 </div>
                 <div class="form-group">
                     <label>Ссылка на товар</label>
-                    <input type="url" id="editVerifiedProductUrl"
+                    <input type="url" id="editVerifiedProductUrl">
                 </div>
                                 <div class="form-group">
                     <label>🎬 Ссылка на видеообзор (необязательно)</label>
@@ -3408,16 +3408,18 @@ window.renderVerifiedProducts = function() {
             document.getElementById('editProductModal').classList.add('active');
         };
 
-        window.openEditVerifiedProductModal = (id) => {
+                window.openEditVerifiedProductModal = (id) => {
             const p = window.verifiedProducts.find(x => x.id === id);
             document.getElementById('editVerifiedProductId').value = p.id;
             document.getElementById('editVerifiedProductName').value = p.name;
             document.getElementById('editVerifiedProductDescription').value = p.description;
             document.getElementById('editVerifiedProductCategory').value = p.category;
             document.getElementById('editVerifiedProductStock').value = p.stock;
-                        document.getElementById('editVerifiedProductUrl').value = p.url;
+            document.getElementById('editVerifiedProductUrl').value = p.url;
             document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
             document.getElementById('editVerifiedProductModal').classList.add('active');
+        };
+
        window.approveReview = async function(id) {
     try {
         await updateDoc(doc(db, "reviews", id), { status: 'approved' });
