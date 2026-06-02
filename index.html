@@ -4078,5 +4078,63 @@ window.showErrorMessage = (msg) => {
     }
   });
 </script>
+    <!-- Кнопка установки приложения -->
+<button id="installBtn" style="
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    cursor: pointer;
+    animation: pulse 2s infinite;
+">
+    📲 Установить приложение
+</button>
+
+<style>
+@keyframes pulse {
+    0%   { transform: translateX(-50%) scale(1); }
+    50%  { transform: translateX(-50%) scale(1.05); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+</style>
+
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Ловим событие, когда установка доступна
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block'; // показываем кнопку
+    console.log('✅ Установка доступна — кнопка показана');
+});
+
+// Когда пользователь нажал кнопку
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('Результат установки:', outcome);
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// Когда приложение установлено — прячем кнопку
+window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+    console.log('🎉 Приложение установлено!');
+});
+</script>
 </body>
 </html>
