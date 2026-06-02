@@ -769,14 +769,48 @@
                 display: flex;
             }
 
-            nav a {
-                font-size: 0.9rem !important;
-                padding: 12px !important;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
+                        nav a {
+                font-size: 0.95rem !important;
+                padding: 14px 16px !important;
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 14px;
                 white-space: nowrap;
-                text-align: center;
+                text-align: left;
                 color: white;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.25s ease;
+                animation: menuSlideIn 0.4s ease backwards;
+            }
+
+            /* Плавное появление по очереди */
+            #mainNav a:nth-child(1) { animation-delay: 0.05s; }
+            #mainNav a:nth-child(2) { animation-delay: 0.10s; }
+            #mainNav a:nth-child(3) { animation-delay: 0.15s; }
+            #mainNav a:nth-child(4) { animation-delay: 0.20s; }
+            #mainNav a:nth-child(5) { animation-delay: 0.25s; }
+
+            /* Нажатие */
+            nav a:active {
+                transform: scale(0.97);
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+            @keyframes menuSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
             /* 📱 ПОРЯДОК МЕНЮ ТОЛЬКО НА ТЕЛЕФОНЕ */
             #mainNav {
@@ -832,8 +866,29 @@
                 font-size: 1rem;
             }
 
-            .grid-2, .grid-3, .grid-4, .features {
+                       .grid-2, .grid-3, .grid-4 {
                 grid-template-columns: 1fr;
+            }
+            
+            /* 📱 На телефоне — 2 карточки в ряд */
+            .features {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.8rem !important;
+            }
+            
+            /* Делаем карточки компактнее */
+            .feature {
+                padding: 1.2rem 0.8rem !important;
+            }
+            .feature-icon {
+                font-size: 2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            .feature h3 {
+                font-size: 0.95rem !important;
+            }
+            .feature p {
+                font-size: 0.8rem !important;
             }
             #productGrid {
                 grid-template-columns: none !important;
@@ -1205,9 +1260,36 @@
                 word-break: break-word;
             }
         }
+                /* ✨ Подсветка активного пункта меню */
+        @media (max-width: 768px) {
+            nav a.nav-active {
+                background: rgba(255, 255, 255, 0.95) !important;
+                color: var(--primary) !important;
+                box-shadow: 0 4px 16px rgba(255,255,255,0.4) !important;
+                border-color: white !important;
+            }
+        }
+                /* 🌑 Затемнение фона при открытом меню */
+        #menuOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+            animation: fadeIn 0.3s ease;
+        }
+        #menuOverlay.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
+        <!-- 🌑 Затемнение фона для меню -->
+    <div id="menuOverlay" onclick="closeMobileMenu()"></div>
     <!-- ⬅️ Кнопка Назад -->
 <button id="backBtn" onclick="goBack()">⬅️ Назад</button>
     <!-- 🍔 Фиксированный бургер -->
@@ -2584,7 +2666,10 @@ window.handleReviewSubmit = async function(e) {
     const target = document.getElementById(sectionId);
     target.classList.add('active');
     target.style.display = 'block';
-
+    // ✨ Подсветка активного пункта меню
+    document.querySelectorAll('#mainNav a').forEach(a => a.classList.remove('nav-active'));
+    const activeLink = document.querySelector(`#mainNav a[onclick*="'${sectionId}'"]`);
+    if (activeLink) activeLink.classList.add('nav-active');
     // 🤝 КНОПКА СОТРУДНИЧЕСТВО — только на главной
     const partnerBtn = document.getElementById('partnerFloatBtn');
     if (partnerBtn) {
@@ -3307,11 +3392,13 @@ window.showErrorMessage = (msg) => {
             }
         };
                 // 🍔 БУРГЕР-МЕНЮ
-                window.toggleMobileMenu = function() {
+                                window.toggleMobileMenu = function() {
             const nav = document.getElementById('mainNav');
             const fixedBurger = document.getElementById('fixedBurger');
+            const overlay = document.getElementById('menuOverlay');
             nav.classList.toggle('mobile-open');
             fixedBurger.classList.toggle('open');
+            overlay.classList.toggle('active');
             // 📱 Шапка появляется при открытии меню
             if (nav.classList.contains('mobile-open')) {
                 document.querySelector('header').classList.remove('header-hidden');
@@ -3321,8 +3408,10 @@ window.showErrorMessage = (msg) => {
         window.closeMobileMenu = function() {
             const nav = document.getElementById('mainNav');
             const fixedBurger = document.getElementById('fixedBurger');
+            const overlay = document.getElementById('menuOverlay');
             nav.classList.remove('mobile-open');
             fixedBurger.classList.remove('open');
+            overlay.classList.remove('active');
         };
                 // 👆 СВАЙП ВЛЕВО/ВПРАВО = НАЗАД
         let touchStartX = 0;
