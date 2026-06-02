@@ -3577,7 +3577,9 @@ window.showErrorMessage = (msg) => {
             // Свайп должен быть горизонтальным (не вертикальным)
             if (diffY > 80) return;
 
-            /            // 👉 Свайп ВЛЕВО (палец справа налево) = Назад
+                        if (diffY > 80) return;
+
+            // 👉 Свайп ВЛЕВО (палец справа налево) = Назад
             if (diffX < -100) {
                 // 📳 Лёгкая вибрация (если поддерживается)
                 if (navigator.vibrate) navigator.vibrate(30);
@@ -3609,8 +3611,6 @@ window.showSwipeHint = () => {
     // ✅ Запоминаем — больше не показываем в этой сессии
     sessionStorage.setItem('swipeHintShown', 'true');
 };
-};
-
 // 🎆 Функция фейерверка
 window.launchFirework = (x, y) => {
     const colors = ['#fbbf24', '#f97316', '#ef4444', '#10b981', '#3b82f6', '#ffffff'];
