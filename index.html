@@ -1317,7 +1317,7 @@
 <body>
         <!-- 🎉 Большой текст при регистрации -->
     <div id="welcomeBurst">🎉<br>ДОБРО ПОЖАЛОВАТЬ!</div>
-    <    <!-- 💡 Подсказка про свайп -->
+        <!-- 💡 Подсказка про свайп -->
 <div id="swipeHint">
     <span class="swipe-arrow">←</span> Свайп ВЛЕВО — назад
 </div>
@@ -1325,6 +1325,8 @@
     <div id="menuOverlay" onclick="closeMobileMenu()"></div>
     <!-- ⬅️ Кнопка Назад -->
 <button id="backBtn" onclick="goBack()">⬅️ Назад</button>
+        <!-- ⬆️ Кнопка Наверх -->
+    <button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
     <!-- 🍔 Фиксированный бургер -->
 <button id="fixedBurger" onclick="toggleMobileMenu()">
     <span></span>
@@ -1482,7 +1484,40 @@
         70%  { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
         100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
-
+    /* ⬆️ Кнопка Наверх */
+    #scrollTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        transition: all 0.3s ease;
+        animation: scrollBtnBounce 2s ease-in-out infinite;
+    }
+    #scrollTopBtn:hover {
+        transform: scale(1.1);
+    }
+    #scrollTopBtn:active {
+        transform: scale(0.9);
+    }
+    #scrollTopBtn.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    @keyframes scrollBtnBounce {
+        0%, 100% { box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+        50% { box-shadow: 0 6px 30px rgba(37, 99, 235, 0.9); }
+    }
     /* ⬅️ Кнопка Назад */
     #backBtn {
         display: none !important;
@@ -2781,9 +2816,12 @@ window.handleReviewSubmit = async function(e) {
     const receiptImage = await compressImage(receiptFile);
     const screenshotImage = await compressImage(screenshotFile);
 
-    await addReview(productId, window.selectedRating, text, receiptImage, screenshotImage);
+       await addReview(productId, window.selectedRating, text, receiptImage, screenshotImage);
     closeReviewModal();
     showSuccessMessage('✅ Отзыв добавлен! +10 баллов');
+    
+    // 🎊 КОНФЕТТИ ЗА ОТЗЫВ!
+    setTimeout(() => launchSuperConfetti(), 300);
 };
         window.addReview = async function(productId, rating, text, receiptImage, screenshotImage) {
     if (!window.currentUser) return;
@@ -2890,6 +2928,39 @@ window.handleReviewSubmit = async function(e) {
                 if (heroRegisterBtn) heroRegisterBtn.style.display = 'inline-block';
             }
         };
+        // 🔢 АНИМАЦИЯ ЦИФР (от 0 до значения)
+        window.animateNumber = function(element, target, suffix = '') {
+            if (!element) return;
+            const duration = 1200;
+            const start = 0;
+            const startTime = performance.now();
+
+            function update(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+                const value = Math.round(start + (target - start) * eased);
+                element.textContent = value + suffix;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        };
+        // 💰 АНИМАЦИЯ ДЕНЕГ
+        window.animateMoneyValue = function(element, target) {
+            if (!element) return;
+            const duration = 1200;
+            const startTime = performance.now();
+
+            function update(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const value = (target * eased).toFixed(2);
+                element.textContent = '$' + value;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        };
 
                 window.updateCabinet = function() {
             if (!window.currentUser) {
@@ -2904,9 +2975,9 @@ window.handleReviewSubmit = async function(e) {
             document.getElementById('userName').textContent = window.currentUser.name;
             document.getElementById('userEmail').textContent = window.currentUser.email;
             document.getElementById('userAvatar').textContent = window.currentUser.name.charAt(0);
-            document.getElementById('productsCount').textContent = window.currentUser.products;
-            document.getElementById('reviewsCount').textContent = window.currentUser.reviews;
-            document.getElementById('pointsCount').textContent = window.currentUser.points;
+            animateNumber(document.getElementById('productsCount'), window.currentUser.products || 0);
+            animateNumber(document.getElementById('reviewsCount'), window.currentUser.reviews || 0);
+            animateNumber(document.getElementById('pointsCount'), window.currentUser.points || 0);
             
             const userReviews = window.reviews.filter(r => r.userId === window.currentUser.id);
             const avg = userReviews.length > 0 ? (userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length).toFixed(1) : 0;
@@ -2952,9 +3023,13 @@ window.handleReviewSubmit = async function(e) {
             const userCommissions = window.commissions.filter(c => c.referrerId === window.currentUser.id);
             const total = userCommissions.reduce((sum, c) => sum + c.amount, 0);
             const paid = userCommissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
-            document.getElementById('totalCommission').textContent = '$' + total.toFixed(2);
-            document.getElementById('paidCommission').textContent = '$' + paid.toFixed(2);
-            document.getElementById('unpaidCommission').textContent = '$' + (total - paid).toFixed(2);
+            const totalEl = document.getElementById('totalCommission');
+            const paidEl = document.getElementById('paidCommission');
+            const unpaidEl = document.getElementById('unpaidCommission');
+            
+            animateMoneyValue(totalEl, total);
+            animateMoneyValue(paidEl, paid);
+            animateMoneyValue(unpaidEl, total - paid);
             
             const commList = document.getElementById('commissionsList');
             commList.innerHTML = userCommissions.length === 0 ? '<p class="text-muted">Нет комиссий</p>' : userCommissions.map(c => `
@@ -3577,6 +3652,22 @@ window.showErrorMessage = (msg) => {
                 backBtn.style.display = (!homeActive && window.navHistory && window.navHistory.length > 0) ? 'block' : 'none';
             }
         };
+                // ⬆️ КНОПКА НАВЕРХ
+        window.scrollToTop = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (navigator.vibrate) navigator.vibrate(20);
+        };
+
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scrollTopBtn');
+            if (!btn) return;
+            if (window.pageYOffset > 400) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+
                 // 🍔 БУРГЕР-МЕНЮ
                                 window.toggleMobileMenu = function() {
             const nav = document.getElementById('mainNav');
@@ -3608,23 +3699,27 @@ window.showErrorMessage = (msg) => {
             touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
 
-        document.addEventListener('touchend', (e) => {
+               document.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].screenX;
             const touchEndY = e.changedTouches[0].screenY;
             const diffX = touchEndX - touchStartX;
-            const diffY = Math.abs(touchEndY - touchStartY);
+            const diffY = touchEndY - touchStartY;
 
-            // 🛑 Не реагируем на свайп внутри каталога (там горизонтальная прокрутка)
+            // 🛑 Не реагируем внутри каталога (горизонтальная прокрутка)
             if (e.target.closest('#productGrid')) return;
 
-            // Свайп должен быть горизонтальным
-            if (diffY > 80) return;
+            // 👈 Свайп ВЛЕВО: горизонтальный, длинный, не диагональный
+            if (diffX < -70 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+                console.log('👈 Свайп влево! diffX:', diffX);
 
-            // 👈 Свайп ВЛЕВО (палец справа налево) = Назад
-            if (diffX < -80) {
-                if (navigator.vibrate) navigator.vibrate(30);
-                launchFirework(touchEndX, touchEndY);
-                goBack();
+                // Проверяем — есть ли куда возвращаться
+                if (window.navHistory && window.navHistory.length > 0) {
+                    if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
+                    launchFirework(touchEndX, touchEndY);
+                    goBack();
+                } else {
+                    console.log('🚫 Некуда возвращаться (мы на главной)');
+                }
             }
         }, { passive: true });
 
