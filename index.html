@@ -3210,7 +3210,14 @@ window.rejectReview = async function(id) {
                     </div>`;
             }).join('');
         };
-                window.showReviewsPage = () => {
+                                window.showReviewsPage = () => {
+    // 📚 Запоминаем историю переходов (для кнопки Назад и свайпа)
+    if (!window.navHistory) window.navHistory = [];
+    const currentActive = document.querySelector('.section.active');
+    if (currentActive && currentActive.id !== 'reviews-page') {
+        window.navHistory.push(currentActive.id);
+    }
+
     // 🔑 Прячем ВСЕ секции
     document.querySelectorAll('.section').forEach(s => {
         s.classList.remove('active');
@@ -3221,7 +3228,14 @@ window.rejectReview = async function(id) {
         page.classList.add('active');
         page.style.display = 'block';
     }
+
+    // 🤝 Прячем кнопку Сотрудничество (она только на главной)
+    const partnerBtn = document.getElementById('partnerFloatBtn');
+    if (partnerBtn) partnerBtn.style.display = 'none';
+
     window.showPublicReviews();
+    updateBackButton();  // ⬅️ показать кнопку Назад
+    closeMobileMenu();   // 🍔 закрыть меню если открыто
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
            
@@ -3398,10 +3412,11 @@ window.showErrorMessage = (msg) => {
                 if (partnerBtn) {
                     partnerBtn.style.display = (prevSection === 'home') ? 'flex' : 'none';
                 }
-                if (prevSection === 'catalog') renderProducts();
+                               if (prevSection === 'catalog') renderProducts();
                 else if (prevSection === 'verified') renderVerifiedProducts();
                 else if (prevSection === 'cabinet') updateCabinet();
                 else if (prevSection === 'admin') updateAdmin();
+                else if (prevSection === 'reviews-page') showPublicReviews();
 
                 updateBackButton();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
