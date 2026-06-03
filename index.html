@@ -950,9 +950,7 @@
                 font-size: 1rem;
             }
 
-                      .grid-2, .grid-3, .grid-4 {
-            
-                              /* 📱 На телефоне — 2 карточки в ряд, по центру */
+                                 /* 📱 На телефоне — 2 карточки в ряд, по центру */
             .features {
                 display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -960,6 +958,28 @@
                 margin: 1.5rem auto !important;
                 max-width: 100% !important;
                 justify-content: center !important;
+            }
+            
+            /* 🔵 Синие карточки (в тон фону) */
+            .feature {
+                padding: 1.2rem 0.8rem !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+            }
+            .feature-icon {
+                font-size: 2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            .feature h3 {
+                font-size: 0.95rem !important;
+                color: white !important;
+            }
+            .feature p {
+                font-size: 0.8rem !important;
+                color: rgba(255, 255, 255, 0.85) !important;
             }
             
             /* 🔵 Синие карточки (в тон фону) */
@@ -992,14 +1012,62 @@
                 gap: 10px !important;
             }
 
-            /* 📱 Убираем белые бока на телефоне */
-            .container {
+                        /* 📱 Убираем белые бока на телефоне (только для каталогов) */
+            #verified .container,
+            #catalog .container {
                 padding: 0 !important;
             }
             
-            /* Но текстовым секциям вернём отступы (чтобы текст не прилипал) */
+            /* Текстовым секциям — нормальные отступы */
             #verified, #catalog, #cabinet, #admin, #reviews-page {
-                padding: 0 1rem !important;
+                padding: 0 0.8rem !important;
+            }
+
+            /* 📱 ФИКС: всё внутри кабинета и админки не вылазит */
+            #cabinet .card,
+            #admin .card,
+            #cabinet .stat-card,
+            #admin .stat-card {
+                padding: 0.9rem !important;
+                font-size: 0.9rem;
+            }
+
+            /* Заголовки кабинета/админки — компактнее */
+            #cabinet h1, #admin h1 {
+                font-size: 1.4rem !important;
+            }
+            #cabinet .card-title, #admin .card-title {
+                font-size: 1rem !important;
+            }
+
+            /* Цифры в статистике — меньше */
+            #cabinet .stat-value, #admin .stat-value {
+                font-size: 1.5rem !important;
+            }
+
+            /* Кнопки в карточках — мельче */
+            #cabinet .btn, #admin .btn {
+                font-size: 0.8rem !important;
+                padding: 0.5rem 0.8rem !important;
+            }
+
+            /* Поля ввода не вылазят */
+            #cabinet input, #admin input,
+            #cabinet textarea, #admin textarea,
+            #cabinet select, #admin select {
+                font-size: 0.9rem !important;
+                max-width: 100% !important;
+            }
+
+            /* Картинки чеков/отзывов в админке — меньше */
+            #admin img {
+                max-width: 100px !important;
+            }
+
+            /* Длинные слова переносятся */
+            #cabinet *, #admin * {
+                word-break: break-word;
+                overflow-wrap: break-word;
             }
 
             .stats {
@@ -4351,14 +4419,23 @@ window.showErrorMessage = (msg) => {
             touchStartTime = Date.now();
         }, { passive: true });
 
-                document.addEventListener('touchend', (e) => {
+                       window.lastSwipeTime = 0;
+        document.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].clientX;
             const touchEndY = e.changedTouches[0].clientY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
 
-            // Минимальная длина свайпа
-            const minSwipe = 60;
+            // 🛑 Задержка между свайпами (1 раз в секунду)
+            const now = Date.now();
+            if (now - window.lastSwipeTime < 1000) return;
+
+            // 🛑 Свайп должен быть быстрым (не медленное листание страницы)
+            const swipeDuration = now - touchStartTime;
+            if (swipeDuration > 500) return;
+
+            // Минимальная длина свайпа (увеличена)
+            const minSwipe = 100;
 
             // Свайп должен быть горизонтальным (не вертикальным)
             if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
@@ -4390,6 +4467,7 @@ window.showErrorMessage = (msg) => {
             // 👈 Свайп ВЛЕВО = следующий раздел
             if (diffX < 0) {
                 if (currentIndex < menuOrder.length - 1) {
+                                        window.lastSwipeTime = now;
                     const nextId = menuOrder[currentIndex + 1];
                     if (navigator.vibrate) navigator.vibrate(30);
                     launchFirework(touchEndX, touchEndY);
@@ -4402,6 +4480,7 @@ window.showErrorMessage = (msg) => {
             // 👉 Свайп ВПРАВО = предыдущий раздел
             else if (diffX > 0) {
                 if (currentIndex > 0) {
+                                        window.lastSwipeTime = now;
                     const prevId = menuOrder[currentIndex - 1];
                     if (navigator.vibrate) navigator.vibrate(30);
                     launchFirework(touchEndX, touchEndY);
