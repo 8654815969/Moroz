@@ -773,7 +773,6 @@
         @media (max-width: 768px) {
                        #partnerFloatBtn {
     position: static !important;      /* обычное место в потоке страницы */
-    display: block !important;
     margin: 30px auto 20px !important; /* по центру + отступы */
     top: auto !important;
     bottom: auto !important;
@@ -1522,7 +1521,7 @@ html, body {
     <div id="welcomeBurst">🎉<br>ДОБРО ПОЖАЛОВАТЬ!</div>
         <!-- 💡 Подсказка про свайп -->
 <div id="swipeHint">
-    <span class="swipe-arrow">←</span> Свайп ВЛЕВО — назад
+    <span class="swipe-arrow">⟷</span> Свайпайте влево/вправо для навигации
 </div>
         <!-- 🌑 Затемнение фона для меню -->
     <div id="menuOverlay" onclick="closeMobileMenu()"></div>
@@ -1776,6 +1775,37 @@ html, body {
     border-radius: 50px; cursor: pointer;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
+                    /* 📱 ФИКС поздравительного окна на телефоне */
+@media (max-width: 768px) {
+    #congratsModal {
+        align-items: flex-start !important;
+        padding: 10px !important;
+    }
+    #congratsModal .modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 10px auto !important;
+        padding: 1.5rem 1rem !important;
+        max-height: 95vh !important;
+        overflow-y: auto !important;
+    }
+    #congratsModal h2 {
+        font-size: 1.3rem !important;
+        line-height: 1.3 !important;
+    }
+    #congratsModal p {
+        font-size: 0.9rem !important;
+    }
+    #congratsModal input {
+        font-size: 1rem !important;
+        padding: 0.8rem !important;
+    }
+    /* Убираем большие декоративные эмодзи по углам (они вылезают) */
+    #congratsModal .modal-content > div[style*="position: absolute"] {
+        font-size: 3rem !important;
+        opacity: 0.1 !important;
+    }
+}
 </style>
     <!-- Header -->
     <header>
@@ -1994,7 +2024,8 @@ html, body {
                         <p class="text-muted mb-2">Поделитесь этой ссылкой с друзьями. Они автоматически зарегистрируются как ваши рефералы и вы получите 5% комиссию с их покупок!</p>
                         <div class="referral-link-box">
                             <div class="referral-link-input" id="referralLink">https://example.com/?ref=REF123456</div>
-                            <button class="btn btn-primary btn-small" onclick="copyReferralLink()" style="width: 100%;">📋 Копировать ссылку</button>
+                            <button class="btn btn-primary btn-small" onclick="copyReferralLink()" style="width: 100%; margin-bottom: 8px;">📋 Копировать ссылку</button>
+<button class="btn btn-success btn-small" onclick="shareReferralLink()" style="width: 100%;">📤 Поделиться</button>
                         </div>
                     </div>
 
@@ -2082,6 +2113,7 @@ html, body {
                 <div id="users-admin" class="tab-content active">
                     <div class="card">
                         <h3 class="card-title mb-2">Список пользователей</h3>
+                        <input type="text" id="userSearchInput" placeholder="🔍 Поиск по имени или email..." style="margin-bottom: 1rem;" oninput="filterAdminUsers()">
                         <div id="usersList">
                             <p class="text-muted">Нет пользователей</p>
                         </div>
@@ -2100,12 +2132,19 @@ html, body {
                 <div id="messages-admin" class="tab-content">
                     <div class="card mb-3">
                         <h3 class="card-title mb-2">📢 Отправить сообщение</h3>
-                        <div class="form-group">
+                                                <div class="form-group">
                             <label>Кому отправить?</label>
-                            <select id="messageRecipient">
+                            <select id="messageRecipient" onchange="toggleSelectMode()">
                                 <option value="all">📣 Всем пользователям</option>
+                                <option value="selected">✅ Выбранным (отметить галочками)</option>
                             </select>
                         </div>
+
+                        <!-- Список с чекбоксами (показывается при выборе "Выбранным") -->
+                        <div id="userCheckboxList" style="display:none; max-height:250px; overflow-y:auto; border:1px solid var(--border); border-radius:12px; padding:10px; margin-bottom:1rem;">
+                            <!-- Чекбоксы пользователей -->
+                        </div>
+
                         <div class="form-group">
                             <label>Текст сообщения</label>
                             <textarea id="messageText" placeholder="Напишите сообщение..."></textarea>
@@ -2623,7 +2662,45 @@ html, body {
         window.commissions = [];
         window.productRequests = [];
         window.partnerRequests = [];
+// ========== 🎉 УВЕДОМЛЕНИЯ О РЕФЕРАЛАХ ==========
+window.showFullscreenNotify = function(icon, title, text) {
+    document.getElementById('notifyIcon').textContent = icon;
+    document.getElementById('notifyTitle').innerHTML = title;
+    document.getElementById('notifyText').innerHTML = text;
+    document.getElementById('fullscreenNotify').classList.add('show');
+    if (typeof launchSuperConfetti === 'function') launchSuperConfetti();
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+};
 
+window.closeFullscreenNotify = function() {
+    document.getElementById('fullscreenNotify').classList.remove('show');
+};
+
+window.checkReferralNotifications = async function() {
+    if (!window.currentUser) return;
+    const newReferrals = window.users.filter(u =>
+        u.referrer === window.currentUser.id &&
+        u.notifiedReferrer !== true
+    );
+    if (newReferrals.length === 0) return;
+
+    const names = newReferrals.map(u => u.name).join(', ');
+    const count = newReferrals.length;
+
+    showFullscreenNotify(
+        '🎊',
+        count === 1 ? 'Новый реферал!' : `+${count} новых рефералов!`,
+        `<strong>${names}</strong> ${count === 1 ? 'присоединился' : 'присоединились'} по вашей ссылке! 🚀<br><br>Вы получаете <strong>5% с каждой покупки</strong>! 💰`
+    );
+
+    for (const u of newReferrals) {
+        try {
+            await updateDoc(doc(db, "users", u.id), { notifiedReferrer: true });
+        } catch (err) {
+            console.error('Ошибка:', err);
+        }
+    }
+};
         // Firebase Sync Listeners
         function setupListeners() {
             onSnapshot(collection(db, "users"), (snapshot) => {
@@ -2645,6 +2722,9 @@ html, body {
                 updateHeader();
                 updateCabinet();
                 updateAdmin();
+                if (typeof checkReferralNotifications === 'function') {
+                    checkReferralNotifications();
+                }
             });
 
             onSnapshot(collection(db, "products"), (snapshot) => {
@@ -2974,9 +3054,6 @@ image: image,
     };
     
    await addDoc(collection(db, "productRequests"), request);
-    await updateDoc(doc(db, "users", window.currentUser.id), {
-        products: increment(1)
-    });
     
     closeRequestProductModal();
     
@@ -3392,8 +3469,15 @@ window.handleReviewSubmit = async function(e) {
                     </div>
                 </div>`).join('');
                                 renderUserMessages();
+                                updateMessagesBadge();
         };
-
+        window.filterAdminUsers = function() {
+            const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase();
+            document.querySelectorAll('#usersList .card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(q) ? '' : 'none';
+            });
+        };
         window.updateAdmin = function() {
             if (!window.currentUser || window.currentUser.role !== 'admin') return;
             document.getElementById('adminNotification').style.display = 'none';
@@ -3694,8 +3778,18 @@ window.renderVerifiedProducts = function() {
 
        window.approveReview = async function(id) {
     try {
+        const review = window.reviews.find(r => r.id === id);
         await updateDoc(doc(db, "reviews", id), { status: 'approved' });
-        showSuccessMessage('✅ Отзыв одобрен!');
+
+        // ✅ Начисляем товар автору отзыва (только 1 раз)
+        if (review && review.productCounted !== true) {
+            await updateDoc(doc(db, "users", review.userId), {
+                products: increment(1)
+            });
+            await updateDoc(doc(db, "reviews", id), { productCounted: true });
+        }
+
+        showSuccessMessage('✅ Отзыв одобрен! Товар засчитан пользователю 🎁');
     } catch (err) {
         console.error('❌ Ошибка одобрения:', err);
         showErrorMessage('Ошибка: ' + err.message);
@@ -3711,10 +3805,19 @@ window.rejectReview = async function(id) {
         console.error('❌ Ошибка отклонения:', err);
         showErrorMessage('Ошибка: ' + err.message);
     }
-};
-        window.unapproveReview = async function(id) {
+};window.unapproveReview = async function(id) {
     try {
+        const review = window.reviews.find(r => r.id === id);
         await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+
+        // ↩️ Забираем товар обратно (если был засчитан)
+        if (review && review.productCounted === true) {
+            await updateDoc(doc(db, "users", review.userId), {
+                products: increment(-1)
+            });
+            await updateDoc(doc(db, "reviews", id), { productCounted: false });
+        }
+
         showSuccessMessage('↩️ Одобрение снято, отзыв снова на проверке.');
     } catch (err) {
         showErrorMessage('Ошибка: ' + err.message);
@@ -3927,10 +4030,30 @@ window.openProductPage = function(productId, isVerified = false) {
             event.target.classList.add('active');
             document.getElementById(name + '-admin').classList.add('active');
         };
-        window.copyReferralLink = () => {
-            navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
-            showSuccessMessage('Скопировано!');
+
+                window.shareReferralLink = async function() {
+            const link = document.getElementById('referralLink').textContent;
+            const text = `🎁 Присоединяйся к национальному проекту "Честный Отзыв"! Получай лучшие товары в РФ! ${link}`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Честный Отзыв', text: text, url: link });
+                } catch (err) { console.log('Отменено'); }
+            } else {
+                navigator.clipboard.writeText(text);
+                showSuccessMessage('📋 Ссылка скопирована! Вставьте в мессенджер');
+            }
         };
+        
+                window.copyReferralLink = () => {
+            navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
+            showSuccessMessage('🎉 Ссылка скопирована!');
+            if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+            const rect = document.getElementById('referralLink').getBoundingClientRect();
+            if (typeof launchFirework === 'function') {
+                launchFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+        };
+        
 window.togglePassword = function(inputId, icon) {
     const input = document.getElementById(inputId);
     if (input.type === 'password') {
@@ -4165,29 +4288,67 @@ window.showErrorMessage = (msg) => {
             touchStartTime = Date.now();
         }, { passive: true });
 
-        document.addEventListener('touchend', (e) => {
+                document.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].clientX;
             const touchEndY = e.changedTouches[0].clientY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
-            const elapsed = Date.now() - touchStartTime;
 
-
-                        /// 🛑 В каталоге нужен длинный свайп (чтобы не мешать прокрутке товаров)
+            // 🛑 В каталоге нужен длинный свайп (чтобы не мешать прокрутке товаров)
             const inCatalog = e.target.closest('#productGrid');
-            const minSwipe = inCatalog ? 130 : 50;  // в каталоге 130px, везде 50px
+            const minSwipe = inCatalog ? 130 : 60;
 
-                        // 👉 Свайп ВПРАВО = назад (как на телефонах)
-            if (diffX > minSwipe && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+            // Свайп должен быть горизонтальным (не вертикальным)
+            if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
 
-                if (window.navHistory && window.navHistory.length > 0) {
-                    if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
-                    launchFirework(touchEndX, touchEndY);
-                    goBack();
-                } else {
-                    showErrorMessage('🚫 Вы на главной');
+            // 📋 Список разделов меню (по порядку)
+            let menuOrder = ['home', 'verified', 'catalog', 'cabinet'];
+            // Админ добавляем только если пользователь — админ
+            if (window.currentUser && window.currentUser.role === 'admin') {
+                menuOrder.push('admin');
+            }
+
+            // Какой раздел сейчас активен?
+            const currentActive = document.querySelector('.section.active');
+            const currentId = currentActive ? currentActive.id : 'home';
+            let currentIndex = menuOrder.indexOf(currentId);
+
+            // Если мы на странице товара или отзывов — свайп вправо = назад
+            if (currentId === 'product-page' || currentId === 'reviews-page') {
+                if (diffX > 0) { // вправо
+                    if (window.navHistory && window.navHistory.length > 0) {
+                        if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
+                        launchFirework(touchEndX, touchEndY);
+                        goBack();
+                    }
                 }
-            } 
+                return;
+            }
+
+            // 👈 Свайп ВЛЕВО = следующий раздел
+            if (diffX < 0) {
+                if (currentIndex < menuOrder.length - 1) {
+                    const nextId = menuOrder[currentIndex + 1];
+                    if (navigator.vibrate) navigator.vibrate(30);
+                    launchFirework(touchEndX, touchEndY);
+                    showSection(nextId);
+                } else {
+                    if (navigator.vibrate) navigator.vibrate(15);
+                    showErrorMessage('📭 Это последний раздел');
+                }
+            }
+            // 👉 Свайп ВПРАВО = предыдущий раздел
+            else if (diffX > 0) {
+                if (currentIndex > 0) {
+                    const prevId = menuOrder[currentIndex - 1];
+                    if (navigator.vibrate) navigator.vibrate(30);
+                    launchFirework(touchEndX, touchEndY);
+                    showSection(prevId);
+                } else {
+                    if (navigator.vibrate) navigator.vibrate(15);
+                    showErrorMessage('🏠 Вы на главной');
+                }
+            }
         }, { passive: true });
 
         // 💡 Подсказка про свайп — ТОЛЬКО при переходе с главной + 1 раз за сессию
@@ -4287,7 +4448,7 @@ window.showErrorMessage = (msg) => {
         };
                 // ========== 📢 СИСТЕМА СООБЩЕНИЙ ==========
 
-        // 📨 ТЫ (админ) отправляешь сообщение
+              // 📨 ТЫ (админ) отправляешь сообщение
         window.sendBroadcast = async function() {
             const recipient = document.getElementById('messageRecipient').value;
             const text = document.getElementById('messageText').value.trim();
@@ -4295,23 +4456,32 @@ window.showErrorMessage = (msg) => {
 
             try {
                 if (recipient === 'all') {
-                    // Отправляем КАЖДОМУ пользователю (кроме админов)
+                    // 📣 Всем пользователям (кроме админов)
                     const targets = window.users.filter(u => u.role !== 'admin');
                     for (const u of targets) {
                         await addDoc(collection(db, "messages"), {
-                            userId: u.id,
-                            text: text,
-                            fromAdmin: true,
+                            userId: u.id, text: text, fromAdmin: true,
                             date: new Date().toLocaleString('ru-RU')
                         });
                     }
                     showSuccessMessage(`📣 Отправлено ${targets.length} пользователям!`);
+                } else if (recipient === 'selected') {
+                    // ✅ Только выбранным галочками
+                    const checked = document.querySelectorAll('#userCheckboxList input[type="checkbox"]:checked');
+                    if (checked.length === 0) { showErrorMessage('Отметьте хотя бы одного!'); return; }
+                    for (const cb of checked) {
+                        await addDoc(collection(db, "messages"), {
+                            userId: cb.value, text: text, fromAdmin: true,
+                            date: new Date().toLocaleString('ru-RU')
+                        });
+                    }
+                    showSuccessMessage(`✅ Отправлено ${checked.length} выбранным!`);
+                    // Снимаем галочки после отправки
+                    checked.forEach(cb => cb.checked = false);
                 } else {
-                    // Отправляем ОДНОМУ
+                    // 👤 Одному (старый вариант — если выбран из списка)
                     await addDoc(collection(db, "messages"), {
-                        userId: recipient,
-                        text: text,
-                        fromAdmin: true,
+                        userId: recipient, text: text, fromAdmin: true,
                         date: new Date().toLocaleString('ru-RU')
                     });
                     showSuccessMessage('✅ Сообщение отправлено!');
@@ -4320,6 +4490,48 @@ window.showErrorMessage = (msg) => {
             } catch (err) {
                 showErrorMessage('Ошибка: ' + err.message);
             }
+        };
+
+        // 🔘 Показать/скрыть список чекбоксов
+        window.toggleSelectMode = function() {
+            const mode = document.getElementById('messageRecipient').value;
+            const list = document.getElementById('userCheckboxList');
+            if (!list) return;
+            if (mode === 'selected') {
+                renderUserCheckboxes();
+                list.style.display = 'block';
+            } else {
+                list.style.display = 'none';
+            }
+        };
+
+        // 📋 Рисуем чекбоксы всех пользователей
+        window.renderUserCheckboxes = function() {
+            const list = document.getElementById('userCheckboxList');
+            if (!list) return;
+            const targets = window.users.filter(u => u.role !== 'admin');
+            if (targets.length === 0) {
+                list.innerHTML = '<p class="text-muted">Нет пользователей</p>';
+                return;
+            }
+            list.innerHTML = `
+                <label style="display:flex; align-items:center; gap:8px; padding:6px; font-weight:700; border-bottom:1px solid var(--border); cursor:pointer;">
+                    <input type="checkbox" onchange="toggleAllCheckboxes(this)" style="width:auto;">
+                    Выбрать всех
+                </label>
+            ` + targets.map(u => `
+                <label style="display:flex; align-items:center; gap:8px; padding:8px; cursor:pointer; border-radius:8px;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+                    <input type="checkbox" value="${u.id}" class="user-cb" style="width:auto;">
+                    <span>👤 ${u.name} <span class="text-muted">(${u.email})</span></span>
+                </label>
+            `).join('');
+        };
+
+        // ☑️ Выбрать/снять всех
+        window.toggleAllCheckboxes = function(master) {
+            document.querySelectorAll('#userCheckboxList .user-cb').forEach(cb => {
+                cb.checked = master.checked;
+            });
         };
 
         // 📨 ПОЛЬЗОВАТЕЛЬ отправляет сообщение тебе
@@ -4341,7 +4553,27 @@ window.showErrorMessage = (msg) => {
                 showErrorMessage('Ошибка: ' + err.message);
             }
         };
+        // 🔴 Красный кружок непрочитанных сообщений
+        window.updateMessagesBadge = function() {
+            if (!window.currentUser || !window.messages) return;
+            const unread = window.messages.filter(m =>
+                m.userId === window.currentUser.id && m.fromAdmin && m.readByUser !== true
+            ).length;
 
+            document.querySelectorAll('#cabinet .tab').forEach(t => {
+                if (t.textContent.includes('Сообщения')) {
+                    const old = t.querySelector('.msg-badge');
+                    if (old) old.remove();
+                    if (unread > 0) {
+                        const b = document.createElement('span');
+                        b.className = 'msg-badge';
+                        b.textContent = unread;
+                        b.style.cssText = 'background:#ef4444;color:#fff;border-radius:50%;min-width:20px;height:20px;font-size:0.75rem;font-weight:700;text-align:center;line-height:20px;margin-left:6px;display:inline-block;padding:0 6px;animation:pulse 1.5s infinite;';
+                        t.appendChild(b);
+                    }
+                }
+            });
+        };
         // 💬 Показываем переписку ПОЛЬЗОВАТЕЛЮ
         window.renderUserMessages = function() {
             if (!window.currentUser) return;
@@ -4508,8 +4740,9 @@ window.showErrorMessage = (msg) => {
             if (select) {
                 const current = select.value;
                 select.innerHTML = '<option value="all">📣 Всем пользователям</option>' +
-                    window.users.filter(u => u.role !== 'admin')
-                        .map(u => `<option value="${u.id}">👤 ${u.name} (${u.email})</option>`).join('');
+    '<option value="selected">✅ Выбранным (галочками)</option>' +
+    window.users.filter(u => u.role !== 'admin')
+        .map(u => `<option value="${u.id}">👤 ${u.name} (${u.email})</option>`).join('');
                 select.value = current || 'all';
             }
 
@@ -4650,5 +4883,12 @@ window.addEventListener('appinstalled', () => {
     console.log('🎉 Приложение установлено!');
 });
 </script>
+    <!-- 🎉 Полноэкранное уведомление о реферале -->
+<div id="fullscreenNotify">
+    <div class="notify-icon" id="notifyIcon">🎉</div>
+    <div class="notify-title" id="notifyTitle">Поздравляем!</div>
+    <div class="notify-text" id="notifyText">Текст</div>
+    <button class="notify-btn" onclick="closeFullscreenNotify()">✨ Круто, спасибо!</button>
+</div>
 </body>
 </html>
