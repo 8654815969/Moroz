@@ -2134,9 +2134,12 @@ html, body {
                         <h3 class="card-title mb-2">📢 Отправить сообщение</h3>
                                                 <div class="form-group">
                             <label>Кому отправить?</label>
-                            <select id="messageRecipient" onchange="toggleSelectMode()">
+                                                        <select id="messageRecipient" onchange="toggleSelectMode()">
                                 <option value="all">📣 Всем пользователям</option>
-                                <option value="selected">✅ Выбранным (отметить галочками)</option>
+                                <option value="selected">✅ Выбранным (галочками)</option>
+                                <option value="approved">✅ Заявка одобрена</option>
+                                <option value="pending">⏳ Ожидают одобрения</option>
+                                <option value="awaitingReview">⭐ Ожидаем отзыва</option>
                             </select>
                         </div>
 
@@ -4420,7 +4423,36 @@ window.showErrorMessage = (msg) => {
                 if (total >= 5) clearInterval(wave); // 5 волн = 150 конфетти
             }, 250);
         };
-
+        // 🎯 Получить список ID пользователей по фильтру
+        window.getUsersByFilter = function(filter) {
+            if (filter === 'approved') {
+                // Уникальные пользователи с одобренной заявкой
+                const ids = window.productRequests
+                    .filter(r => r.status === 'approved')
+                    .map(r => r.userId);
+                return [...new Set(ids)];
+            }
+            if (filter === 'pending') {
+                // Уникальные пользователи с заявкой в ожидании
+                const ids = window.productRequests
+                    .filter(r => r.status === 'pending')
+                    .map(r => r.userId);
+                return [...new Set(ids)];
+            }
+            if (filter === 'awaitingReview') {
+                // Заявка одобрена, но отзыв НЕ оставлен
+                const approved = window.productRequests.filter(r => r.status === 'approved');
+                const ids = approved.filter(r => {
+                    const hasReview = window.reviews.some(rev =>
+                        rev.userId === r.userId && rev.productId === r.productId
+                    );
+                    return !hasReview; // нет отзыва = ждём отзыв
+                }).map(r => r.userId);
+                return [...new Set(ids)];
+            }
+            return [];
+        };
+        
         // 🎆 Функция фейерверка / конфетти
         window.launchFirework = (x, y) => {
             const colors = ['#fbbf24', '#f97316', '#ef4444', '#10b981', '#3b82f6', '#ffffff', '#a855f7'];
@@ -4448,7 +4480,7 @@ window.showErrorMessage = (msg) => {
         };
                 // ========== 📢 СИСТЕМА СООБЩЕНИЙ ==========
 
-              // 📨 ТЫ (админ) отправляешь сообщение
+                   // 📨 ТЫ (админ) отправляешь сообщение
         window.sendBroadcast = async function() {
             const recipient = document.getElementById('messageRecipient').value;
             const text = document.getElementById('messageText').value.trim();
@@ -4456,7 +4488,7 @@ window.showErrorMessage = (msg) => {
 
             try {
                 if (recipient === 'all') {
-                    // 📣 Всем пользователям (кроме админов)
+                    // 📣 Всем (кроме админов)
                     const targets = window.users.filter(u => u.role !== 'admin');
                     for (const u of targets) {
                         await addDoc(collection(db, "messages"), {
@@ -4465,9 +4497,10 @@ window.showErrorMessage = (msg) => {
                         });
                     }
                     showSuccessMessage(`📣 Отправлено ${targets.length} пользователям!`);
+
                 } else if (recipient === 'selected') {
-                    // ✅ Только выбранным галочками
-                    const checked = document.querySelectorAll('#userCheckboxList input[type="checkbox"]:checked');
+                    // ✅ Выбранным галочками
+                    const checked = document.querySelectorAll('#userCheckboxList input[type="checkbox"].user-cb:checked');
                     if (checked.length === 0) { showErrorMessage('Отметьте хотя бы одного!'); return; }
                     for (const cb of checked) {
                         await addDoc(collection(db, "messages"), {
@@ -4476,10 +4509,30 @@ window.showErrorMessage = (msg) => {
                         });
                     }
                     showSuccessMessage(`✅ Отправлено ${checked.length} выбранным!`);
-                    // Снимаем галочки после отправки
                     checked.forEach(cb => cb.checked = false);
+
+                } else if (['approved', 'pending', 'awaitingReview'].includes(recipient)) {
+                    // 🎯 По фильтру (одобрены / ожидают / ждём отзыв)
+                    const userIds = getUsersByFilter(recipient);
+                    if (userIds.length === 0) {
+                        showErrorMessage('Нет пользователей в этой категории');
+                        return;
+                    }
+                    for (const uid of userIds) {
+                        await addDoc(collection(db, "messages"), {
+                            userId: uid, text: text, fromAdmin: true,
+                            date: new Date().toLocaleString('ru-RU')
+                        });
+                    }
+                    const labels = {
+                        approved: '✅ с одобренной заявкой',
+                        pending: '⏳ ожидающим одобрения',
+                        awaitingReview: '⭐ от кого ждём отзыв'
+                    };
+                    showSuccessMessage(`📨 Отправлено ${userIds.length} ${labels[recipient]}!`);
+
                 } else {
-                    // 👤 Одному (старый вариант — если выбран из списка)
+                    // 👤 Одному (выбран из списка по ID)
                     await addDoc(collection(db, "messages"), {
                         userId: recipient, text: text, fromAdmin: true,
                         date: new Date().toLocaleString('ru-RU')
@@ -4492,14 +4545,28 @@ window.showErrorMessage = (msg) => {
             }
         };
 
-        // 🔘 Показать/скрыть список чекбоксов
+                // 🔘 Показать/скрыть список + счётчик по фильтру
         window.toggleSelectMode = function() {
             const mode = document.getElementById('messageRecipient').value;
             const list = document.getElementById('userCheckboxList');
             if (!list) return;
+
             if (mode === 'selected') {
                 renderUserCheckboxes();
                 list.style.display = 'block';
+            } else if (['approved', 'pending', 'awaitingReview'].includes(mode)) {
+                // Показываем сколько человек попадёт под фильтр
+                const count = getUsersByFilter(mode).length;
+                const labels = {
+                    approved: '✅ с одобренной заявкой',
+                    pending: '⏳ ожидающих одобрения',
+                    awaitingReview: '⭐ от кого ждём отзыв'
+                };
+                list.style.display = 'block';
+                list.innerHTML = `<p style="text-align:center; font-weight:600; color:var(--primary); padding:10px;">
+                    📊 Получателей: <b>${count}</b><br>
+                    <span class="text-muted" style="font-weight:400; font-size:0.85rem;">${labels[mode]}</span>
+                </p>`;
             } else {
                 list.style.display = 'none';
             }
@@ -4739,10 +4806,13 @@ window.showErrorMessage = (msg) => {
             // Заполняем список "Кому отправить"
             if (select) {
                 const current = select.value;
-                select.innerHTML = '<option value="all">📣 Всем пользователям</option>' +
-    '<option value="selected">✅ Выбранным (галочками)</option>' +
-    window.users.filter(u => u.role !== 'admin')
-        .map(u => `<option value="${u.id}">👤 ${u.name} (${u.email})</option>`).join('');
+                                select.innerHTML = '<option value="all">📣 Всем пользователям</option>' +
+                    '<option value="selected">✅ Выбранным (галочками)</option>' +
+                    '<option value="approved">✅ Заявка одобрена</option>' +
+                    '<option value="pending">⏳ Ожидают одобрения</option>' +
+                    '<option value="awaitingReview">⭐ Ожидаем отзыва</option>' +
+                    window.users.filter(u => u.role !== 'admin')
+                        .map(u => `<option value="${u.id}">👤 ${u.name} (${u.email})</option>`).join('');
                 select.value = current || 'all';
             }
 
