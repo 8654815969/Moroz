@@ -1620,6 +1620,89 @@ html, body {
                 padding: 2px 6px !important;
             }
         }
+                /* 🔔 ПЛАШКА-ЗВОНОЧЕК О СООБЩЕНИИ */
+        #bellNotify {
+            display: none;
+            position: fixed;
+            top: 100px;
+            right: 16px;
+            z-index: 99996;
+            background: linear-gradient(135deg, rgba(37,99,235,0.92) 0%, rgba(30,64,175,0.92) 100%);
+            color: white;
+            padding: 12px 18px 12px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.25);
+            max-width: 280px;
+            animation: bellFloat 3s ease-in-out infinite, bellFadePulse 2.5s ease-in-out infinite;
+        }
+        #bellNotify.show {
+            display: flex;
+        }
+        #bellNotify:active {
+            transform: scale(0.93);
+        }
+        .bell-icon {
+            font-size: 1.8rem;
+            animation: bellRing 1s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        .bell-text { line-height: 1.2; }
+        .bell-title { font-weight: 700; font-size: 0.95rem; }
+        .bell-sub { font-size: 0.72rem; opacity: 0.9; }
+        .bell-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+            box-shadow: 0 0 0 2px white;
+        }
+
+        /* 🔔 Звоночек качается как звонит */
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(18deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(-8deg); }
+        }
+
+        /* 🔔 Полупрозрачное появление/исчезновение */
+        @keyframes bellFadePulse {
+            0%, 100% { opacity: 0.55; }
+            50% { opacity: 1; }
+        }
+
+        /* 🔔 Плавно "ездит" вверх-вниз */
+        @keyframes bellFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 📱 На телефоне — чуть ниже, чтобы не мешал бургеру */
+        @media (max-width: 768px) {
+            #bellNotify {
+                top: auto;
+                bottom: 90px;
+                right: 12px;
+                max-width: 240px;
+                padding: 10px 14px 10px 12px;
+            }
+            .bell-title { font-size: 0.88rem; }
+            .bell-sub { font-size: 0.68rem; }
+        }
     </style>
 </head>
 <body>
@@ -1635,6 +1718,16 @@ html, body {
 <button id="backBtn" onclick="goBack()">⬅️ Назад</button>
         <!-- ⬆️ Кнопка Наверх -->
     <button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
+<!-- 🔔 Плашка-уведомление о новом сообщении -->
+<div id="bellNotify" onclick="openMessagesFromBell()">
+    <div class="bell-icon">🔔</div>
+    <div class="bell-text">
+        <div class="bell-title">Вам сообщение!</div>
+        <div class="bell-sub">Нажмите, чтобы открыть 👉</div>
+    </div>
+    <span class="bell-count" id="bellCount">1</span>
+</div>
+    
     <!-- 🍔 Фиксированный бургер -->
 <button id="fixedBurger" onclick="toggleMobileMenu()">
     <span></span>
@@ -2878,15 +2971,15 @@ window.checkReferralNotifications = async function() {
     window.partnerRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     updateAdmin();
 });
-                        // 📢 Сообщения (рассылка + ответы)
+                                  // 📢 Сообщения (рассылка + ответы)
             window.messages = [];
             onSnapshot(collection(db, "messages"), (snapshot) => {
                 window.messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateAdmin();
                 updateCabinet();
-                if (typeof updateMessageBadge === 'function') updateMessageBadge();
+                if (typeof updateMessagesBadge === 'function') updateMessagesBadge();
+                if (typeof checkBellNotify === 'function') checkBellNotify();  // 🔔 проверка звоночка
             });
-        }
 
         // Initialize App
         setupListeners();
@@ -4426,16 +4519,16 @@ window.showErrorMessage = (msg) => {
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
 
-            // 🛑 Задержка между свайпами (1 раз в секунду)
+                       // 🛑 Задержка между свайпами (быстрее реагирует)
             const now = Date.now();
-            if (now - window.lastSwipeTime < 1000) return;
+            if (now - window.lastSwipeTime < 600) return;
 
-            // 🛑 Свайп должен быть быстрым (не медленное листание страницы)
+            // 🛑 Свайп быстрый (можно резче)
             const swipeDuration = now - touchStartTime;
-            if (swipeDuration > 500) return;
+            if (swipeDuration > 600) return;
 
-            // Минимальная длина свайпа (увеличена)
-            const minSwipe = 100;
+            // Минимальная длина свайпа (чуть короче = резче срабатывает)
+            const minSwipe = 70;
 
             // Свайп должен быть горизонтальным (не вертикальным)
             if (Math.abs(diffX) < minSwipe || Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
@@ -4778,6 +4871,62 @@ window.showErrorMessage = (msg) => {
                     }
                 }
             });
+        };
+                // 🔔 Показываем плашку-звоночек, если есть новые сообщения
+        window.checkBellNotify = function() {
+            const bell = document.getElementById('bellNotify');
+            if (!bell) return;
+
+            if (!window.currentUser || !window.messages) {
+                bell.classList.remove('show');
+                return;
+            }
+
+            // Считаем непрочитанные сообщения от админа
+            const unread = window.messages.filter(m =>
+                m.userId === window.currentUser.id &&
+                m.fromAdmin &&
+                m.readByUser !== true
+            );
+
+            if (unread.length > 0) {
+                document.getElementById('bellCount').textContent = unread.length;
+                bell.classList.add('show');
+                // Лёгкая вибрация при появлении
+                if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+            } else {
+                bell.classList.remove('show');
+            }
+        };
+
+        // 🔔 Клик по звоночку → открыть сообщения + пометить прочитанными
+        window.openMessagesFromBell = async function() {
+            const bell = document.getElementById('bellNotify');
+            if (bell) bell.classList.remove('show');
+
+            // Переходим в кабинет, на вкладку "Сообщения"
+            showSection('cabinet');
+            setTimeout(() => {
+                switchTabProgrammatically('messages');
+                const msgTab = document.getElementById('messages');
+                if (msgTab) msgTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+
+            // Помечаем все сообщения как прочитанные
+            if (window.currentUser && window.messages) {
+                const unread = window.messages.filter(m =>
+                    m.userId === window.currentUser.id &&
+                    m.fromAdmin &&
+                    m.readByUser !== true
+                );
+                for (const m of unread) {
+                    try {
+                        await updateDoc(doc(db, "messages", m.id), { readByUser: true });
+                    } catch (err) {
+                        console.error('Ошибка пометки прочитанным:', err);
+                    }
+                }
+            }
         };
         // 💬 Показываем переписку ПОЛЬЗОВАТЕЛЮ
         window.renderUserMessages = function() {
