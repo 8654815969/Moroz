@@ -2250,6 +2250,68 @@ html, body {
                 padding: 0.7rem !important;
             }
         }
+                /* 🎋 Фэншуй-текст подзаголовка (только ПК) */
+        @media (min-width: 769px) {
+            .hero-subtitle {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                font-size: 1.15rem !important;
+                line-height: 1.7 !important;
+                max-width: 620px;
+                margin: 1.5rem auto 0 !important;
+            }
+            .hero-sub-line {
+                display: block;
+                opacity: 0;
+                animation: subLineIn 0.6s ease forwards;
+            }
+            /* Появляются по очереди — плавно и гармонично */
+            .hero-sub-line:nth-child(1) { animation-delay: 0.2s; }
+            .hero-sub-line:nth-child(2) { animation-delay: 0.4s; }
+            .hero-sub-line:nth-child(3) { animation-delay: 0.6s; }
+
+            /* Девиз — выделенный, золотистый */
+            .hero-sub-motto {
+                display: block;
+                margin-top: 12px;
+                font-size: 1.3rem;
+                font-weight: 700;
+                background: linear-gradient(90deg, #ffd700, #fff5cc, #ffd700);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                opacity: 0;
+                animation: subLineIn 0.6s ease 0.8s forwards, mottoShine 4s linear infinite 1.5s;
+                text-shadow: 0 2px 12px rgba(255,215,0,0.3);
+            }
+            @keyframes subLineIn {
+                0%   { opacity: 0; transform: translateY(10px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes mottoShine {
+                0%   { background-position: 0% center; }
+                100% { background-position: 200% center; }
+            }
+        }
+
+        /* 📱 На телефоне — оставляем как было (просто обычный текст) */
+        @media (max-width: 768px) {
+            .hero-subtitle {
+                display: block;
+            }
+            .hero-sub-line, .hero-sub-motto {
+                display: inline;
+                animation: none !important;
+                opacity: 1 !important;
+            }
+            .hero-sub-motto {
+                -webkit-text-fill-color: #ffd700;
+                font-weight: 700;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2654,12 +2716,17 @@ html, body {
             <path fill="url(#starGold)" d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
         </svg>
     </span>
-    <span class="hero-line">Станьте экспертом</span>
-    <span class="hero-line">по выбору Лучших</span>
+        <span class="hero-line">Станьте народным</span>
+    <span class="hero-line">экспертом лучших</span>
     <span class="hero-line">товаров России</span>
 </h1>
         </div>
-        <p>Участвуйте в народном отборе товаров производителей РФ и зарабатывайте, рекомендуя качество "Честно работать Выгодно"!</p>
+                <p class="hero-subtitle">
+            <span class="hero-sub-line">🇷🇺 Выбирайте лучшее. Поддерживайте своё.</span>
+            <span class="hero-sub-line">Тестируйте товары производителей России</span>
+            <span class="hero-sub-line">и зарабатывайте на честных рекомендациях.</span>
+            <span class="hero-sub-motto">«Честно работать — выгодно» ✨</span>
+        </p>
     </div>
 </div>
 
