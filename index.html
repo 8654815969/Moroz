@@ -949,10 +949,6 @@
     transform: scale(1.05) !important;
 }
 
-#partnerFloatBtn:hover {
-    transform: scale(1.05) !important;
-}
-
             .logo {
                 font-size: 1.1rem;
             }
@@ -2209,15 +2205,7 @@ html, body {
             0%   { opacity: 0; transform: translateY(-15px) scale(0.92); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        #mainNav.mobile-open a {
-            font-size: 0.9rem !important;
-            padding: 11px 14px !important;
-            background: rgba(255,255,255,0.1) !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            border-radius: 12px !important;
-            font-weight: 500 !important;
-            box-shadow: none !important;
-        }
+        
         #mainNav.mobile-open a {
             font-size: 0.92rem !important;
             padding: 11px 16px !important;
@@ -4276,8 +4264,6 @@ if (adminReviewsList) {
     });
 
     adminReviewsList.innerHTML = allReviews.length === 0
-
-    adminReviewsList.innerHTML = allReviews.length === 0
         ? '<p class="text-muted">Нет отзывов</p>'
         : allReviews.map(r => {
             const user = window.users.find(u => u.id === r.userId);
@@ -4514,6 +4500,7 @@ window.setCategory = function(type, cat) {
             <button class="btn btn-secondary" onclick="submitProductRequest('${id}', 'later')">Выбрать</button>
         </div>`;
     document.getElementById('requestProductModal').classList.add('active');
+           };
         // 💳 Оформить карту → переход по ссылке + запрос товара
         window.getCardAndProduct = async function(productId) {
             const product = window.products.find(p => p.id === productId);
