@@ -131,6 +131,13 @@
                 display: flex;
             }
         }
+                /* 🖥️ Надпись над рамкой — прячем на телефоне (показываем только на ПК) */
+        @media (max-width: 768px) {
+            .desktop-only-title {
+                display: none !important;
+            }
+        }
+
                 /* ========== 🇷🇺 НАРОДНЫЙ ПРОЕКТ С ФЛАГОМ ========== */
         .folk-project {
             display: none; /* по умолчанию скрыт */
