@@ -3838,25 +3838,27 @@ window.checkReferralNotifications = async function() {
         setupListeners();
 
         // Authentication Functions
-        window.handleLogin = async function(e) {
+       window.handleLogin = async function(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-// 🔒 ПРОВЕРКА: подтверждена ли почта? (админа пускаем всегда)
-const dbUser = window.users.find(u => u.email === email);
-const isAdmin = dbUser && dbUser.role === 'admin';
 
-if (!authUser.emailVerified && !isAdmin) {
-    showErrorMessage('📧 Сначала подтвердите email! Проверьте почту (и папку Спам)');
-    await signOut(auth);
-    return;
-}
-if (!authUser.emailVerified) {
-    showErrorMessage('📧 Сначала подтвердите email!');
-    await signOut(auth);
-    return;
-}
-        // Ищем пользователя в Firestore по authUid или email
+    try {
+        // 🔐 Вход через Firebase Auth
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const authUser = userCredential.user;
+
+        // 🔒 ПРОВЕРКА: подтверждена ли почта? (админа пускаем всегда)
+        const dbUser = window.users.find(u => u.email === email);
+        const isAdmin = dbUser && dbUser.role === 'admin';
+
+        if (!authUser.emailVerified && !isAdmin) {
+            showErrorMessage('📧 Сначала подтвердите email! Проверьте почту (и папку Спам)');
+            await signOut(auth);
+            return;
+        }
+
+        // Ищем пользователя в Firestore
         let user = window.users.find(u => u.authUid === authUser.uid);
         if (!user) {
             user = window.users.find(u => u.email === email);
