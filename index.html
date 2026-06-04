@@ -3870,9 +3870,9 @@ window.checkReferralNotifications = async function() {
                 'Мы обрабатываем ваши данные только для работы сервиса:<br>имя, email и активность.<br><br>Данные <strong>не передаются третьим лицам</strong> и защищены согласно 152-ФЗ. 🛡️'
             );
         };
-        window.handleRegister = async function(e) {
+      window.handleRegister = async function(e) {
     e.preventDefault();
-                // 🫧 Проверка согласия
+
     const consentBubble = document.getElementById('consentBubble');
     if (!consentBubble.classList.contains('checked')) {
         consentBubble.classList.add('shake');
@@ -3880,20 +3880,19 @@ window.checkReferralNotifications = async function() {
         showErrorMessage('🔒 Поставьте галочку согласия на обработку данных');
         return;
     }
+
     const name = document.getElementById('registerName').value;
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
-    
-    if (window.users.find(u => u.email === email)) {
-        showErrorMessage('Пользователь с таким email уже существует');
+
+    if (password.length < 6) {
+        showErrorMessage('🔒 Пароль должен быть минимум 6 символов');
         return;
     }
-    
-    // 🔑 Берём реф-код из URL или из localStorage
+
     const refCode = getUrlParams().ref || localStorage.getItem('pendingRef');
     console.log('🔍 Реферальный код:', refCode);
-    
-    // 🔥 ИЩЕМ РЕФЕРЕРА ПРЯМО В FIREBASE (не в window.users!)
+
     let referrer = null;
     if (refCode) {
         try {
@@ -3902,51 +3901,71 @@ window.checkReferralNotifications = async function() {
             if (!snapshot.empty) {
                 const refDoc = snapshot.docs[0];
                 referrer = { id: refDoc.id, ...refDoc.data() };
-                console.log('✅ Реферер найден в Firebase:', referrer.name, '| ID:', referrer.id);
-            } else {
-                console.log('❌ Реферер с таким кодом не найден');
+                console.log('✅ Реферер найден:', referrer.name);
             }
         } catch (err) {
             console.error('❌ Ошибка поиска реферера:', err);
         }
     }
-    
-    const newUser = {
-        name,
-        email,
-        password,
-        role: email === 'Marketology2019@mail.ru' ? 'admin' : 'user',
-        referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        points: 0,
-        reviews: 0,
-        products: 0,
-        referrer: referrer ? referrer.id : null
-    };
-    
-    console.log('💾 Сохраняю пользователя с referrer:', newUser.referrer);
-    
+
     try {
+        console.log('🔐 Создаю Auth-аккаунт...');
+        // 🔐 1. Создаём пользователя в Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const authUser = userCredential.user;
+        console.log('✅ Auth-аккаунт создан, UID:', authUser.uid);
+
+        // 📧 2. Отправляем письмо для подтверждения
+        await sendEmailVerification(authUser);
+        console.log('📧 Письмо отправлено!');
+
+        // 💾 3. Сохраняем в Firestore (БЕЗ пароля!)
+        const newUser = {
+            authUid: authUser.uid,
+            name,
+            email,
+            role: email.toLowerCase() === 'marketology2019@mail.ru' ? 'admin' : 'user',
+            referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            points: 0,
+            reviews: 0,
+            products: 0,
+            referrer: referrer ? referrer.id : null,
+            emailVerified: false
+        };
+
         const docRef = await addDoc(collection(db, "users"), newUser);
         window.currentUser = { id: docRef.id, ...newUser };
         localStorage.setItem('currentUserId', docRef.id);
-        
-        if (referrer) {
-            showSuccessMessage(`✅ Вы зарегистрировались по ссылке от ${referrer.name}!`);
-            localStorage.removeItem('pendingRef');  // 🧹 очищаем код
-        }
-        
+
+        if (referrer) localStorage.removeItem('pendingRef');
+
         toggleRegisterModal();
         updateHeader();
-        showSuccessMessage('Вы успешно зарегистрировались!');
         document.querySelector('#registerModal form').reset();
-          // 🎊 СУПЕР-КОНФЕТТИ!
+        consentBubble.classList.remove('checked');
+
         setTimeout(() => launchSuperConfetti(), 300);
+        showFullscreenNotify(
+            '📧',
+            'Почти готово!',
+            `Мы отправили письмо на <strong>${email}</strong>.<br><br>Откройте почту и нажмите на ссылку, чтобы <strong>подтвердить email</strong>! ✅<br><br><span style="font-size:0.85rem; opacity:0.8;">(проверьте папку «Спам»)</span>`
+        );
+
     } catch (error) {
         console.error('❌ Ошибка регистрации:', error);
-        showErrorMessage('Ошибка регистрации');
+        if (error.code === 'auth/email-already-in-use') {
+            showErrorMessage('❌ Этот email уже зарегистрирован');
+        } else if (error.code === 'auth/invalid-email') {
+            showErrorMessage('❌ Неверный формат email');
+        } else if (error.code === 'auth/weak-password') {
+            showErrorMessage('🔒 Слишком простой пароль (минимум 6 символов)');
+        } else if (error.code === 'auth/operation-not-allowed') {
+            showErrorMessage('⚠️ Включите Email/Password в Firebase!');
+        } else {
+            showErrorMessage('Ошибка: ' + error.message);
+        }
     }
 };
-
         window.logout = function() {
             window.currentUser = null;
             localStorage.removeItem('currentUserId');
