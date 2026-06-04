@@ -8,6 +8,61 @@
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
+                /* ========== 🇷🇺 НАРОДНЫЙ ПРОЕКТ С ФЛАГОМ ========== */
+        .folk-project {
+            display: none; /* по умолчанию скрыт */
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        /* Показываем только на телефоне */
+        @media (max-width: 768px) {
+            .folk-project {
+                display: flex !important;
+            }
+        }
+
+        /* 🏳️ Развевающийся флаг */
+        .flag-ru {
+            width: 36px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            transform-origin: left center;
+            animation: flagWave 2.5s ease-in-out infinite;
+        }
+        .flag-stripe {
+            flex: 1;
+            display: block;
+            width: 100%;
+        }
+        .flag-stripe.white { background: #ffffff; }
+        .flag-stripe.blue  { background: #0039A6; }
+        .flag-stripe.red   { background: #D52B1E; }
+
+        /* Анимация «развевания» */
+        @keyframes flagWave {
+            0%   { transform: rotate(0deg)   skewY(0deg); }
+            25%  { transform: rotate(-2deg)  skewY(2deg); }
+            50%  { transform: rotate(0deg)   skewY(0deg); }
+            75%  { transform: rotate(2deg)   skewY(-2deg); }
+            100% { transform: rotate(0deg)   skewY(0deg); }
+        }
+
+        /* Текст «Народный проект» */
+        .folk-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #0039A6, #D52B1E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.3px;
+        }
         .hero-title-plate {
     display: inline-block;
     padding: 1.2rem 2rem;
@@ -2262,7 +2317,15 @@ html, body {
     </div>
     <span>Честный Отзыв</span>
 </div>
-
+<!-- 🇷🇺 Народный проект (только на телефоне) -->
+<div class="folk-project">
+    <div class="flag-ru">
+        <span class="flag-stripe white"></span>
+        <span class="flag-stripe blue"></span>
+        <span class="flag-stripe red"></span>
+    </div>
+    <span class="folk-text">Народный проект</span>
+</div>
             <!-- 🍔 Кнопка бургер (видна только на телефоне) -->
             <button class="burger-btn" onclick="toggleMobileMenu()">
                 <span></span>
@@ -2331,7 +2394,7 @@ html, body {
                 Станьте экспертом по выбору лучших товаров России
             </h1>
         </div>
-        <p>Участвуйте в национальном отборе товаров РФ, получайте продукты на тестирование и помогайте сформировать честный рейтинг качественных товаров!</p>
+        <p>Участвуйте в народном отборе товаров РФ, получайте на тестирование, покупайте победителей, зарабатывайте и помогайте сформировать честный рейтинг качественных товаров!</p>
     </div>
 </div>
 
@@ -4565,21 +4628,22 @@ window.openProductPage = function(productId, isVerified = false) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
            
- window.switchAdminTab = (name) => {
-    document.querySelectorAll('#admin .tab, #admin .tab-content, #adminPanel .tab, #adminPanel .tab-content')
+  window.switchAdminTab = (name) => {
+    document.querySelectorAll('#admin .tab, #admin .tab-content')
         .forEach(x => x.classList.remove('active'));
 
     // Подсветка нажатой вкладки
-    const clickedTab = Array.from(document.querySelectorAll('#admin .tab, #adminPanel .tab')).find(t =>
+    const clickedTab = Array.from(document.querySelectorAll('#admin .tab')).find(t =>
         t.getAttribute('onclick')?.includes(`'${name}'`)
     );
     if (clickedTab) clickedTab.classList.add('active');
 
-    const content = document.getElementById(name);
+    // 🔑 ВАЖНО: блоки называются с "-admin" в конце!
+    const content = document.getElementById(name + '-admin');
     if (content) content.classList.add('active');
 
     // 📱 НЕ съезжаем вниз — мягко к плашке вкладок
-    const tabsBlock = document.querySelector('#admin .tabs, #adminPanel .tabs');
+    const tabsBlock = document.querySelector('#admin .tabs');
     if (tabsBlock) {
         const y = tabsBlock.getBoundingClientRect().top + window.pageYOffset - 80;
         window.scrollTo({ top: y, behavior: 'smooth' });
