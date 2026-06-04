@@ -3481,7 +3481,7 @@ html, body {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         const firebaseConfig = {
             apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
             authDomain: "saintmarketology.firebaseapp.com",
@@ -3495,7 +3495,8 @@ html, body {
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+        const auth = getAuth(app);
+        window.firebaseAuth = auth;
         // Data Storage (Synced with Firebase)
         window.currentUser = null;
         window.users = [];
@@ -4687,16 +4688,15 @@ window.setCategory = function(type, cat) {
     }
     
        document.getElementById('requestProductOptions').innerHTML = shippingWarning + `
-        <div class="payment-option">
+               <div class="payment-option">
             <h4>💳 Оформить карту и получить товар</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); margin:8px 0;">
-                💰 Чтобы получить <strong style="color:var(--success);">5% кэшбэк</strong>, 
-                после покупки загрузите <strong>скриншот отзыва с маркетплейса</strong>!
+                💰 После покупки загрузите <strong>скриншот отзыва с маркетплейса</strong>!
             </p>
             <button class="btn btn-primary" onclick="getCardAndProduct('${id}')">✅ Оформить и получить</button>
         </div>
         <div class="payment-option">
-            <h4>⏰ Кэшбэк через 3 дня</h4>
+            <h4>⏰ Возврат через 3 дня</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); margin:8px 0;">
                 💰 Для возврата загрузите <strong>отзыв с маркетплейса</strong>.
             </p>
