@@ -3317,6 +3317,9 @@ html, body {
     </div>
 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                <button onclick="handleResetPassword()" style="background: none; border: none; color: #888; cursor: pointer; text-decoration: underline; margin-top: 10px;">
+    Забыли пароль?
+</button>
             </form>
         </div>
     </div>
@@ -3690,7 +3693,7 @@ html, body {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, query, where, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         const firebaseConfig = {
             apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
             authDomain: "saintmarketology.firebaseapp.com",
@@ -3836,7 +3839,23 @@ window.checkReferralNotifications = async function() {
        }
         // Initialize App
         setupListeners();
+// Функция сброса пароля
+async function handleResetPassword() {
+    const email = prompt("Введите ваш email:");
+    
+    if (!email) return;
+    
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert("✅ Письмо для смены пароля отправлено на " + email + "\nПроверьте почту (и папку Спам).");
+    } catch (error) {
+        console.error("Ошибка:", error);
+        alert("❌ Ошибка: " + error.message);
+    }
+}
 
+// Делаем функцию доступной для кнопки
+window.handleResetPassword = handleResetPassword;
         // Authentication Functions
        window.handleLogin = async function(e) {
     e.preventDefault();
