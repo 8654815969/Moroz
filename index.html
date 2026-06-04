@@ -1703,6 +1703,97 @@ html, body {
             .bell-title { font-size: 0.88rem; }
             .bell-sub { font-size: 0.68rem; }
         }
+                /* ========== 🛠️ КРАСИВАЯ АДМИНКА НА ТЕЛЕФОНЕ ========== */
+        @media (max-width: 768px) {
+            /* 📑 ВКЛАДКИ АДМИНКИ — плашка-сетка как в кабинете */
+            #admin .tabs,
+            #adminPanel .tabs {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                border-bottom: none !important;
+                background: var(--surface);
+                padding: 10px !important;
+                border-radius: 18px;
+                margin-bottom: 1.5rem !important;
+                overflow: visible !important;
+                box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+            }
+            #admin .tabs .tab,
+            #adminPanel .tabs .tab {
+                margin: 0 !important;
+                padding: 12px 8px !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 14px !important;
+                background: white !important;
+                font-size: 0.78rem !important;
+                font-weight: 600 !important;
+                color: var(--text-muted) !important;
+                text-align: center;
+                white-space: normal !important;
+                line-height: 1.2;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                transition: all 0.2s ease;
+            }
+            #admin .tabs .tab:active,
+            #adminPanel .tabs .tab:active {
+                transform: scale(0.96);
+            }
+            /* Активная вкладка — фиолетовая (чтобы отличалась от кабинета) */
+            #admin .tabs .tab.active,
+            #adminPanel .tabs .tab.active {
+                background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+                color: white !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4) !important;
+            }
+
+            /* 🪪 Шапка админки — цельная плашка */
+            #admin .admin-header,
+            #adminPanel .admin-header {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px;
+                padding: 1.3rem !important;
+                background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+                text-align: center;
+            }
+            #admin .admin-header h1,
+            #admin .admin-header h2,
+            #adminPanel .admin-header h1,
+            #adminPanel .admin-header h2 {
+                color: white !important;
+                font-size: 1.2rem !important;
+            }
+
+            /* 📊 Карточки статистики админки — 2 в ряд */
+            #admin .stats,
+            #adminPanel .stats,
+            #admin .admin-stats,
+            #adminPanel .admin-stats {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            #admin .stat-card,
+            #adminPanel .stat-card {
+                border-radius: 16px !important;
+                text-align: center;
+                border-left: none !important;
+                border-top: 3px solid #7c3aed !important;
+            }
+
+            /* 📋 Таблицы в админке — чтобы не вылезали за экран */
+            #admin table,
+            #adminPanel table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
         /* ========== 👤 КРАСИВЫЙ ЛИЧНЫЙ КАБИНЕТ НА ТЕЛЕФОНЕ ========== */
         @media (max-width: 768px) {
             /* 🪪 Карточка профиля — цельная и эстетичная */
@@ -4475,10 +4566,25 @@ window.openProductPage = function(productId, isVerified = false) {
 };
            
  window.switchAdminTab = (name) => {
-            document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(name + '-admin').classList.add('active');
-        };
+    document.querySelectorAll('#admin .tab, #admin .tab-content, #adminPanel .tab, #adminPanel .tab-content')
+        .forEach(x => x.classList.remove('active'));
+
+    // Подсветка нажатой вкладки
+    const clickedTab = Array.from(document.querySelectorAll('#admin .tab, #adminPanel .tab')).find(t =>
+        t.getAttribute('onclick')?.includes(`'${name}'`)
+    );
+    if (clickedTab) clickedTab.classList.add('active');
+
+    const content = document.getElementById(name);
+    if (content) content.classList.add('active');
+
+    // 📱 НЕ съезжаем вниз — мягко к плашке вкладок
+    const tabsBlock = document.querySelector('#admin .tabs, #adminPanel .tabs');
+    if (tabsBlock) {
+        const y = tabsBlock.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+};
 
                 window.shareReferralLink = async function() {
             const link = document.getElementById('referralLink').textContent;
