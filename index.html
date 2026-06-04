@@ -1691,7 +1691,7 @@ html, body {
             50% { transform: translateY(-10px); }
         }
 
-        /* 📱 На телефоне — чуть ниже, чтобы не мешал бургеру */
+               /* 📱 На телефоне — чуть ниже, чтобы не мешал бургеру */
         @media (max-width: 768px) {
             #bellNotify {
                 top: auto;
@@ -1702,6 +1702,48 @@ html, body {
             }
             .bell-title { font-size: 0.88rem; }
             .bell-sub { font-size: 0.68rem; }
+        }
+
+        /* 🏷️ Кнопки-фильтры категорий */
+        .cat-filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .cat-filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .cat-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 🚚 Плашка "Только доставка" — сверху слева на картинке */
+        .shipping-badge-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            background: var(--warning);
+            color: white;
+            padding: 0.35rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 768px) {
+            .cat-filter-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .shipping-badge-top { font-size: 0.62rem; padding: 3px 7px; top: 6px; left: 6px; }
         }
     </style>
 </head>
@@ -2135,12 +2177,13 @@ html, body {
 </section>
 
         <!-- Verified Products Section -->
-        <section id="verified" class="section">
+               <section id="verified" class="section">
             <h1 style="margin-bottom: 2rem;">✅ Проверенные товары для покупки</h1>
             
-            <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 1rem;">
                 <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
+            <div id="verifiedCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
             <!-- 👉 Подсказка свайпа -->
             <div class="swipe-hint">👈 Листайте товары вбок 👉</div>
             <div class="grid grid-3" id="verifiedProductGrid">
@@ -2156,12 +2199,13 @@ html, body {
         <div id="publicReviewsList"></div>
     </div>
 </section>
-        <section id="catalog" class="section">
+               <section id="catalog" class="section">
             <h1 style="margin-bottom: 2rem;">📦 Каталог товаров для тестирования</h1>
             
-            <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 1rem;">
                 <input type="text" id="searchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
             </div>
+            <div id="catalogCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
             <!-- 👉 Подсказка свайпа -->
             <div class="swipe-hint">👈 Листайте товары вбок 👉</div>
             <div class="grid grid-3" id="productGrid">
@@ -2342,6 +2386,10 @@ html, body {
                             </select>
                         </div>
 
+                                                <!-- Поиск пользователей в рассылке -->
+                        <input type="text" id="broadcastSearchInput" placeholder="🔍 Найти пользователя по имени или email..." 
+                               style="display:none; margin-bottom:0.5rem;" oninput="filterCheckboxUsers()">
+
                         <!-- Список с чекбоксами (показывается при выборе "Выбранным") -->
                         <div id="userCheckboxList" style="display:none; max-height:250px; overflow-y:auto; border:1px solid var(--border); border-radius:12px; padding:10px; margin-bottom:1rem;">
                             <!-- Чекбоксы пользователей -->
@@ -2515,7 +2563,7 @@ html, body {
                 <h2 class="modal-title">Добавить товар для тестирования</h2>
                 <button class="close-btn" onclick="toggleAddProductModal()">×</button>
             </div>
-            <form onsubmit="handleAddProduct(event)">
+                        <form onsubmit="handleAddProduct(event)">
                 <div class="form-group">
                     <label>Название товара</label>
                     <input type="text" id="productName" required>
@@ -2525,14 +2573,8 @@ html, body {
                     <textarea id="productDescription" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Категория</label>
-                    <select id="productCategory" required>
-                        <option value="">Выберите категорию</option>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
+                    <label>Категория (пишите любую)</label>
+                    <input type="text" id="productCategory" placeholder="Например: Электроника, Игрушки..." required>
                 </div>
                 <div class="form-group">
                     <label>Ссылка на товар</label>
@@ -2583,14 +2625,9 @@ html, body {
                     <label>Описание</label>
                     <textarea id="editProductDescription" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="editProductCategory" required>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
+                                               <div class="form-group">
+                    <label>Категория (пишите любую)</label>
+                    <input type="text" id="editProductCategory" placeholder="Например: Электроника, Игрушки..." required>
                 </div>
                 <div class="form-group">
                     <label>Ссылка на товар</label>
@@ -2640,15 +2677,9 @@ html, body {
                     <label>Описание</label>
                     <textarea id="verifiedProductDescription" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="verifiedProductCategory" required>
-                        <option value="">Выберите категорию</option>
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
+                                                <div class="form-group">
+                    <label>Категория (пишите любую)</label>
+                    <input type="text" id="verifiedProductCategory" placeholder="Например: Электроника, Игрушки..." required>
                 </div>
                 <div class="form-group">
                     <label>Цена ($)</label>
@@ -2697,14 +2728,9 @@ html, body {
                     <label>Описание</label>
                     <textarea id="editVerifiedProductDescription"></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Категория</label>
-                    <select id="editVerifiedProductCategory">
-                        <option value="electronics">Электроника</option>
-                        <option value="home">Товары для дома</option>
-                        <option value="beauty">Красота и уход</option>
-                        <option value="sports">Спорт и фитнес</option>
-                    </select>
+                                               <div class="form-group">
+                    <label>Категория (пишите любую)</label>
+                    <input type="text" id="editVerifiedProductCategory" placeholder="Например: Электроника, Игрушки...">
                 </div>
                 <div class="form-group">
                     <label>Остаток на складе (шт.)</label>
@@ -2862,8 +2888,10 @@ html, body {
         window.verifiedProducts = [];
         window.reviews = [];
         window.commissions = [];
-        window.productRequests = [];
+                window.productRequests = [];
         window.partnerRequests = [];
+        window.activeCatalogCategory = 'all';
+        window.activeVerifiedCategory = 'all';
 // ========== 🎉 УВЕДОМЛЕНИЯ О РЕФЕРАЛАХ ==========
 window.showFullscreenNotify = function(icon, title, text) {
     document.getElementById('notifyIcon').textContent = icon;
@@ -3855,29 +3883,35 @@ if (adminReviewsList) {
             renderAdminMessages();
         };
 
-      window.renderProducts = function() {
+           window.renderProducts = function() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
     const searchEl = document.getElementById('searchInput');
     const search = searchEl ? searchEl.value.toLowerCase() : '';
 
+    renderCategoryButtons('catalog');
+
     const filtered = window.products.filter(p => {
         const name = (p.name || '').toLowerCase();
         const desc = (p.description || '').toLowerCase();
-        return name.includes(search) || desc.includes(search);
+        const matchSearch = name.includes(search) || desc.includes(search);
+        const matchCat = window.activeCatalogCategory === 'all' || p.category === window.activeCatalogCategory;
+        return matchSearch && matchCat;
     });
 
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">Товаров не найдено</p>';
+        return;
+    }
+
     grid.innerHTML = filtered.map(p => {
-        // Проверяем — запрашивал ли пользователь этот товар
         const requested = window.currentUser && window.productRequests.some(r =>
             r.userId === window.currentUser.id && r.productId === p.id
         );
-        // Проверяем — оставлял ли уже отзыв
         const reviewed = window.currentUser && window.reviews.some(rev =>
             rev.userId === window.currentUser.id && rev.productId === p.id
         );
 
-                // Кнопка отзыва (появляется только если запросил)
         let reviewBtn = '';
         if (requested) {
             reviewBtn = reviewed
@@ -3885,7 +3919,6 @@ if (adminReviewsList) {
                 : `<button class="btn btn-success btn-small" onclick="openReviewModal('${p.id}')">⭐ Оставить отзыв</button>`;
         }
 
-        // 🛒 Кнопка "Купить на маркетплейсе" (только после запроса)
         let buyBtn = '';
         if (requested && p.url) {
             buyBtn = `<a href="${p.url}" target="_blank" rel="noopener" class="btn btn-warning btn-small" style="text-decoration:none;">🛒 Купить на маркетплейсе</a>`;
@@ -3893,10 +3926,11 @@ if (adminReviewsList) {
 
         return `
         <div class="card position-relative">
-            <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет в наличии' : 'Склад: ' + (p.stock ?? 0)}</div>
-                        <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
-${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
+            ${p.shippingOnly ? '<span class="shipping-badge-top">🚚 Только доставка</span>' : ''}
+            <div class="stock-badge ${(p.stock ?? 0) <= 5 ? 'low' : ''}">${(p.stock ?? 0) === 0 ? 'Нет' : 'Склад: ' + (p.stock ?? 0)}</div>
+            <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+            <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', false)">${p.name || 'Без названия'}</h3>
+            ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
             <div class="card-footer" style="flex-direction: column; align-items: stretch;">
                 <button class="btn btn-primary btn-small" onclick="showRequestProductOptions('${p.id}')" ${(p.stock ?? 0) === 0 || requested ? 'disabled' : ''}>
                     ${requested ? '✅ Запрошено' : 'Запросить'}
@@ -3905,7 +3939,7 @@ ${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только дост
                 ${reviewBtn}
             </div>
         </div>`;
-  }).join('');
+    }).join('');
 };
         
 window.renderVerifiedProducts = function() {
@@ -3914,20 +3948,60 @@ window.renderVerifiedProducts = function() {
     const searchEl = document.getElementById('verifiedSearchInput');
     const search = searchEl ? searchEl.value.toLowerCase() : '';
 
+    renderCategoryButtons('verified');
+
     const filtered = window.verifiedProducts.filter(p => {
-        const name = (p.name || '').toLowerCase();          // ← защита
-        const desc = (p.description || '').toLowerCase();   // ← защита
-        return name.includes(search) || desc.includes(search);
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const matchSearch = name.includes(search) || desc.includes(search);
+        const matchCat = window.activeVerifiedCategory === 'all' || p.category === window.activeVerifiedCategory;
+        return matchSearch && matchCat;
     });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">Товаров не найдено</p>';
+        return;
+    }
 
     grid.innerHTML = filtered.map(p => `
         <div class="card position-relative">
-           <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-           <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
+            <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+            <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
+            ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
             <div class="card-footer">
-    <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
+                <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
             </div>
         </div>`).join('');
+};
+
+// 🏷️ Рисуем кнопки-фильтры категорий
+window.renderCategoryButtons = function(type) {
+    const isVerified = type === 'verified';
+    const container = document.getElementById(isVerified ? 'verifiedCategoryFilter' : 'catalogCategoryFilter');
+    if (!container) return;
+
+    const source = isVerified ? window.verifiedProducts : window.products;
+    const activeCat = isVerified ? window.activeVerifiedCategory : window.activeCatalogCategory;
+
+    const categories = [...new Set(source.map(p => p.category).filter(c => c && c.trim()))];
+
+    let html = `<button class="cat-filter-btn ${activeCat === 'all' ? 'active' : ''}" onclick="setCategory('${type}', 'all')">Все</button>`;
+    html += categories.map(cat =>
+        `<button class="cat-filter-btn ${activeCat === cat ? 'active' : ''}" onclick="setCategory('${type}', '${cat.replace(/'/g, "\\'")}')">🏷️ ${cat}</button>`
+    ).join('');
+
+    container.innerHTML = html;
+};
+
+// 🏷️ Выбрать категорию
+window.setCategory = function(type, cat) {
+    if (type === 'verified') {
+        window.activeVerifiedCategory = cat;
+        renderVerifiedProducts();
+    } else {
+        window.activeCatalogCategory = cat;
+        renderProducts();
+    }
 };
 
        window.showRequestProductOptions = function(id) {
@@ -4208,8 +4282,9 @@ window.openProductPage = function(productId, isVerified = false) {
         <div class="grid grid-2" style="align-items:start;">
             <div>${imageHtml}</div>
             <div>
-                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'}</h1>
-                <div style="margin-bottom:1rem;">
+                                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'}</h1>
+                ${product.category ? `<span class="badge badge-primary" style="margin-bottom:0.5rem; display:inline-block;">🏷️ ${product.category}</span>` : ''}
+                <div style="margin-bottom:1rem; margin-top:0.5rem;">
                     <span style="color:gold; font-size:1.5rem;">${avgStars}</span>
                     <span class="text-muted">${avg} / 5 • ${productReviews.length} отзыв(ов)</span>
                 </div>
@@ -4801,17 +4876,19 @@ window.showErrorMessage = (msg) => {
             }
         };
 
-                // 🔘 Показать/скрыть список + счётчик по фильтру
+                        // 🔘 Показать/скрыть список + счётчик по фильтру
         window.toggleSelectMode = function() {
             const mode = document.getElementById('messageRecipient').value;
             const list = document.getElementById('userCheckboxList');
+            const searchInput = document.getElementById('broadcastSearchInput');
             if (!list) return;
 
             if (mode === 'selected') {
                 renderUserCheckboxes();
                 list.style.display = 'block';
+                if (searchInput) searchInput.style.display = 'block';
             } else if (['approved', 'pending', 'awaitingReview'].includes(mode)) {
-                // Показываем сколько человек попадёт под фильтр
+                if (searchInput) searchInput.style.display = 'none';
                 const count = getUsersByFilter(mode).length;
                 const labels = {
                     approved: '✅ с одобренной заявкой',
@@ -4825,7 +4902,19 @@ window.showErrorMessage = (msg) => {
                 </p>`;
             } else {
                 list.style.display = 'none';
+                if (searchInput) searchInput.style.display = 'none';
             }
+        };
+
+        // 🔍 Поиск пользователей в списке чекбоксов
+        window.filterCheckboxUsers = function() {
+            const q = (document.getElementById('broadcastSearchInput')?.value || '').toLowerCase();
+            document.querySelectorAll('#userCheckboxList label').forEach(label => {
+                const cb = label.querySelector('.user-cb');
+                if (!cb) return;
+                const text = label.textContent.toLowerCase();
+                label.style.display = text.includes(q) ? 'flex' : 'none';
+            });
         };
 
         // 📋 Рисуем чекбоксы всех пользователей
