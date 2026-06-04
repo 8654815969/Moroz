@@ -23,17 +23,17 @@
             }
         }
 
-        /* 🏳️ Развевающийся флаг */
+               /* 🏳️ Развевающийся флаг (настоящая волна) */
         .flag-ru {
-            width: 36px;
-            height: 24px;
+            width: 42px;
+            height: 28px;
             display: flex;
             flex-direction: column;
             border-radius: 3px;
             overflow: hidden;
             box-shadow: 0 2px 6px rgba(0,0,0,0.25);
             transform-origin: left center;
-            animation: flagWave 2.5s ease-in-out infinite;
+            animation: flagWave 1.2s ease-in-out infinite;
         }
         .flag-stripe {
             flex: 1;
@@ -44,13 +44,23 @@
         .flag-stripe.blue  { background: #0039A6; }
         .flag-stripe.red   { background: #D52B1E; }
 
-        /* Анимация «развевания» */
+        /* 🌊 Анимация развевания — флаг "колышется" на ветру */
         @keyframes flagWave {
-            0%   { transform: rotate(0deg)   skewY(0deg); }
-            25%  { transform: rotate(-2deg)  skewY(2deg); }
-            50%  { transform: rotate(0deg)   skewY(0deg); }
-            75%  { transform: rotate(2deg)   skewY(-2deg); }
-            100% { transform: rotate(0deg)   skewY(0deg); }
+            0% {
+                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
+            }
+            25% {
+                transform: perspective(80px) rotateY(-12deg) skewY(2deg) scaleX(0.97);
+            }
+            50% {
+                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
+            }
+            75% {
+                transform: perspective(80px) rotateY(12deg) skewY(-2deg) scaleX(0.97);
+            }
+            100% {
+                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
+            }
         }
 
         /* Текст «Народный проект» */
@@ -3869,9 +3879,11 @@ window.handleReviewSubmit = async function(e) {
                 }
             });
 
-            if (window.currentUser) {
+                        if (window.currentUser) {
                 authButtons.innerHTML = `
-                    <div class="flex gap-2" style="align-items: center;">
+                    <div class="flex gap-2" style="align-items: center; cursor: pointer;" 
+                         onclick="showSection('cabinet')" 
+                         title="Открыть личный кабинет">
                         <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.9rem;">${window.currentUser.name.charAt(0)}</div>
                         <span style="color: white;">${window.currentUser.name}</span>
                     </div>`;
@@ -4043,11 +4055,25 @@ window.handleReviewSubmit = async function(e) {
                     </div>
                 </div>`).join('');
                // === ЗАПРОСЫ ТОВАРОВ В АДМИНКЕ ===
-            const adminRequestsList = document.getElementById('adminRequestsList');
+                        const adminRequestsList = document.getElementById('adminRequestsList');
             if (adminRequestsList) {
-                adminRequestsList.innerHTML = window.productRequests.length === 0
+                // 🔝 Сортировка: новые/невыполненные — сверху
+                const sortedRequests = [...window.productRequests].sort((a, b) => {
+                    // 1) pending (ожидание) — выше всех
+                    const aPending = a.status === 'pending' ? 0 : 1;
+                    const bPending = b.status === 'pending' ? 0 : 1;
+                    if (aPending !== bPending) return aPending - bPending;
+                    // 2) Внутри — новые выше (по дате ДД.ММ.ГГГГ)
+                    const parseDate = (d) => {
+                        if (!d) return 0;
+                        const p = d.split('.');
+                        return p.length === 3 ? new Date(p[2], p[1]-1, p[0]).getTime() : 0;
+                    };
+                    return parseDate(b.date) - parseDate(a.date);
+                });
+                adminRequestsList.innerHTML = sortedRequests.length === 0
                     ? '<p class="text-muted">Нет запросов</p>'
-                    : window.productRequests.map(r => {
+                    : sortedRequests.map(r => {
                         const user = window.users.find(u => u.id === r.userId);
                         const product = window.products.find(p => p.id === r.productId);
                         const statusText = r.status === 'pending' ? '⏳ Ожидание'
@@ -4096,10 +4122,24 @@ if (partnersList) {
             </div>`).join('')
         : '<p class="text-muted">Нет заявок</p>';
 }
-// === Отзывы (все: на проверке + одобренные) ===
 const adminReviewsList = document.getElementById('adminReviewsList');
 if (adminReviewsList) {
-    const allReviews = window.reviews;
+    // 🔝 Сортировка: новые/непроверенные — сверху
+    const allReviews = [...window.reviews].sort((a, b) => {
+        // 1) pending (на проверке) — выше
+        const aPending = a.status === 'pending' ? 0 : 1;
+        const bPending = b.status === 'pending' ? 0 : 1;
+        if (aPending !== bPending) return aPending - bPending;
+        // 2) Новые выше (по дате ДД.ММ.ГГГГ)
+        const parseDate = (d) => {
+            if (!d) return 0;
+            const p = d.split('.');
+            return p.length === 3 ? new Date(p[2], p[1]-1, p[0]).getTime() : 0;
+        };
+        return parseDate(b.date) - parseDate(a.date);
+    });
+
+    adminReviewsList.innerHTML = allReviews.length === 0
 
     adminReviewsList.innerHTML = allReviews.length === 0
         ? '<p class="text-muted">Нет отзывов</p>'
