@@ -90,10 +90,44 @@
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-/* На телефонах ещё компактнее */
+/* 📱 На телефонах — заголовок красивый и гармоничный (фэншуй ✨) */
 @media (max-width: 600px) {
-    .hero-title-plate { padding: 1rem 1.2rem; }
-    .hero-title-plate h1 { font-size: 1.4rem; }
+    /* Каждая смысловая строка — на своей строчке */
+    .hero-title-plate .hero-line {
+        display: block;
+    }
+}
+
+/* На компьютере — строки сливаются в обычный текст */
+@media (min-width: 601px) {
+    .hero-title-plate .hero-line {
+        display: inline;
+    }
+}
+    .hero-title-plate h1 {
+        font-size: 1.35rem !important;
+        line-height: 1.45 !important;
+        letter-spacing: 0.2px !important;
+        text-align: center !important;
+        /* 🎯 Красивый перенос — слова не рвутся по одному */
+        text-wrap: balance;          /* строки одинаковой длины */
+        word-break: keep-all;        /* не рвёт слова */
+        overflow-wrap: break-word;
+        hyphens: none;
+    }
+    /* ⭐ Крутящаяся звезда — по центру над текстом */
+    .hero-title-plate .spinning-star {
+        display: block !important;
+        margin: 0 auto 8px auto !important;
+    }
+}
+
+/* 📱 Очень узкие экраны (старые/маленькие телефоны) */
+@media (max-width: 380px) {
+    .hero-title-plate h1 {
+        font-size: 1.2rem !important;
+        line-height: 1.4 !important;
+    }
 }
         * {
             margin: 0;
@@ -2379,22 +2413,24 @@ html, body {
     <div class="hero">
     <div class="hero-content">
                 <div class="hero-title-plate">
-            <h1>
-                <span class="spinning-star">
-                    <svg viewBox="0 0 24 24" width="32" height="32">
-                        <defs>
-                            <linearGradient id="starGold" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="50%" stop-color="#ffd700"/>
-                                <stop offset="50%" stop-color="#a8c5f0"/>
-                            </linearGradient>
-                        </defs>
-                        <path fill="url(#starGold)" d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
-                    </svg>
-                </span>
-                Станьте экспертом по выбору лучших товаров России
-            </h1>
+           <h1>
+    <span class="spinning-star">
+        <svg viewBox="0 0 24 24" width="32" height="32">
+            <defs>
+                <linearGradient id="starGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="50%" stop-color="#ffd700"/>
+                    <stop offset="50%" stop-color="#a8c5f0"/>
+                </linearGradient>
+            </defs>
+            <path fill="url(#starGold)" d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+        </svg>
+    </span>
+    <span class="hero-line">Станьте экспертом</span>
+    <span class="hero-line">по выбору лучших</span>
+    <span class="hero-line">товаров России</span>
+</h1>
         </div>
-        <p>Участвуйте в народном отборе товаров РФ, получайте на тестирование, покупайте победителей, зарабатывайте и помогайте сформировать честный рейтинг качественных товаров!</p>
+        <p>Участвуйте в народном отборе товаров РФ и зарабатывайте рекомендую качество, "Честно работать Выгодно"!</p>
     </div>
 </div>
 
