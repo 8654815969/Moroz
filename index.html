@@ -23,17 +23,18 @@
             }
         }
 
-               /* 🏳️ Развевающийся флаг (настоящая волна) */
+                      /* 🏳️ Флаг — медленный, развевающийся + переливается */
         .flag-ru {
             width: 42px;
             height: 28px;
+            position: relative;
             display: flex;
             flex-direction: column;
             border-radius: 3px;
             overflow: hidden;
             box-shadow: 0 2px 6px rgba(0,0,0,0.25);
             transform-origin: left center;
-            animation: flagWave 1.2s ease-in-out infinite;
+            animation: flagWave 3.5s ease-in-out infinite;
         }
         .flag-stripe {
             flex: 1;
@@ -44,23 +45,35 @@
         .flag-stripe.blue  { background: #0039A6; }
         .flag-stripe.red   { background: #D52B1E; }
 
-        /* 🌊 Анимация развевания — флаг "колышется" на ветру */
+        /* ✨ Переливающийся блик (как солнце по флагу) */
+        .flag-ru::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -60%;
+            width: 50%; height: 100%;
+            background: linear-gradient(
+                120deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.45) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            animation: flagShine 3.5s ease-in-out infinite;
+        }
+
+        /* 🌊 Медленное развевание */
         @keyframes flagWave {
-            0% {
-                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
-            }
-            25% {
-                transform: perspective(80px) rotateY(-12deg) skewY(2deg) scaleX(0.97);
-            }
-            50% {
-                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
-            }
-            75% {
-                transform: perspective(80px) rotateY(12deg) skewY(-2deg) scaleX(0.97);
-            }
-            100% {
-                transform: perspective(80px) rotateY(0deg) skewY(0deg) scaleX(1);
-            }
+            0%   { transform: perspective(90px) rotateY(0deg) skewY(0deg) scaleX(1); }
+            25%  { transform: perspective(90px) rotateY(-10deg) skewY(1.5deg) scaleX(0.98); }
+            50%  { transform: perspective(90px) rotateY(0deg) skewY(0deg) scaleX(1); }
+            75%  { transform: perspective(90px) rotateY(10deg) skewY(-1.5deg) scaleX(0.98); }
+            100% { transform: perspective(90px) rotateY(0deg) skewY(0deg) scaleX(1); }
+        }
+
+        /* ✨ Переливание блика */
+        @keyframes flagShine {
+            0%   { left: -60%; }
+            60%  { left: 120%; }
+            100% { left: 120%; }
         }
 
         /* Текст «Народный проект» */
@@ -2051,6 +2064,44 @@ html, body {
         @media (max-width: 768px) {
             .cat-filter-btn { padding: 6px 12px; font-size: 0.75rem; }
             .shipping-badge-top { font-size: 0.62rem; padding: 3px 7px; top: 6px; left: 6px; }
+        }
+                /* 📱 Компактная рассылка в админке на телефоне */
+        @media (max-width: 768px) {
+            #messages-admin .card {
+                padding: 0.9rem !important;
+            }
+            #messages-admin select,
+            #messages-admin textarea,
+            #messages-admin input {
+                font-size: 0.85rem !important;
+                padding: 0.6rem !important;
+            }
+            #messages-admin textarea {
+                min-height: 70px !important;
+            }
+            #userCheckboxList {
+                max-height: 180px !important;
+                padding: 6px !important;
+            }
+            #userCheckboxList label {
+                padding: 6px !important;
+                font-size: 0.8rem !important;
+            }
+            /* Переписка — компактнее */
+            #adminMessagesList .card {
+                padding: 0.8rem !important;
+            }
+            #adminMessagesList .card-title {
+                font-size: 0.95rem !important;
+            }
+            #adminMessagesList input {
+                font-size: 0.85rem !important;
+            }
+            /* Кнопка отправки чуть меньше */
+            #messages-admin .btn {
+                font-size: 0.9rem !important;
+                padding: 0.7rem !important;
+            }
         }
     </style>
 </head>
