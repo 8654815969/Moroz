@@ -24,7 +24,15 @@ self.addEventListener("activate", (e) => {
     ).then(() => self.clients.claim())
   );
 });
+self.addEventListener('fetch', (event) => {
+    // ⛔ Не кешируем POST и запросы к Firebase
+    if (event.request.method !== 'GET') return;
+    if (event.request.url.includes('firestore') || 
+        event.request.url.includes('googleapis') ||
+        event.request.url.includes('google')) return;
 
+    // ... остальной твой код кеширования ...
+});
 // Запросы — "Network First": сначала интернет, потом кэш
 self.addEventListener("fetch", (e) => {
   e.respondWith(
