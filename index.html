@@ -3933,16 +3933,20 @@ window.checkReferralNotifications = async function() {
             emailVerified: false
         };
 
-        const docRef = await addDoc(collection(db, "users"), newUser);
+                const docRef = await addDoc(collection(db, "users"), newUser);
         window.currentUser = { id: docRef.id, ...newUser };
         localStorage.setItem('currentUserId', docRef.id);
 
         if (referrer) localStorage.removeItem('pendingRef');
 
         toggleRegisterModal();
-        updateHeader();
         document.querySelector('#registerModal form').reset();
         consentBubble.classList.remove('checked');
+
+        // 🏠 Переходим на главную как вошедший пользователь
+        showSection('home');
+        updateHeader();
+        updateCabinet();
 
         setTimeout(() => launchSuperConfetti(), 300);
         showFullscreenNotify(
