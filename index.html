@@ -1703,7 +1703,119 @@ html, body {
             .bell-title { font-size: 0.88rem; }
             .bell-sub { font-size: 0.68rem; }
         }
+        /* ========== 👤 КРАСИВЫЙ ЛИЧНЫЙ КАБИНЕТ НА ТЕЛЕФОНЕ ========== */
+        @media (max-width: 768px) {
+            /* 🪪 Карточка профиля — цельная и эстетичная */
+            #cabinet .user-info {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 14px;
+                padding: 1.3rem !important;
+                background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+            }
 
+            /* Имя + почта по центру, белым */
+            #cabinet .user-info > .flex {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center;
+                gap: 10px !important;
+            }
+            #cabinet .user-info .user-avatar {
+                width: 64px !important;
+                height: 64px !important;
+                font-size: 1.8rem !important;
+                background: rgba(255,255,255,0.25) !important;
+                border: 2px solid rgba(255,255,255,0.4);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+            #cabinet .user-info #userName {
+                color: white !important;
+                font-size: 1.2rem !important;
+                font-weight: 700 !important;
+            }
+            #cabinet .user-info #userEmail {
+                color: rgba(255,255,255,0.85) !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* Кнопка Выход — широкая, под профилем */
+            #cabinet .user-info .btn-danger {
+                width: 100% !important;
+                background: rgba(255,255,255,0.18) !important;
+                border: 1px solid rgba(255,255,255,0.4) !important;
+                color: white !important;
+                font-weight: 600 !important;
+                padding: 0.7rem !important;
+                backdrop-filter: blur(10px);
+            }
+            #cabinet .user-info .btn-danger:active {
+                transform: scale(0.97);
+                background: rgba(255,255,255,0.3) !important;
+            }
+
+            /* 📑 ВКЛАДКИ — красивая плашка-сетка вместо узкой полоски */
+            #cabinet .tabs {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                border-bottom: none !important;
+                background: var(--surface);
+                padding: 10px !important;
+                border-radius: 18px;
+                margin-bottom: 1.5rem !important;
+                overflow: visible !important;
+                box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+            }
+            #cabinet .tabs .tab {
+                margin: 0 !important;
+                padding: 12px 8px !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 14px !important;
+                background: white !important;
+                font-size: 0.8rem !important;
+                font-weight: 600 !important;
+                color: var(--text-muted) !important;
+                text-align: center;
+                white-space: normal !important;
+                line-height: 1.2;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                transition: all 0.2s ease;
+            }
+            #cabinet .tabs .tab:active {
+                transform: scale(0.96);
+            }
+            /* Активная вкладка — синяя, с тенью */
+            #cabinet .tabs .tab.active {
+                background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+                color: white !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+            }
+            /* Бейджи (красные кружки) внутри вкладок */
+            #cabinet .tabs .tab .msg-badge,
+            #cabinet .tabs .tab .notif-badge {
+                margin-left: 4px !important;
+            }
+
+            /* 📊 Статистика — 2 в ряд, красивее */
+            #cabinet .stats {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            #cabinet .stat-card {
+                border-radius: 16px !important;
+                text-align: center;
+                border-left: none !important;
+                border-top: 3px solid var(--primary) !important;
+            }
+            #cabinet .stat-label {
+                font-size: 0.7rem !important;
+            }
+        }
         /* 🏷️ Кнопки-фильтры категорий */
         .cat-filter-btn {
             padding: 8px 16px;
@@ -2252,12 +2364,12 @@ html, body {
                     </div>
                 </div>
 
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('referral')">Реферральная программа</button>
-                                        <button class="tab" onclick="switchTab('messages')">💬 Сообщения</button>
-                    <button class="tab" onclick="switchTab('reviews')">Мои отзывы</button>
-                    <button class="tab" onclick="switchTab('requests')">Мои запросы</button>
-                    <button class="tab" onclick="switchTab('commissions')">Комиссии</button>
+                               <div class="tabs">
+                    <button class="tab active" onclick="switchTab('referral')">🎁 Рефералы</button>
+                    <button class="tab" onclick="switchTab('messages')">💬 Сообщения</button>
+                    <button class="tab" onclick="switchTab('reviews')">⭐ Мои отзывы</button>
+                    <button class="tab" onclick="switchTab('requests')">📦 Мои запросы</button>
+                    <button class="tab" onclick="switchTab('commissions')">💰 Комиссии</button>
                 </div>
 
                 <!-- Referral Tab -->
@@ -4106,11 +4218,24 @@ window.rejectReview = async function(id) {
         showErrorMessage('Ошибка: ' + err.message);
     }
 };
-                             window.switchTab = (name) => {
+                                    window.switchTab = (name) => {
             document.querySelectorAll('#cabinet .tab, #cabinet .tab-content').forEach(x => x.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(name).classList.add('active');
-            document.getElementById(name).scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Подсветка нажатой вкладки (надёжнее, чем event.target)
+            const clickedTab = Array.from(document.querySelectorAll('#cabinet .tab')).find(t =>
+                t.getAttribute('onclick')?.includes(`'${name}'`)
+            );
+            if (clickedTab) clickedTab.classList.add('active');
+
+            const content = document.getElementById(name);
+            if (content) content.classList.add('active');
+
+            // 📱 НЕ съезжаем вниз — мягко подкручиваем к плашке вкладок
+            const tabsBlock = document.querySelector('#cabinet .tabs');
+            if (tabsBlock) {
+                const y = tabsBlock.getBoundingClientRect().top + window.pageYOffset - 80;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
 
             // 🔔 Если открыли "Сообщения" — помечаем прочитанными + прячем звоночек
             if (name === 'messages') {
