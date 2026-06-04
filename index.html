@@ -3839,22 +3839,44 @@ window.checkReferralNotifications = async function() {
 
         // Authentication Functions
         window.handleLogin = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const user = window.users.find(u => u.email === email && u.password === password);
-            if (user) {
-                window.currentUser = { ...user };
-                localStorage.setItem('currentUserId', user.id);
-                toggleLoginModal();
-                updateHeader();
-                showSuccessMessage('Вы успешно вошли!');
-                document.querySelector('#loginModal form').reset();
-            } else {
-                showErrorMessage('Неверный email или пароль');
-            }
-        };
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        // 🔐 Вход через Firebase Auth
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const authUser = userCredential.user;
+
+        // Ищем пользователя в Firestore по authUid или email
+        let user = window.users.find(u => u.authUid === authUser.uid);
+        if (!user) {
+            user = window.users.find(u => u.email === email);
+        }
+
+        if (user) {
+            window.currentUser = { ...user };
+            localStorage.setItem('currentUserId', user.id);
+            toggleLoginModal();
+            showSection('home');
+            updateHeader();
+            updateCabinet();
+            showSuccessMessage('Вы успешно вошли!');
+            document.querySelector('#loginModal form').reset();
+        } else {
+            showErrorMessage('Аккаунт не найден в базе');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка входа:', error);
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+            showErrorMessage('❌ Неверный email или пароль');
+        } else if (error.code === 'auth/user-not-found') {
+            showErrorMessage('❌ Пользователь не найден');
+        } else {
+            showErrorMessage('Ошибка: ' + error.message);
+        }
+    }
+};
         // 🫧 Переключение согласия
         window.toggleConsent = function() {
             const bubble = document.getElementById('consentBubble');
