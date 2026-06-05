@@ -2607,9 +2607,16 @@ html, body {
         animation: pulse 1.5s infinite;
     }
 
-    /* 📏 Отступ снизу, чтобы контент не прятался за меню */
+       /* 📏 Отступ снизу, чтобы контент не прятался за меню */
     main {
-        padding-bottom: 80px !important;
+        padding-bottom: 90px !important;
+    }
+    /* Кнопки в самом низу секций — не прячутся */
+    .section {
+        padding-bottom: 20px;
+    }
+    .hero-buttons {
+        margin-bottom: 30px !important;
     }
     footer {
         margin-bottom: 64px;
@@ -2621,6 +2628,31 @@ html, body {
     #bellNotify {
         bottom: 130px !important;
     }
+}
+        /* 🛡️ ФИКС: невидимые элементы НЕ блокируют клики */
+#swipeHint {
+    pointer-events: none !important;
+}
+#welcomeBurst {
+    pointer-events: none !important;
+}
+.confetti-piece,
+.firework {
+    pointer-events: none !important;
+}
+/* Оверлей меню кликается только когда активен */
+#menuOverlay:not(.active) {
+    display: none !important;
+    pointer-events: none !important;
+}
+/* Нижнее меню — клики работают */
+#bottomNav,
+.bottom-nav-item {
+    pointer-events: auto !important;
+}
+/* Контент над нижним меню — кликабелен */
+main, .section, .card, .btn, button, a {
+    pointer-events: auto;
 }
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
