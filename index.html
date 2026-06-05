@@ -6862,14 +6862,13 @@ window.showErrorMessage = (msg) => {
 </script>
     
     <script>
-    // 🗑️ УДАЛЯЕМ старый Service Worker (чинит зависший сайт!)
+     // Регистрируем Service Worker
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => reg.unregister());
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('✅ PWA готова!'))
+        .catch(err => console.log('❌ Ошибка PWA:', err));
     });
-    if (window.caches) {
-      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-    }
   }
 
   // Проверка интернета
