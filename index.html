@@ -2654,6 +2654,27 @@ html, body {
 main, .section, .card, .btn, button, a {
     pointer-events: auto;
 }
+        /* 🛡️ ФИКС: меню НЕ блокирует клики по странице */
+@media (max-width: 768px) {
+    #bottomNav {
+        height: 64px !important;
+        max-height: 64px !important;
+        overflow: hidden;
+    }
+    /* Невидимые элементы НЕ ловят нажатия */
+    #swipeHint, #welcomeBurst,
+    .confetti-piece, .firework {
+        pointer-events: none !important;
+    }
+    /* Оверлей скрыт когда неактивен */
+    #menuOverlay:not(.active) {
+        display: none !important;
+    }
+    /* Всё кликабельно */
+    body, main, .section, .btn, button, a, .card {
+        pointer-events: auto !important;
+    }
+}
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -6839,14 +6860,16 @@ window.showErrorMessage = (msg) => {
             }
         };
 </script>
+    
     <script>
-  // Регистрируем Service Worker
+    // 🗑️ УДАЛЯЕМ старый Service Worker (чинит зависший сайт!)
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('✅ PWA готова!'))
-        .catch(err => console.log('❌ Ошибка PWA:', err));
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
     });
+    if (window.caches) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+    }
   }
 
   // Проверка интернета
