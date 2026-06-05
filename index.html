@@ -4503,7 +4503,7 @@ image: image,
             await updateDoc(doc(db, "verifiedProducts", productId), {
                 stock: increment(-1)
             });
-            
+             };
                 window.approveRequest = async function(requestId) {
     // 1. Находим заявку
     const request = window.productRequests.find(r => r.id === requestId);
