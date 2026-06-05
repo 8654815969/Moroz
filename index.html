@@ -2520,6 +2520,8 @@ html, body {
             .rf-flag-wrap { display: none; }
         }
     </style>
+    <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
         <!-- 🎉 Большой текст при регистрации -->
@@ -3279,16 +3281,33 @@ html, body {
                     </div>
                 </div>
 
-                <!-- Commissions Tab -->
-                <div id="commissions-admin" class="tab-content">
-                    <div class="card">
-                        <h3 class="card-title mb-2">Управление комиссиями</h3>
-                        <div id="adminCommissionsList">
-                            <p class="text-muted">Нет комиссий</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                               <!-- Commissions Tab -->
+<div id="commissions-admin" class="tab-content">
+    <!-- 📊 ИМПОРТ ОТЧЁТА OZON -->
+    <div class="card">
+        <h3 class="card-title mb-2">📊 Импорт отчёта Ozon → Автоначисление</h3>
+        <p class="text-muted mb-2">
+            Загрузите XLSX-отчёт «По источникам трафика» из Ozon. Система найдёт рефералов по колонке <b>content</b> (там ID) и начислит 5%/2%.
+        </p>
+        <!-- Зона загрузки файла -->
+        <div id="dropZone" style="border:3px dashed var(--primary); border-radius:16px; padding:30px; text-align:center; cursor:pointer; background:rgba(37,99,235,0.05); transition:0.3s;">
+            <div style="font-size:2.5rem; margin-bottom:8px;">📁</div>
+            <p style="font-weight:600; margin-bottom:4px;">Нажмите или перетащите XLSX-файл</p>
+            <p class="text-muted" style="font-size:0.85rem;">отчёт «По источникам трафика»</p>
+            <input type="file" id="reportFile" accept=".xlsx,.xls" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Результат разбора отчёта -->
+    <div id="reportResult"></div>
+
+    <div class="card">
+        <h3 class="card-title mb-2">Управление комиссиями</h3>
+        <div id="adminCommissionsList">
+            <p class="text-muted">Нет комиссий</p>
+        </div>
+    </div>
+</div>            
         </section>
     </main>
 <!-- Partner Modal -->
@@ -3741,6 +3760,27 @@ html, body {
         window.partnerRequests = [];
         window.activeCatalogCategory = 'all';
         window.activeVerifiedCategory = 'all';
+
+                // 🔗 УНИВЕРСАЛЬНОЕ ОТСЛЕЖИВАНИЕ (Ozon / WB / любой сайт)
+        // ID реферала всегда кладём в utm_content — он есть и у Ozon, и у WB!
+        window.addOzonTracking = function(baseUrl, refCode) {
+            if (!baseUrl) return '#';
+
+            // 🧹 Чистим короткий код реферала (только латиница/цифры — для безопасности меток)
+            const safeCode = String(refCode || '').replace(/[^a-zA-Z0-9]/g, '');
+
+            const sep = baseUrl.includes('?') ? '&' : '?';
+
+            // 🟦 OZON и 🟪 WILDBERRIES — оба используют utm_content
+            // Если в ссылке УЖЕ есть utm_content (производитель вставил) — НЕ дублируем, дописываем code
+            if (baseUrl.includes('utm_content=')) {
+                // метка уже есть — добавляем код реферала в конец через "_"
+                return `${baseUrl}_${safeCode}`;
+            }
+
+            // Метки нет — добавляем полный набор UTM
+            return `${baseUrl}${sep}utm_source=chestnyotzyv&utm_medium=referral&utm_content=${safeCode}`;
+        };
 // ========== 🎉 УВЕДОМЛЕНИЯ О РЕФЕРАЛАХ ==========
 window.showFullscreenNotify = function(icon, title, text) {
     document.getElementById('notifyIcon').textContent = icon;
@@ -3942,6 +3982,22 @@ window.handleResetPassword = handleResetPassword;
                 'Мы обрабатываем ваши данные только для работы сервиса:<br>имя, email и активность.<br><br>Данные <strong>не передаются третьим лицам</strong> и защищены согласно 152-ФЗ. 🛡️'
             );
         };
+        // 📧 Определяем почтовый сервис по email
+window.getMailUrl = function(email) {
+    const domain = (email.split('@')[1] || '').toLowerCase();
+    const services = {
+        'mail.ru':'https://e.mail.ru/','bk.ru':'https://e.mail.ru/',
+        'inbox.ru':'https://e.mail.ru/','list.ru':'https://e.mail.ru/',
+        'internet.ru':'https://e.mail.ru/',
+        'gmail.com':'https://mail.google.com/',
+        'yandex.ru':'https://mail.yandex.ru/','yandex.com':'https://mail.yandex.ru/',
+        'ya.ru':'https://mail.yandex.ru/',
+        'rambler.ru':'https://mail.rambler.ru/',
+        'outlook.com':'https://outlook.live.com/','hotmail.com':'https://outlook.live.com/',
+        'icloud.com':'https://www.icloud.com/mail/'
+    };
+    return services[domain] || `https://${domain}`;
+};
       window.handleRegister = async function(e) {
     e.preventDefault();
 
@@ -4021,11 +4077,22 @@ window.handleResetPassword = handleResetPassword;
         updateCabinet();
 
         setTimeout(() => launchSuperConfetti(), 300);
-        showFullscreenNotify(
-            '📧',
-            'Почти готово!',
-            `Мы отправили письмо на <strong>${email}</strong>.<br><br>Откройте почту и нажмите на ссылку, чтобы <strong>подтвердить email</strong>! ✅<br><br><span style="font-size:0.85rem; opacity:0.8;">(проверьте папку «Спам»)</span>`
-        );
+        const mailUrl = window.getMailUrl(email);
+showFullscreenNotify(
+    '📧',
+    'Почти готово!',
+    `Мы отправили письмо на <strong>${email}</strong>.<br><br>
+     Подтвердите email одним нажатием! ✅<br><br>
+     <a href="${mailUrl}" target="_blank" 
+        style="display:inline-block; background:#fff; color:#2563eb; 
+               font-weight:700; padding:14px 32px; border-radius:50px; 
+               text-decoration:none; font-size:1.1rem; margin-top:10px;
+               box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+        ✉️ Открыть почту
+     </a>
+     <br><br>
+     <span style="font-size:0.85rem; opacity:0.8;">(проверьте папку «Спам»)</span>`
+);
 
     } catch (error) {
         console.error('❌ Ошибка регистрации:', error);
@@ -4256,19 +4323,6 @@ image: image,
                 stock: increment(-1)
             });
             
-           
-            if (window.currentUser.referrer) {
-    const commission = {
-        referrerId: window.currentUser.referrer,
-        referredUserId: window.currentUser.id,
-        productId: productId,
-        amount: product.price * 0.05,
-        paid: false,
-        date: new Date().toLocaleDateString('ru-RU')
-    };
-    await addDoc(collection(db, "commissions"), commission);
-}
- };
                 window.approveRequest = async function(requestId) {
     // 1. Находим заявку
     const request = window.productRequests.find(r => r.id === requestId);
@@ -4906,12 +4960,15 @@ if (adminReviewsList) {
                 ? `<span class="badge badge-success">✅ Отзыв оставлен</span>`
                 : `<button class="btn btn-success btn-small" onclick="openReviewModal('${p.id}')">⭐ Оставить отзыв</button>`;
         }
-
-        let buyBtn = '';
+        
+                      let buyBtn = '';
         if (requested && p.url) {
-            buyBtn = `<a href="${p.url}" target="_blank" rel="noopener" class="btn btn-warning btn-small" style="text-decoration:none;">🛒 Купить на маркетплейсе</a>`;
+           // 🎯 Передаём КОРОТКИЙ referralCode (а не длинный Firebase ID)
+           const myCode = window.currentUser.referralCode || window.currentUser.id;
+           const trackUrl = window.addOzonTracking(p.url, myCode);
+           buyBtn = `<a href="${trackUrl}" target="_blank" rel="noopener" class="btn btn-warning btn-small" style="text-decoration:none;">🛒 Купить на маркетплейсе</a>`;
         }
-
+        
         return `
         <div class="card position-relative">
             ${p.shippingOnly ? '<span class="shipping-badge-top">🚚 Только доставка</span>' : ''}
@@ -5377,7 +5434,7 @@ window.openProductPage = function(productId, isVerified = false) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
            
-  window.switchAdminTab = (name) => {
+   window.switchAdminTab = (name) => {
     document.querySelectorAll('#admin .tab, #admin .tab-content')
         .forEach(x => x.classList.remove('active'));
 
@@ -5390,6 +5447,13 @@ window.openProductPage = function(productId, isVerified = false) {
     // 🔑 ВАЖНО: блоки называются с "-admin" в конце!
     const content = document.getElementById(name + '-admin');
     if (content) content.classList.add('active');
+
+    // 🆕 Если открыли "Комиссии" — настраиваем зону загрузки отчёта
+    if (name === 'commissions') {
+        setTimeout(() => {
+            if (typeof window.initImportZone === 'function') window.initImportZone();
+        }, 100);
+    }
 
     // 📱 НЕ съезжаем вниз — мягко к плашке вкладок
     const tabsBlock = document.querySelector('#admin .tabs');
@@ -6307,6 +6371,338 @@ window.showErrorMessage = (msg) => {
             } catch (err) {
                 showErrorMessage('Ошибка: ' + err.message);
             }
+        };
+
+                           // ═══════════════════════════════════════════════════════
+        // 📊 СИСТЕМА ИМПОРТА ОТЧЁТА OZON + АВТОНАЧИСЛЕНИЕ
+        // ═══════════════════════════════════════════════════════
+
+        window.parsedReport = [];
+
+        // 🔹 Настройка зоны загрузки (вызывается при открытии вкладки)
+        window.initImportZone = function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('reportFile');
+            if (!dropZone || !fileInput) return;
+            if (dropZone.dataset.ready === '1') return; // уже настроена
+            dropZone.dataset.ready = '1';
+
+            dropZone.onclick = () => fileInput.click();
+            fileInput.onchange = (e) => {
+                if (e.target.files.length) handleReportFile(e.target.files[0]);
+            };
+            dropZone.ondragover = (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'rgba(37,99,235,0.15)';
+            };
+            dropZone.ondragleave = () => {
+                dropZone.style.background = 'rgba(37,99,235,0.05)';
+            };
+            dropZone.ondrop = (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'rgba(37,99,235,0.05)';
+                if (e.dataTransfer.files.length) handleReportFile(e.dataTransfer.files[0]);
+            };
+        };
+
+        // 🔹 Чтение XLSX-файла
+        window.handleReportFile = function(file) {
+            if (typeof XLSX === 'undefined') {
+                showErrorMessage('❌ Библиотека Excel не загрузилась. Обновите страницу.');
+                return;
+            }
+            showSuccessMessage('📖 Читаю отчёт...');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    parseOzonReport(rows);
+                } catch (err) {
+                    showErrorMessage('❌ Ошибка чтения: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        };
+
+                // 🔹 Разбор отчёта (Ozon и WB — оба через utm_content!)
+        window.parseOzonReport = function(rows) {
+            if (!rows || rows.length < 2) {
+                showErrorMessage('❌ Файл пустой или неверный формат');
+                return;
+            }
+
+            // 🔎 Ищем строку заголовков + нужные колонки
+            let headerRow = -1, contentCol = -1, sumCol = -1;
+            for (let i = 0; i < Math.min(rows.length, 15); i++) {
+                const row = (rows[i] || []).map(c => String(c || '').toLowerCase().trim());
+
+                // Колонка с ID реферала: "utm_content" или просто "content"
+                const cIdx = row.findIndex(c => c === 'utm_content' || c.includes('content'));
+
+                // Колонка с суммой: "стоимость заказов" (WB) или "стоимость атрибуции" (Ozon)
+                const sIdx = row.findIndex(c =>
+                    c.includes('стоимость') || c.includes('сумма') || c.includes('attribution')
+                );
+
+                if (cIdx !== -1 && sIdx !== -1) {
+                    headerRow = i; contentCol = cIdx; sumCol = sIdx;
+                    break;
+                }
+            }
+
+            if (headerRow === -1) {
+                showErrorMessage('❌ Не нашёл колонки "utm_content" и "Стоимость заказов". Проверь файл!');
+                return;
+            }
+
+            // 📊 Собираем суммы по каждому referralCode (из utm_content)
+            const buyersMap = {};
+            for (let i = headerRow + 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (!row || row.length === 0) continue;
+                const refCode = String(row[contentCol] || '').trim();
+                const sum = parseFloat(String(row[sumCol] || '0').replace(/[^0-9.,]/g, '').replace(',', '.')) || 0;
+                if (!refCode || sum <= 0) continue;
+                buyersMap[refCode] = (buyersMap[refCode] || 0) + sum;
+            }
+
+            // 🔗 Сопоставляем referralCode с пользователями
+            window.parsedReport = [];
+            for (const refCode in buyersMap) {
+                // Ищем покупателя по его referralCode
+                const buyer = window.users.find(u => u.referralCode === refCode);
+                const totalSum = buyersMap[refCode];
+
+                window.parsedReport.push({
+                    refCode,
+                    buyerName: buyer ? buyer.name : '❓ Не найден',
+                    buyerEmail: buyer ? buyer.email : '—',
+                    buyerId: buyer ? buyer.id : null,
+                    referrer1: buyer ? buyer.referrer : null,
+                    sum: totalSum,
+                    comm1: +(totalSum * 0.05).toFixed(2),
+                    comm2: +(totalSum * 0.02).toFixed(2),
+                    status: buyer ? (buyer.referrer ? 'ready' : 'no_referrer') : 'not_found'
+                });
+            }
+
+            renderReportTable();
+            showSuccessMessage(`✅ Найдено покупок: ${window.parsedReport.length}`);
+        };
+
+            // Ищем строку заголовков (content + стоимость атрибуции)
+            let headerRow = -1, contentCol = -1, sumCol = -1;
+            for (let i = 0; i < Math.min(rows.length, 15); i++) {
+                const row = (rows[i] || []).map(c => String(c || '').toLowerCase());
+                const cIdx = row.findIndex(c => c.includes('content'));
+                const sIdx = row.findIndex(c => c.includes('стоимость') && c.includes('атрибуц'));
+                if (cIdx !== -1 && sIdx !== -1) {
+                    headerRow = i; contentCol = cIdx; sumCol = sIdx;
+                    break;
+                }
+            }
+
+            // Запасной вариант: если не нашли "стоимость атрибуции", ищем любую "стоимость"
+            if (headerRow === -1) {
+                for (let i = 0; i < Math.min(rows.length, 15); i++) {
+                    const row = (rows[i] || []).map(c => String(c || '').toLowerCase());
+                    const cIdx = row.findIndex(c => c.includes('content'));
+                    const sIdx = row.findIndex(c => c.includes('стоимость'));
+                    if (cIdx !== -1 && sIdx !== -1) {
+                        headerRow = i; contentCol = cIdx; sumCol = sIdx;
+                        break;
+                    }
+                }
+            }
+
+            if (headerRow === -1) {
+                showErrorMessage('❌ Не нашёл колонки "content" и "стоимость". Это точно отчёт "По источникам трафика"?');
+                return;
+            }
+
+            // Собираем суммы по каждому content (ID реферала)
+            const buyersMap = {};
+            for (let i = headerRow + 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (!row || row.length === 0) continue;
+                const userId = String(row[contentCol] || '').trim();
+                const sum = parseFloat(String(row[sumCol] || '0').replace(',', '.')) || 0;
+                if (!userId || sum <= 0) continue;
+                buyersMap[userId] = (buyersMap[userId] || 0) + sum;
+            }
+
+            // Сопоставляем с пользователями
+            window.parsedReport = [];
+            for (const userId in buyersMap) {
+                const buyer = window.users.find(u => u.id === userId);
+                const totalSum = buyersMap[userId];
+                window.parsedReport.push({
+                    userId,
+                    buyerName: buyer ? buyer.name : '❓ Не найден в базе',
+                    buyerEmail: buyer ? buyer.email : '—',
+                    referrer1: buyer ? buyer.referrer : null,
+                    sum: totalSum,
+                    comm1: +(totalSum * 0.05).toFixed(2),
+                    comm2: +(totalSum * 0.02).toFixed(2),
+                    status: buyer ? (buyer.referrer ? 'ready' : 'no_referrer') : 'not_found'
+                });
+            }
+
+            renderReportTable();
+            showSuccessMessage(`✅ Найдено покупателей: ${window.parsedReport.length}`);
+        };
+
+        // 🔹 Отрисовка таблицы с ветками
+        window.renderReportTable = function() {
+            const container = document.getElementById('reportResult');
+            if (!container) return;
+
+            if (window.parsedReport.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let totalSum = 0, totalComm1 = 0, totalComm2 = 0, readyCount = 0;
+            window.parsedReport.forEach(r => {
+                if (r.status === 'ready') {
+                    totalSum += r.sum; totalComm1 += r.comm1; totalComm2 += r.comm2; readyCount++;
+                }
+            });
+
+            let rowsHtml = '';
+            window.parsedReport.forEach(r => {
+                const ref1 = r.referrer1 ? window.users.find(u => u.id === r.referrer1) : null;
+                const ref2 = ref1 && ref1.referrer ? window.users.find(u => u.id === ref1.referrer) : null;
+
+                let statusBadge = '';
+                if (r.status === 'ready') statusBadge = '<span style="color:#10b981; font-weight:600;">✅ Готов</span>';
+                else if (r.status === 'no_referrer') statusBadge = '<span style="color:#f59e0b; font-weight:600;">⚠️ Нет реферера</span>';
+                else statusBadge = '<span style="color:#ef4444; font-weight:600;">❌ Не в базе</span>';
+
+                rowsHtml += `
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px; vertical-align:top;">
+                        <b>${r.buyerName}</b><br>
+                        <span class="text-muted" style="font-size:0.75rem;">${r.buyerEmail}</span><br>
+                        <span class="text-muted" style="font-size:0.7rem;">Код: ${r.refCode}</span>
+                    </td>
+                    <td style="padding:10px; text-align:right; font-weight:600; vertical-align:top;">${r.sum.toFixed(2)} ₽</td>
+                    <td style="padding:10px; vertical-align:top;">
+                        ${ref1 ? `🥇 ${ref1.name}<br><span style="color:#10b981; font-size:0.85rem;">+${r.comm1} ₽ (5%)</span>` : '<span class="text-muted">—</span>'}
+                    </td>
+                    <td style="padding:10px; vertical-align:top;">
+                        ${ref2 ? `🥈 ${ref2.name}<br><span style="color:#7c3aed; font-size:0.85rem;">+${r.comm2} ₽ (2%)</span>` : '<span class="text-muted">—</span>'}
+                    </td>
+                    <td style="padding:10px; text-align:center; vertical-align:top;">${statusBadge}</td>
+                </tr>`;
+            });
+
+            container.innerHTML = `
+            <div class="card" style="background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(124,58,237,0.1));">
+                <h3 class="card-title mb-2">📈 Сводка по отчёту</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:10px;">
+                    <div style="text-align:center; padding:10px; background:var(--background); border-radius:12px;">
+                        <div style="font-size:1.4rem; font-weight:700;">${window.parsedReport.length}</div>
+                        <div class="text-muted" style="font-size:0.75rem;">Покупателей</div>
+                    </div>
+                    <div style="text-align:center; padding:10px; background:var(--background); border-radius:12px;">
+                        <div style="font-size:1.4rem; font-weight:700;">${readyCount}</div>
+                        <div class="text-muted" style="font-size:0.75rem;">Готовы</div>
+                    </div>
+                    <div style="text-align:center; padding:10px; background:var(--background); border-radius:12px;">
+                        <div style="font-size:1.4rem; font-weight:700;">${totalSum.toFixed(0)} ₽</div>
+                        <div class="text-muted" style="font-size:0.75rem;">Покупки</div>
+                    </div>
+                    <div style="text-align:center; padding:10px; background:var(--background); border-radius:12px;">
+                        <div style="font-size:1.4rem; font-weight:700; color:#10b981;">${(totalComm1+totalComm2).toFixed(0)} ₽</div>
+                        <div class="text-muted" style="font-size:0.75rem;">К начислению</div>
+                    </div>
+                </div>
+                <button class="btn btn-success" style="width:100%; margin-top:14px; font-size:1.05rem; padding:12px;" onclick="payAllFromReport()">
+                    ✅ Начислить всем (${readyCount} реферерам)
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title mb-2">🌳 Ветки рефералов и начисления</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:600px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid var(--primary); text-align:left;">
+                                <th style="padding:10px;">👤 Покупатель</th>
+                                <th style="padding:10px; text-align:right;">💰 Сумма</th>
+                                <th style="padding:10px;">🥇 1 линия (5%)</th>
+                                <th style="padding:10px;">🥈 2 линия (2%)</th>
+                                <th style="padding:10px; text-align:center;">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+            </div>`;
+        };
+
+        // 🔹 АВТОНАЧИСЛЕНИЕ ВСЕМ из отчёта
+        window.payAllFromReport = async function() {
+            const ready = window.parsedReport.filter(r => r.status === 'ready');
+            if (ready.length === 0) {
+                showErrorMessage('Нет готовых (нет рефереров или не в базе)');
+                return;
+            }
+            if (!confirm(`Начислить комиссии ${ready.length} реферерам?`)) return;
+
+            showSuccessMessage('⏳ Начисляю...');
+            let success = 0, skipped = 0;
+            const dateStr = new Date().toISOString().slice(0,10);
+
+                        for (const r of ready) {
+                const importId = `report_${r.refCode}_${dateStr}`;
+                            
+                // Защита от дубля
+                const dup = window.commissions.some(c => c.importId === importId);
+                if (dup) { skipped++; continue; }
+
+                try {
+                                      // 1️⃣ линия (5%)
+                    await addDoc(collection(db, "commissions"), {
+                        referrerId: r.referrer1,
+                        referredUserId: r.buyerId,
+                        importId: importId,
+                        amount: r.comm1,
+                        percent: 5, level: 1, paid: false,
+                        source: 'ozon_report',
+                        date: new Date().toLocaleDateString('ru-RU')
+                    });
+                    // 2️⃣ линия (2%)
+                    const ref1 = window.users.find(u => u.id === r.referrer1);
+                    if (ref1 && ref1.referrer) {
+                                                await addDoc(collection(db, "commissions"), {
+                            referrerId: ref1.referrer,
+                            referredUserId: r.buyerId,
+                            importId: importId,
+                            amount: r.comm2,
+                            percent: 2, level: 2, paid: false,
+                            source: 'ozon_report',
+                            date: new Date().toLocaleDateString('ru-RU')
+                        });
+                    }
+                    success++;
+                } catch (err) {
+                    console.error('Ошибка начисления:', r.userId, err);
+                }
+            }
+
+            showSuccessMessage(`✅ Начислено: ${success}. Пропущено (дубли): ${skipped}`);
+            window.parsedReport = [];
+            setTimeout(() => renderReportTable(), 1500);
+        };
+
+        // 🔇 Заглушка для старой кнопки (чтобы не было ошибок)
+        window.checkApiPurchases = function() {
+            showErrorMessage('Используйте загрузку отчёта Ozon выше 📊');
         };
 </script>
     <script>
