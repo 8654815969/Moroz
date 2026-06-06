@@ -7106,13 +7106,16 @@ window.showErrorMessage = (msg) => {
 </script>
     
     <script>
-     // Регистрируем Service Worker
+        // 🧹 ВРЕМЕННО: отключаем Service Worker и чистим кэш
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('✅ PWA готова!'))
-        .catch(err => console.log('❌ Ошибка PWA:', err));
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
+      console.log('🧹 Service Worker отключён');
     });
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+      console.log('🧹 Кэш очищен');
+    }
   }
 
   // Проверка интернета
