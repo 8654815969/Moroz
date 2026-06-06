@@ -2525,7 +2525,7 @@ html, body {
 }
 @media (max-width: 768px) {
     #bottomNav {
-        display: flex;
+        display: flex; !important;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -2654,12 +2654,20 @@ html, body {
 main, .section, .card, .btn, button, a {
     pointer-events: auto;
 }
-        /* 🛡️ ФИКС: меню НЕ блокирует клики по странице */
+              /* 🛡️ ФИКС: меню НЕ блокирует клики по странице */
 @media (max-width: 768px) {
     #bottomNav {
         height: 64px !important;
         max-height: 64px !important;
-        overflow: hidden;
+        overflow: visible !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+    }
+    /* 🔑 Гарантия: ВСЕ 5 кнопок видны и равны */
+    #bottomNav .bottom-nav-item {
+        display: flex !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
     }
     /* Невидимые элементы НЕ ловят нажатия */
     #swipeHint, #welcomeBurst,
@@ -2674,6 +2682,197 @@ main, .section, .card, .btn, button, a {
     body, main, .section, .btn, button, a, .card {
         pointer-events: auto !important;
     }
+}
+        /* 🔴 КРАСНЫЕ БЕЙДЖИ-СЧЁТЧИКИ */
+.nav-badge {
+    position: absolute;
+    top: 6px;
+    right: 50%;
+    transform: translateX(18px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(255, 23, 68, 0.6);
+    animation: badgePulse 2s infinite;
+    z-index: 10;
+}
+
+/* Бейдж в обычном меню (десктоп) */
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 8px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(255, 23, 68, 0.5);
+    animation: badgePulse 2s infinite;
+}
+
+/* Бейдж на подразделах внутри админки */
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin-left: 8px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 11px;
+    box-shadow: 0 2px 10px rgba(255, 23, 68, 0.6);
+    animation: badgePulse 2s infinite;
+    vertical-align: middle;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* для menu-badge не нужен translateX */
+.menu-badge { transform: none; }
+.menu-badge { animation: badgePulseSimple 2s infinite; }
+@keyframes badgePulseSimple {
+    0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,23,68,0.5); }
+    50% { transform: scale(1.12); box-shadow: 0 2px 14px rgba(255,23,68,0.8); }
+}
+        /* 📊 КРАСИВЫЕ КАРТОЧКИ ЗАПРОСОВ И ОТЗЫВОВ */
+.admin-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.admin-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+}
+.admin-card.is-new::before {
+    background: linear-gradient(180deg, #ff5e7e, #ff1744);
+}
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(124,58,237,0.15);
+}
+.admin-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.admin-card-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text);
+}
+.admin-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+}
+.admin-card-body {
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+.admin-card-field {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+.admin-card-field b {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.admin-stars {
+    color: #ffd43b;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+.admin-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.admin-btn-approve, .admin-btn-reject {
+    flex: 1;
+    min-width: 110px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.admin-btn-approve {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #fff;
+}
+.admin-btn-approve:hover {
+    box-shadow: 0 6px 18px rgba(46,204,113,0.4);
+    transform: translateY(-2px);
+}
+.admin-btn-reject {
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239,68,68,0.3);
+}
+.admin-btn-reject:hover {
+    background: rgba(239,68,68,0.15);
+    transform: translateY(-2px);
+}
+.admin-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+.admin-empty-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+    .admin-card-actions { flex-direction: column; }
+    .admin-btn-approve, .admin-btn-reject { width: 100%; }
 }
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
@@ -3327,14 +3526,14 @@ main, .section, .card, .btn, button, a {
             </div>
 
             <div id="adminContent" style="display: none;">
-                <div class="tabs">
+                                <div class="tabs">
                     <button class="tab active" onclick="switchAdminTab('users')">Пользователи</button>
-                    <button class="tab" onclick="switchAdminTab('partners')">🤝 Сотрудничество</button>
-                     <button class="tab" onclick="switchAdminTab('messages')">📢 Рассылка</button>
-                    <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров</button>
+                    <button class="tab" onclick="switchAdminTab('partners')">🤝 Сотрудничество<span class="tab-badge" id="partnersBadge" style="display:none;">0</span></button>
+                     <button class="tab" onclick="switchAdminTab('messages')">📢 Рассылка<span class="tab-badge" id="messagesAdminBadge" style="display:none;">0</span></button>
+                    <button class="tab" onclick="switchAdminTab('requests')">Запросы товаров<span class="tab-badge" id="requestsBadge" style="display:none;">0</span></button>
                     <button class="tab" onclick="switchAdminTab('products')">Товары для тестирования</button>
                     <button class="tab" onclick="switchAdminTab('verified')">Проверенные товары</button>
-                    <button class="tab" onclick="switchAdminTab('reviews')">Отзывы</button>
+                    <button class="tab" onclick="switchAdminTab('reviews')">Отзывы<span class="tab-badge" id="reviewsAdminBadge" style="display:none;">0</span></button>
                     <button class="tab" onclick="switchAdminTab('commissions')">Комиссии</button>
                 </div>
 
@@ -4955,39 +5154,43 @@ window.handleReviewSubmit = async function(e) {
                     };
                     return parseDate(b.date) - parseDate(a.date);
                 });
-                adminRequestsList.innerHTML = sortedRequests.length === 0
-                    ? '<p class="text-muted">Нет запросов</p>'
+                               adminRequestsList.innerHTML = sortedRequests.length === 0
+                    ? `<div class="admin-empty"><div class="admin-empty-icon">📭</div><div>Новых запросов нет</div></div>`
                     : sortedRequests.map(r => {
                         const user = window.users.find(u => u.id === r.userId);
                         const product = window.products.find(p => p.id === r.productId);
+                        const letter = (user?.name || '?').charAt(0).toUpperCase();
                         const statusText = r.status === 'pending' ? '⏳ Ожидание'
                             : r.status === 'approved' ? '✅ Одобрено'
                             : '❌ Отклонено';
 
-                        // 💳 Проверяем — оставил ли пользователь номер для перевода
                         const paymentInfo = user?.paymentNumber
-                            ? `<p style="color: var(--success); font-weight: 600; margin-top: 4px;">💳 Номер для перевода: ${user.paymentNumber}</p>`
-                            : `<p style="color: var(--danger); font-weight: 600; margin-top: 4px;">⚠️ Номер для перевода НЕ указан</p>`;
+                            ? `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--success);font-weight:600;">${user.paymentNumber}</span></div>`
+                            : `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--danger);font-weight:600;">⚠️ не указан</span></div>`;
 
                         return `
-                        <div class="card mb-2">
-                            <div class="flex-between">
-                                <div>
-                                    <h4 class="card-title">${product?.name || 'Товар'}</h4>
-                                    <p class="text-muted">👤 ${user?.name || 'Пользователь'} (${user?.email || ''})</p>
-                                    <p class="text-muted">Способ: ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Позже'} • ${r.date || ''}</p>
-                                    ${paymentInfo}
+                        <div class="admin-card ${r.status === 'pending' ? 'is-new' : ''}">
+                            <div class="admin-card-top">
+                                <div class="admin-card-user">
+                                    <div class="admin-card-avatar">${letter}</div>
+                                    <span>${user?.name || 'Пользователь'}</span>
                                 </div>
                                 <span class="request-status ${r.status}">${statusText}</span>
                             </div>
+                            <div class="admin-card-body">
+                                <div class="admin-card-field"><b>📦 Товар:</b> ${product?.name || '—'}</div>
+                                <div class="admin-card-field"><b>✉️ Email:</b> ${user?.email || '—'}</div>
+                                <div class="admin-card-field"><b>💰 Способ:</b> ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Позже'}</div>
+                                <div class="admin-card-field"><b>🕒 Дата:</b> ${r.date || '—'}</div>
+                                ${paymentInfo}
+                            </div>
                             ${r.status === 'pending' ? `
-                            <div class="card-footer" style="gap: 10px;">
-                                <button class="btn btn-success btn-small" onclick="approveRequest('${r.id}')">✅ Одобрить</button>
-                                <button class="btn btn-danger btn-small" onclick="rejectRequest('${r.id}')">❌ Отклонить</button>
+                            <div class="admin-card-actions">
+                                <button class="admin-btn-approve" onclick="approveRequest('${r.id}')">✅ Одобрить</button>
+                                <button class="admin-btn-reject" onclick="rejectRequest('${r.id}')">❌ Отклонить</button>
                             </div>` : ''}
                         </div>`;
                     }).join('');
-            }
 
 // === ЗАЯВКИ НА СОТРУДНИЧЕСТВО ===
 const partnersList = document.getElementById('adminPartnersList');
@@ -5023,41 +5226,45 @@ if (adminReviewsList) {
         return parseDate(b.date) - parseDate(a.date);
     });
 
-    adminReviewsList.innerHTML = allReviews.length === 0
-        ? '<p class="text-muted">Нет отзывов</p>'
+       adminReviewsList.innerHTML = allReviews.length === 0
+        ? `<div class="admin-empty"><div class="admin-empty-icon">⭐</div><div>Отзывов пока нет</div></div>`
         : allReviews.map(r => {
             const user = window.users.find(u => u.id === r.userId);
             const product = window.products.find(p => p.id === r.productId)
                          || window.verifiedProducts.find(p => p.id === r.productId);
+            const letter = (user?.name || '?').charAt(0).toUpperCase();
             const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
             const statusBadge = r.status === 'approved'
                 ? '<span class="badge badge-success">✅ Одобрен</span>'
                 : '<span class="badge badge-warning">⏳ На проверке</span>';
 
             return `
-            <div class="card mb-2">
-                <div class="flex-between">
-                    <div>
-                        <h4 class="card-title">${product?.name || 'Товар'}</h4>
-                        <p class="text-muted">👤 ${user?.name || 'Пользователь'} • ${r.date}</p>
-                        <p style="color: gold; font-size: 1.2rem;">${stars}</p>
+            <div class="admin-card ${r.status === 'pending' ? 'is-new' : ''}">
+                <div class="admin-card-top">
+                    <div class="admin-card-user">
+                        <div class="admin-card-avatar">${letter}</div>
+                        <span>${user?.name || 'Пользователь'}</span>
                     </div>
-                    <div>${statusBadge}</div>
+                    ${statusBadge}
                 </div>
-                <p class="card-content">${r.text}</p>
-                <div class="flex" style="gap: 10px; flex-wrap: wrap;">
-                    ${r.receiptImage ? `<div><small>Чек:</small><br><img src="${r.receiptImage}" style="max-width: 150px; border-radius: 8px; cursor: pointer;" onclick="window.open('${r.receiptImage}')"></div>` : ''}
-                    ${r.screenshotImage ? `<div><small>Скриншот отзыва:</small><br><img src="${r.screenshotImage}" style="max-width: 150px; border-radius: 8px; cursor: pointer;" onclick="window.open('${r.screenshotImage}')"></div>` : ''}
+                <div class="admin-card-body">
+                    <div class="admin-card-field"><b>📦 Товар:</b> ${product?.name || '—'}</div>
+                    <div class="admin-card-field"><b>🕒 Дата:</b> ${r.date || '—'}</div>
+                    <div class="admin-stars">${stars}</div>
+                    <div class="admin-card-field" style="margin-top:8px;">"${r.text || ''}"</div>
+                    <div class="flex" style="gap:10px; flex-wrap:wrap; margin-top:10px;">
+                        ${r.receiptImage ? `<div><small>Чек:</small><br><img src="${r.receiptImage}" style="max-width:120px; border-radius:8px; cursor:pointer;" onclick="window.open('${r.receiptImage}')"></div>` : ''}
+                        ${r.screenshotImage ? `<div><small>Скриншот:</small><br><img src="${r.screenshotImage}" style="max-width:120px; border-radius:8px; cursor:pointer;" onclick="window.open('${r.screenshotImage}')"></div>` : ''}
+                    </div>
                 </div>
-                <div class="card-footer" style="gap: 10px;">
+                <div class="admin-card-actions">
                     ${r.status === 'pending'
-                        ? `<button class="btn btn-success btn-small" onclick="approveReview('${r.id}')">✅ Одобрить</button>`
-                        : `<button class="btn btn-warning btn-small" onclick="unapproveReview('${r.id}')">↩️ Снять одобрение</button>`}
-                    <button class="btn btn-danger btn-small" onclick="rejectReview('${r.id}')">🗑️ Удалить</button>
+                        ? `<button class="admin-btn-approve" onclick="approveReview('${r.id}')">✅ Опубликовать</button>`
+                        : `<button class="admin-btn-reject" onclick="unapproveReview('${r.id}')">↩️ Снять</button>`}
+                    <button class="admin-btn-reject" onclick="rejectReview('${r.id}')">🗑️ Удалить</button>
                 </div>
             </div>`;
         }).join('');
-}
                        // === СТАТИСТИКА КОМИССИЙ ===
             const totalComm = window.commissions.reduce((sum, c) => sum + c.amount, 0);
             const paidComm = window.commissions.filter(c => c.paid).reduce((sum, c) => sum + c.amount, 0);
@@ -5105,6 +5312,7 @@ if (adminReviewsList) {
 
             document.getElementById('adminCommissionsList').innerHTML = statsHTML + listHTML;
             renderAdminMessages();
+             updateAdminBadges();
         };
 
            window.renderProducts = function() {
@@ -6857,6 +7065,42 @@ window.showErrorMessage = (msg) => {
                 } else {
                     badge.style.display = 'none';
                 }
+            }
+        };
+                // 🔴 ОБНОВЛЕНИЕ БЕЙДЖЕЙ НА ВКЛАДКАХ АДМИНКИ
+        window.updateAdminBadges = function() {
+            if (!window.currentUser || window.currentUser.role !== 'admin') return;
+
+            // Запросы товаров (ожидающие)
+            const newRequests = (window.productRequests || []).filter(r => r.status === 'pending').length;
+            const reqBadge = document.getElementById('requestsBadge');
+            if (reqBadge) {
+                reqBadge.textContent = newRequests;
+                reqBadge.style.display = newRequests > 0 ? 'inline-flex' : 'none';
+            }
+
+            // Отзывы на проверке
+            const newReviews = (window.reviews || []).filter(r => r.status === 'pending').length;
+            const revBadge = document.getElementById('reviewsAdminBadge');
+            if (revBadge) {
+                revBadge.textContent = newReviews;
+                revBadge.style.display = newReviews > 0 ? 'inline-flex' : 'none';
+            }
+
+            // Заявки на сотрудничество (новые)
+            const newPartners = (window.partnerRequests || []).filter(p => p.status === 'new').length;
+            const partBadge = document.getElementById('partnersBadge');
+            if (partBadge) {
+                partBadge.textContent = newPartners;
+                partBadge.style.display = newPartners > 0 ? 'inline-flex' : 'none';
+            }
+
+            // Новые сообщения от пользователей (не от админа)
+            const newMessages = (window.messages || []).filter(m => !m.fromAdmin && m.readByAdmin !== true).length;
+            const msgBadge = document.getElementById('messagesAdminBadge');
+            if (msgBadge) {
+                msgBadge.textContent = newMessages;
+                msgBadge.style.display = newMessages > 0 ? 'inline-flex' : 'none';
             }
         };
 </script>
