@@ -4280,6 +4280,11 @@ window.checkReferralNotifications = async function() {
        }
         // Initialize App
         setupListeners();
+        
+        // 📱 Подсветка нижнего меню при старте
+        setTimeout(() => {
+            if (typeof updateBottomNav === 'function') updateBottomNav();
+        }, 500);
 // Функция сброса пароля
 async function handleResetPassword() {
     const email = prompt("Введите ваш email:");
@@ -5839,7 +5844,9 @@ window.openProductPage = function(productId, isVerified = false) {
     // 🔑 ВАЖНО: блоки называются с "-admin" в конце!
     const content = document.getElementById(name + '-admin');
     if (content) content.classList.add('active');
-
+if (name === 'messages') {
+        markAdminMessagesRead();
+    }
     // 🆕 Если открыли "Комиссии" — настраиваем зону загрузки отчёта
     if (name === 'commissions') {
         setTimeout(() => {
@@ -6690,6 +6697,18 @@ window.showErrorMessage = (msg) => {
             const targetContent = document.getElementById(tabName);
             if (targetContent) targetContent.classList.add('active');
         };
+                // 📢 Помечаем сообщения пользователей прочитанными админом
+        window.markAdminMessagesRead = async function() {
+            if (!window.messages) return;
+            const unread = window.messages.filter(m => !m.fromAdmin && m.readByAdmin !== true);
+            for (const m of unread) {
+                try {
+                    await updateDoc(doc(db, "messages", m.id), { readByAdmin: true });
+                } catch (err) {
+                    console.error('Ошибка пометки:', err);
+                }
+            }
+        };
         // 💬 Показываем переписку ТЕБЕ (админу) — сгруппировано по людям
         window.renderAdminMessages = function() {
             const box = document.getElementById('adminMessagesList');
@@ -6722,9 +6741,22 @@ window.showErrorMessage = (msg) => {
                 return;
             }
 
+                      // 🔝 Сортируем юзеров: у кого есть новые сообщения — наверх
+            userIds.sort((a, b) => {
+                const aNew = byUser[a].some(m => !m.fromAdmin && m.readByAdmin !== true) ? 0 : 1;
+                const bNew = byUser[b].some(m => !m.fromAdmin && m.readByAdmin !== true) ? 0 : 1;
+                if (aNew !== bNew) return aNew - bNew;
+                // Внутри — по последней дате (новые выше)
+                const aLast = Math.max(...byUser[a].map(m => new Date(m.date).getTime() || 0));
+                const bLast = Math.max(...byUser[b].map(m => new Date(m.date).getTime() || 0));
+                return bLast - aLast;
+            });
+
             box.innerHTML = userIds.map(uid => {
                 const user = window.users.find(u => u.id === uid);
                 const msgs = byUser[uid].sort((a, b) => new Date(a.date) - new Date(b.date));
+                // 🔴 Есть ли новые непрочитанные от этого юзера?
+                const hasNew = msgs.some(m => !m.fromAdmin && m.readByAdmin !== true);
                 const chat = msgs.map(m => `
                     <div style="text-align:${m.fromAdmin ? 'right' : 'left'}; margin-bottom:6px;">
                         <span style="display:inline-block; padding:6px 10px; border-radius:10px; font-size:0.9rem;
@@ -6733,9 +6765,12 @@ window.showErrorMessage = (msg) => {
                             ${m.text}
                         </span>
                     </div>`).join('');
-                return `
-                    <div class="card mb-2">
-                        <h4 class="card-title">👤 ${user?.name || 'Пользователь'}</h4>
+                                return `
+                    <div class="card mb-2" style="${hasNew ? 'border:2px solid #ef4444; box-shadow:0 0 12px rgba(239,68,68,0.3);' : ''}">
+                        <h4 class="card-title">
+                            ${hasNew ? '🔴 ' : ''}👤 ${user?.name || 'Пользователь'}
+                            ${hasNew ? '<span style="background:#ef4444;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;margin-left:6px;">НОВОЕ</span>' : ''}
+                        </h4>
                         <p class="text-muted" style="font-size:0.8rem;">${user?.email || ''}</p>
                         <div style="margin:10px 0; max-height:200px; overflow-y:auto;">${chat}</div>
                         <div class="flex gap-1">
@@ -7097,14 +7132,15 @@ window.showErrorMessage = (msg) => {
                 partBadge.style.display = newPartners > 0 ? 'inline-flex' : 'none';
             }
 
-            // Новые сообщения от пользователей (не от админа)
-            const newMessages = (window.messages || []).filter(m => !m.fromAdmin && m.readByAdmin !== true).length;
+                       // Новые сообщения от пользователей (не от админа, не прочитанные)
+            const newMessages = (window.messages || []).filter(m => 
+                !m.fromAdmin && m.readByAdmin !== true
+            ).length;
             const msgBadge = document.getElementById('messagesAdminBadge');
             if (msgBadge) {
                 msgBadge.textContent = newMessages;
                 msgBadge.style.display = newMessages > 0 ? 'inline-flex' : 'none';
             }
-        };
 </script>
     
     <script>
