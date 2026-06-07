@@ -6185,6 +6185,9 @@ window.showErrorMessage = (msg) => {
                     showSection(nextId);
                 } else {
                     if (navigator.vibrate) navigator.vibrate(15);
+                    if (typeof playSwipeSound === 'function') playSwipeSound();  // 🔊
+                    launchFirework(touchEndX, touchEndY);
+                    showSection(nextId);
                     showErrorMessage('📭 Это последний раздел');
                 }
             }
@@ -6194,6 +6197,9 @@ window.showErrorMessage = (msg) => {
                                         window.lastSwipeTime = now;
                     const prevId = menuOrder[currentIndex - 1];
                     if (navigator.vibrate) navigator.vibrate(30);
+                    launchFirework(touchEndX, touchEndY);
+                    showSection(prevId);
+                     if (typeof playSwipeSound === 'function') playSwipeSound();  // 🔊
                     launchFirework(touchEndX, touchEndY);
                     showSection(prevId);
                 } else {
@@ -7070,18 +7076,34 @@ window.showErrorMessage = (msg) => {
         window.checkApiPurchases = function() {
             showErrorMessage('Используйте загрузку отчёта Ozon выше 📊');
         };
-                           // 📱 НИЖНЕЕ МЕНЮ — переход + подсветка активного
-        window.bottomNavGo = function(sectionId) {
-            // Закрытые разделы — проверка регистрации (как в showSection)
-            const locked = ['catalog', 'verified'];
-            if (locked.includes(sectionId) && !window.currentUser) {
-                showErrorMessage('🔒 Сначала зарегистрируйтесь!');
-                toggleRegisterModal();
-                return;
-            }
-            showSection(sectionId);
-            if (navigator.vibrate) navigator.vibrate(15);
-        };
+                         // 🔊 ЗВУК СВАЙПА/ПЕРЕХОДА
+window.playSwipeSound = function() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 600;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
+    } catch(e) {}
+};
+
+window.bottomNavGo = function(sectionId) {
+    const locked = ['catalog', 'verified'];
+    if (locked.includes(sectionId) && !window.currentUser) {
+        showErrorMessage('🔒 Сначала зарегистрируйтесь!');
+        toggleRegisterModal();
+        return;
+    }
+    showSection(sectionId);
+    if (navigator.vibrate) navigator.vibrate(15);
+    playSwipeSound();  // 🔊 ЗВУК!
+};
 
         // 🎯 Подсветка активного пункта нижнего меню
         window.updateBottomNav = function() {
