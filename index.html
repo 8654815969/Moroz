@@ -3457,10 +3457,41 @@ main, .section, .card, .btn, button, a {
         </section>
 
         <!-- Catalog Section -->
-        <section id="reviews-page" class="section" style="display: none;">
+       <section id="reviews-page" class="section" style="display: none;">
     <div class="container">
-        <h2 class="section-title">⭐ Отзывы покупателей</h2>
-        <p class="text-muted text-center mb-3">Реальные отзывы от проверенных покупателей</p>
+        <!-- 📊 Шапка-статистика -->
+        <div class="reviews-hero">
+            <h2>⭐ Честные отзывы покупателей</h2>
+            <p style="opacity:0.95;">Реальные впечатления от проверенных пользователей 🇷🇺</p>
+            <div class="reviews-hero-stats" id="reviewsHeroStats"></div>
+        </div>
+
+        <!-- 🎛️ Фильтры -->
+        <div class="reviews-filters">
+            <input type="text" class="reviews-search" id="reviewsSearch" 
+                   placeholder="🔍 Поиск по отзывам..." oninput="renderPublicReviewsV2()">
+            
+            <div class="filter-row">
+                <span class="filter-label">🏷️ Категория</span>
+                <div id="reviewsCatFilter" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+            </div>
+
+            <div class="filter-row">
+                <span class="filter-label">⭐ Оценка</span>
+                <button class="rfilter-btn active" onclick="setReviewStar('all', this)">Все</button>
+                <button class="rfilter-btn" onclick="setReviewStar(5, this)">5★</button>
+                <button class="rfilter-btn" onclick="setReviewStar(4, this)">4★+</button>
+                <button class="rfilter-btn" onclick="setReviewStar(3, this)">3★+</button>
+            </div>
+
+            <div class="filter-row">
+                <span class="filter-label">🔄 Сортировка</span>
+                <button class="rfilter-btn active" onclick="setReviewSort('new', this)">🆕 Новые</button>
+                <button class="rfilter-btn" onclick="setReviewSort('best', this)">🏆 Лучшие</button>
+            </div>
+        </div>
+
+        <!-- Список отзывов -->
         <div id="publicReviewsList"></div>
     </div>
 </section>
@@ -5896,22 +5927,155 @@ window.rejectReview = async function(id) {
                 }
             }
         };
-                window.showPublicReviews = () => {
+                        // ⭐ НОВАЯ СИСТЕМА ОТЗЫВОВ
+        window.reviewFilters = { category: 'all', star: 'all', sort: 'new', search: '' };
+
+        window.setReviewStar = function(star, btn) {
+            window.reviewFilters.star = star;
+            btn.parentElement.querySelectorAll('.rfilter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPublicReviewsV2();
+        };
+        window.setReviewSort = function(sort, btn) {
+            window.reviewFilters.sort = sort;
+            btn.parentElement.querySelectorAll('.rfilter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPublicReviewsV2();
+        };
+        window.setReviewCat = function(cat, btn) {
+            window.reviewFilters.category = cat;
+            document.querySelectorAll('#reviewsCatFilter .rfilter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPublicReviewsV2();
+        };
+
+        // Главная функция (вызывается при открытии страницы)
+        window.showPublicReviews = () => {
+            renderReviewsCatFilter();
+            renderReviewsStats();
+            renderPublicReviewsV2();
+        };
+
+        // 📊 Статистика в шапке
+        window.renderReviewsStats = function() {
+            const approved = window.reviews.filter(r => r.status === 'approved');
+            const total = approved.length;
+            const avg = total > 0 ? (approved.reduce((s, r) => s + r.rating, 0) / total).toFixed(1) : '0';
+            const fiveStars = approved.filter(r => r.rating === 5).length;
+            const el = document.getElementById('reviewsHeroStats');
+            if (!el) return;
+            el.innerHTML = `
+                <div class="reviews-stat"><div class="num">${total}</div><div class="lbl">📝 Отзывов</div></div>
+                <div class="reviews-stat"><div class="num">${avg}★</div><div class="lbl">⭐ Рейтинг</div></div>
+                <div class="reviews-stat"><div class="num">${fiveStars}</div><div class="lbl">🏆 Пятёрок</div></div>
+            `;
+        };
+
+        // 🏷️ Кнопки категорий
+        window.renderReviewsCatFilter = function() {
+            const el = document.getElementById('reviewsCatFilter');
+            if (!el) return;
+            const approved = window.reviews.filter(r => r.status === 'approved');
+            const cats = new Set();
+            approved.forEach(r => {
+                const p = window.products.find(x => x.id === r.productId) 
+                       || window.verifiedProducts.find(x => x.id === r.productId);
+                if (p?.category) cats.add(p.category);
+            });
+            let html = `<button class="rfilter-btn ${window.reviewFilters.category === 'all' ? 'active' : ''}" onclick="setReviewCat('all', this)">Все</button>`;
+            html += [...cats].map(c => 
+                `<button class="rfilter-btn ${window.reviewFilters.category === c ? 'active' : ''}" onclick="setReviewCat('${c.replace(/'/g,"\\'")}', this)">🏷️ ${c}</button>`
+            ).join('');
+            el.innerHTML = html;
+        };
+
+        // 💬 Рисуем отзывы с фильтрами
+        window.renderPublicReviewsV2 = function() {
             const container = document.getElementById('publicReviewsList');
             if (!container) return;
 
-            const approved = window.reviews.filter(r => r.status === 'approved');
+            const f = window.reviewFilters;
+            f.search = (document.getElementById('reviewsSearch')?.value || '').toLowerCase();
 
-            if (approved.length === 0) {
-                container.innerHTML = '<p class="text-muted">Пока нет отзывов</p>';
+            let list = window.reviews.filter(r => r.status === 'approved');
+
+            // Фильтр по звёздам
+            if (f.star !== 'all') list = list.filter(r => r.rating >= f.star);
+
+            // Фильтр по категории + поиск
+            list = list.filter(r => {
+                const p = window.products.find(x => x.id === r.productId) 
+                       || window.verifiedProducts.find(x => x.id === r.productId);
+                const matchCat = f.category === 'all' || p?.category === f.category;
+                const matchSearch = !f.search 
+                    || (r.text || '').toLowerCase().includes(f.search)
+                    || (p?.name || '').toLowerCase().includes(f.search);
+                return matchCat && matchSearch;
+            });
+
+            // Сортировка
+            if (f.sort === 'best') {
+                list.sort((a, b) => b.rating - a.rating);
+            } else {
+                const pd = (d) => { if(!d) return 0; const p = d.split('.'); return p.length===3 ? new Date(p[2],p[1]-1,p[0]).getTime() : 0; };
+                list.sort((a, b) => pd(b.date) - pd(a.date));
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="reviews-empty"><div class="reviews-empty-icon">🔍</div><p style="font-weight:600;">Отзывов не найдено</p><p style="font-size:0.85rem;">Попробуйте изменить фильтры</p></div>`;
                 return;
             }
 
-            const byProduct = {};
-            approved.forEach(r => {
-                if (!byProduct[r.productId]) byProduct[r.productId] = [];
-                byProduct[r.productId].push(r);
-            });
+            container.innerHTML = list.map(r => {
+                const user = window.users.find(u => u.id === r.userId);
+                const product = window.products.find(p => p.id === r.productId) 
+                             || window.verifiedProducts.find(p => p.id === r.productId);
+                const letter = (user?.name || '?').charAt(0).toUpperCase();
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+
+                // Фото
+                let photos = '';
+                if (r.receiptImage || r.screenshotImage) {
+                    photos = '<div class="review-photos">';
+                    if (r.screenshotImage) photos += `<img src="${r.screenshotImage}" class="review-photo" onclick="window.open('${r.screenshotImage}')" title="Скриншот отзыва">`;
+                    if (r.receiptImage) photos += `<img src="${r.receiptImage}" class="review-photo" onclick="window.open('${r.receiptImage}')" title="Чек">`;
+                    photos += '</div>';
+                }
+
+                // Товар
+                let productBlock = '';
+                if (product) {
+                    const isVer = !!window.verifiedProducts.find(p => p.id === r.productId);
+                    const img = product.image 
+                        ? `<img src="${product.image}">` 
+                        : `<div class="review-product-ph">📦</div>`;
+                    productBlock = `
+                        <div class="review-product" onclick="openProductPage('${product.id}', ${isVer})">
+                            ${img}
+                            <div>
+                                ${product.category ? `<div class="review-product-cat">🏷️ ${product.category}</div>` : ''}
+                                <div class="review-product-name">${product.name}</div>
+                            </div>
+                        </div>`;
+                }
+
+                return `
+                <div class="review-card-new">
+                    <div class="review-card-head">
+                        <div class="review-avatar">${letter}</div>
+                        <div class="review-user-info">
+                            <div class="review-user-name">${user?.name || 'Покупатель'}</div>
+                            <div class="review-date">${r.date || ''}</div>
+                        </div>
+                        <div class="review-stars-big">${stars}</div>
+                    </div>
+                    ${productBlock}
+                    <div class="review-text-body">${r.text || ''}</div>
+                    ${photos}
+                    <span class="review-verified-tag">✅ Проверенная покупка</span>
+                </div>`;
+            }).join('');
+        };
 
             container.innerHTML = Object.keys(byProduct).map(pid => {
                 const product = window.products.find(p => p.id === pid)
@@ -7763,6 +7927,226 @@ window.bottomNavGo = function(sectionId) {
         margin-top: 0.5rem;
     }
 }
+
+    /* ⭐ КРАСИВАЯ СТРАНИЦА ОТЗЫВОВ */
+.reviews-hero {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    border-radius: 24px;
+    padding: 30px 24px;
+    margin-bottom: 24px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(37,99,235,0.3);
+}
+.reviews-hero h2 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    color: white !important;
+}
+.reviews-hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.reviews-stat {
+    text-align: center;
+}
+.reviews-stat .num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+}
+.reviews-stat .lbl {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+/* 🎛️ Панель фильтров */
+.reviews-filters {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+}
+.reviews-search {
+    width: 100%;
+    margin-bottom: 12px;
+}
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.filter-row:last-child { margin-bottom: 0; }
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    width: 100%;
+    margin-bottom: 4px;
+}
+.rfilter-btn {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: white;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.rfilter-btn:hover { border-color: var(--primary); }
+.rfilter-btn.active {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+}
+
+/* 💬 Красивая карточка отзыва */
+.review-card-new {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: cardAppear 0.5s ease backwards;
+}
+.review-card-new:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(124,58,237,0.15);
+}
+.review-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.review-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+}
+.review-user-info { flex: 1; min-width: 0; }
+.review-user-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+}
+.review-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.review-stars-big {
+    color: #fbbf24;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+/* Блок товара внутри отзыва */
+.review-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.review-product:hover { background: rgba(37,99,235,0.05); }
+.review-product img {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.review-product-ph {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: white; flex-shrink: 0;
+}
+.review-product-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+.review-product-cat {
+    font-size: 0.72rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+.review-text-body {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+/* Фото-доказательства */
+.review-photos {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.review-photo {
+    width: 70px; height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    transition: transform 0.2s;
+}
+.review-photo:hover { transform: scale(1.05); border-color: var(--primary); }
+.review-verified-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(16,185,129,0.12);
+    color: var(--success);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+}
+.reviews-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+}
+.reviews-empty-icon { font-size: 4rem; margin-bottom: 12px; }
+
+@media (max-width: 768px) {
+    .reviews-hero { padding: 24px 16px; }
+    .reviews-hero h2 { font-size: 1.4rem; }
+    .reviews-stat .num { font-size: 1.7rem; }
+    .reviews-hero-stats { gap: 20px; }
+    .review-card-new { padding: 16px; }
+    .review-photo { width: 60px; height: 60px; }
+}
+    
     /* 🎠 КАРУСЕЛЬ БЛОГГЕРОВ */
 .bloggers-section {
     margin: 3rem 0;
