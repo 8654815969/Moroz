@@ -3633,6 +3633,7 @@ main, .section, .card, .btn, button, a {
                     <button class="btn btn-primary mb-2" onclick="toggleAddBloggerModal()">+ Добавить блоггера</button>
                     <div class="card">
                         <h3 class="card-title mb-2">🎬 Блоггеры на главной</h3>
+                                    <button class="btn btn-primary btn-small" style="margin-bottom:12px;" onclick="fixBloggersOrder()">🔧 Исправить порядок</button>
                         <div id="adminBloggersList">
                             <p class="text-muted">Нет блоггеров</p>
                         </div>
@@ -6260,10 +6261,27 @@ window.submitPartnerRequest = async function(e) {
                 showErrorMessage('Ошибка: ' + err.message);
             }
         };
-
+        // 🔧 ИСПРАВИТЬ ПОРЯДОК (проставить order всем)
+        window.fixBloggersOrder = async function() {
+            try {
+                const sorted = [...window.bloggers].sort((a, b) => {
+                    const oa = a.order ?? 9999;
+                    const ob = b.order ?? 9999;
+                    return oa - ob;
+                });
+                for (let i = 0; i < sorted.length; i++) {
+                    await updateDoc(doc(db, "bloggers", sorted[i].id), { order: i });
+                }
+                showSuccessMessage('✅ Порядок исправлен! Теперь стрелки работают');
+            } catch (err) {
+                console.error('Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
         
-        // 🔼🔽 ПЕРЕМЕЩЕНИЕ БЛОГГЕРА
+               // 🔼🔽 ПЕРЕМЕЩЕНИЕ БЛОГГЕРА
         window.moveBlogger = async function(id, direction) {
+            // Сортируем по order
             const sorted = [...window.bloggers].sort((a, b) => {
                 const oa = a.order ?? 9999;
                 const ob = b.order ?? 9999;
@@ -6276,18 +6294,17 @@ window.submitPartnerRequest = async function(e) {
 
             const current = sorted[index];
             const swap = sorted[swapIndex];
-            const currentOrder = current.order ?? index;
-            const swapOrder = swap.order ?? swapIndex;
 
+            // Используем ИНДЕКСЫ как новый порядок (надёжно!)
             try {
-                await updateDoc(doc(db, "bloggers", current.id), { order: swapOrder });
-                await updateDoc(doc(db, "bloggers", swap.id), { order: currentOrder });
-                showSuccessMessage('✅ Порядок изменён!');
+                await updateDoc(doc(db, "bloggers", current.id), { order: swapIndex });
+                await updateDoc(doc(db, "bloggers", swap.id), { order: index });
+                showSuccessMessage('✅ Перемещено!');
             } catch (err) {
+                console.error('Ошибка:', err);
                 showErrorMessage('Ошибка: ' + err.message);
             }
         };
-
         
         window.deletePartnerRequest = async function(id) {
     if (!confirm("Удалить заявку?")) return;
@@ -6498,7 +6515,8 @@ window.showErrorMessage = (msg) => {
         let touchStartY = 0;
         let touchStartTime = 0;
 
-        document.addEventListener('touchstart', (e) => {
+        document.addEventListener('touchstart', (e) => {          
+        if (e.target.closest('.bloggers-carousel')) return;
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             touchStartTime = Date.now();
