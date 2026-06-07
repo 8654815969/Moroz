@@ -3672,6 +3672,34 @@ main, .section, .card, .btn, button, a {
     </div>
 </div>
 
+                    <!-- ✏️ МОДАЛКА РЕДАКТИРОВАНИЯ БЛОГГЕРА -->
+    <div class="modal" id="editBloggerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleEditBloggerModal()">×</button>
+            <h2 class="modal-title">✏️ Редактировать блоггера</h2>
+            <form onsubmit="handleEditBlogger(event)">
+                <input type="hidden" id="editBloggerId">
+                <div class="form-group">
+                    <label class="form-label">Имя / Никнейм</label>
+                    <input type="text" id="editBloggerName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Описание / Роль</label>
+                    <input type="text" id="editBloggerRole" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ссылка на обзор</label>
+                    <input type="url" id="editBloggerLink" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Новое фото (оставь пустым — не менять)</label>
+                    <input type="file" id="editBloggerPhoto" class="form-input" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">💾 Сохранить</button>
+            </form>
+        </div>
+    </div>
+                
 <!-- Partners Tab -->
 <div id="partners-admin" class="tab-content">
     <div class="card">
@@ -4267,16 +4295,26 @@ main, .section, .card, .btn, button, a {
         window.bloggers = [];
 
     // Рисуем карусель блоггеров
-        window.renderBloggers = function() {
+              window.renderBloggers = function() {
             const carousel = document.getElementById('bloggersCarousel');
             if (!carousel) return;
-            carousel.innerHTML = window.bloggers.map(b => `
+            if (window.bloggers.length === 0) {
+                carousel.innerHTML = '<p class="text-muted" style="margin:0 auto;">Блоггеры скоро появятся ⭐</p>';
+                return;
+            }
+            // Сортируем по порядку
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            carousel.innerHTML = sorted.map(b => `
                 <a href="${b.link}" target="_blank" rel="noopener" class="blogger-card">
                     <img src="${b.photo}" alt="${b.name}" class="blogger-photo">
                     <div class="blogger-info">
                         <div class="blogger-name">${b.name}</div>
                         <div class="blogger-role">${b.role}</div>
-                        <span class="blogger-btn">⭐ Смотреть 👆</span>
+                        <span class="blogger-btn">▶️ Смотреть обзор</span>
                     </div>
                 </a>
             `).join('');
@@ -6120,11 +6158,12 @@ window.submitPartnerRequest = async function(e) {
             const photoFile = document.getElementById('bloggerPhoto').files[0];
             const photo = await compressImage(photoFile);
             try {
-                await addDoc(collection(db, "bloggers"), {
+                                await addDoc(collection(db, "bloggers"), {
                     name: document.getElementById('bloggerName').value,
                     role: document.getElementById('bloggerRole').value,
                     link: document.getElementById('bloggerLink').value,
                     photo: photo,
+                    order: window.bloggers.length,
                     date: new Date().toLocaleString('ru-RU')
                 });
                 toggleAddBloggerModal();
@@ -6146,25 +6185,107 @@ window.submitPartnerRequest = async function(e) {
             }
         };
 
-        window.renderAdminBloggers = function() {
+                window.renderAdminBloggers = function() {
             const list = document.getElementById('adminBloggersList');
             if (!list) return;
             if (!window.bloggers || window.bloggers.length === 0) {
                 list.innerHTML = '<p class="text-muted">Нет блоггеров</p>';
                 return;
             }
-            list.innerHTML = window.bloggers.map(b => `
+            // Сортируем по порядку (order). Если нет — по дате
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            list.innerHTML = sorted.map((b, index) => `
                 <div class="card mb-2 flex-between">
                     <div class="flex gap-2" style="align-items:center;">
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <button class="btn btn-small" 
+                                style="padding:4px 10px; background:var(--primary); color:white; ${index === 0 ? 'opacity:0.3; pointer-events:none;' : ''}"
+                                onclick="moveBlogger('${b.id}', 'up')" title="Поднять">⬆️</button>
+                            <button class="btn btn-small" 
+                                style="padding:4px 10px; background:var(--primary); color:white; ${index === sorted.length - 1 ? 'opacity:0.3; pointer-events:none;' : ''}"
+                                onclick="moveBlogger('${b.id}', 'down')" title="Опустить">⬇️</button>
+                        </div>
                         <img src="${b.photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                         <div>
                             <h4 class="card-title">${b.name}</h4>
                             <p class="text-muted">${b.role}</p>
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-small" onclick="deleteBlogger('${b.id}')">🗑️</button>
-                </div>
+                                        <div style="display:flex; gap:6px;">
+                        <button class="btn btn-small" style="background:#3498db; color:white;" onclick="openEditBlogger('${b.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteBlogger('${b.id}')">🗑️</button>
+                    </div>
             `).join('');
+        };
+
+                // ✏️ ОТКРЫТЬ РЕДАКТИРОВАНИЕ
+        window.toggleEditBloggerModal = function() {
+            document.getElementById('editBloggerModal').classList.toggle('active');
+        };
+
+        window.openEditBlogger = function(id) {
+            const blogger = window.bloggers.find(b => b.id === id);
+            if (!blogger) return;
+            document.getElementById('editBloggerId').value = blogger.id;
+            document.getElementById('editBloggerName').value = blogger.name;
+            document.getElementById('editBloggerRole').value = blogger.role;
+            document.getElementById('editBloggerLink').value = blogger.link;
+            document.getElementById('editBloggerPhoto').value = '';
+            toggleEditBloggerModal();
+        };
+
+        window.handleEditBlogger = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editBloggerId').value;
+            const updateData = {
+                name: document.getElementById('editBloggerName').value,
+                role: document.getElementById('editBloggerRole').value,
+                link: document.getElementById('editBloggerLink').value
+            };
+            // Если выбрали новое фото — обновляем
+            const photoFile = document.getElementById('editBloggerPhoto').files[0];
+            if (photoFile) {
+                updateData.photo = await compressImage(photoFile);
+            }
+            try {
+                await updateDoc(doc(db, "bloggers", id), updateData);
+                toggleEditBloggerModal();
+                showSuccessMessage('✅ Блоггер обновлён!');
+            } catch (err) {
+                console.error('❌ Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        
+        // 🔼🔽 ПЕРЕМЕЩЕНИЕ БЛОГГЕРА
+        window.moveBlogger = async function(id, direction) {
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            const index = sorted.findIndex(b => b.id === id);
+            if (index === -1) return;
+            const swapIndex = direction === 'up' ? index - 1 : index + 1;
+            if (swapIndex < 0 || swapIndex >= sorted.length) return;
+
+            const current = sorted[index];
+            const swap = sorted[swapIndex];
+            const currentOrder = current.order ?? index;
+            const swapOrder = swap.order ?? swapIndex;
+
+            try {
+                await updateDoc(doc(db, "bloggers", current.id), { order: swapOrder });
+                await updateDoc(doc(db, "bloggers", swap.id), { order: currentOrder });
+                showSuccessMessage('✅ Порядок изменён!');
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
         };
 
         
@@ -7639,14 +7760,28 @@ window.bottomNavGo = function(sectionId) {
     margin-bottom: 10px;
 }
 .blogger-btn {
-    display: inline-block;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 90%;
+    background: linear-gradient(135deg, #ff0000, #cc0000);
     color: white;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 8px 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 11px 16px;
     border-radius: 50px;
-    animation: pulse 1.8s infinite;
+    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.4);
+    animation: bloggerBtnPulse 1.8s infinite;
+    transition: all 0.2s ease;
+}
+.blogger-card:hover .blogger-btn {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+}
+@keyframes bloggerBtnPulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(255, 0, 0, 0.4); }
+    50% { box-shadow: 0 4px 22px rgba(255, 0, 0, 0.8); }
 }
 /* Подсказка свайпа */
 .bloggers-hint {
