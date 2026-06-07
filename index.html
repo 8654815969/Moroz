@@ -4387,16 +4387,28 @@ window.checkReferralNotifications = async function() {
         const savedId = localStorage.getItem('currentUserId');
         if (savedId) {
             const savedUser = window.users.find(u => u.id === savedId);
-            if (savedUser) {
-                window.currentUser = { ...savedUser };
-                console.log('✅ Сессия восстановлена:', savedUser.email);
-            }
+if (savedUser) {
+    window.currentUser = { ...savedUser };
+    // 🔒 Подгружаем свои приватные контакты
+    getDoc(doc(db, "users", savedUser.id, "private", "data")).then(snap => {
+        if (snap.exists()) {
+            window.currentUser = { ...window.currentUser, ...snap.data() };
+            updateCabinet();
+        }
+    }).catch(() => {});
+    console.log('✅ Сессия восстановлена');
+}
         }
     }
-                if (window.currentUser) {
-                    const updatedUser = window.users.find(u => u.id === window.currentUser.id);
-                    if (updatedUser) window.currentUser = updatedUser;
-                }
+               if (window.currentUser) {
+    const updatedUser = window.users.find(u => u.id === window.currentUser.id);
+    if (updatedUser) {
+        // сохраняем приватные поля (email, paymentNumber) при обновлении
+        const savedEmail = window.currentUser.email;
+        const savedPayment = window.currentUser.paymentNumber;
+        window.currentUser = { ...updatedUser, email: savedEmail, paymentNumber: savedPayment };
+    }
+}
                 updateHeader();
                 updateCabinet();
                 updateAdmin();
@@ -4540,7 +4552,14 @@ window.handleResetPassword = handleResetPassword;
         }
 
         if (user) {
-            window.currentUser = { ...user };
+             let privateData = {};
+    try {
+        const privSnap = await getDoc(doc(db, "users", user.id, "private", "data"));
+        if (privSnap.exists()) privateData = privSnap.data();
+    } catch (err) {
+        console.log('Приватные данные недоступны');
+    }
+                       window.currentUser = { ...user, ...privateData };
             localStorage.setItem('currentUserId', user.id);
             toggleLoginModal();
             showSection('home');
@@ -4642,23 +4661,30 @@ window.getMailUrl = function(email) {
         await sendEmailVerification(authUser);
         console.log('📧 Письмо отправлено!');
 
-        // 💾 3. Сохраняем в Firestore (БЕЗ пароля!)
-        const newUser = {
-            authUid: authUser.uid,
-            name,
-            email,
-            role: email.toLowerCase() === 'marketology2019@mail.ru' ? 'admin' : 'user',
-            referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-            points: 0,
-            reviews: 0,
-            products: 0,
-            referrer: referrer ? referrer.id : null,
-            emailVerified: false
-        };
+       // 💾 3. ПУБЛИЧНЫЕ данные (без email!)
+const newUser = {
+    authUid: authUser.uid,
+    name,
+    role: email.toLowerCase() === 'marketology2019@mail.ru' ? 'admin' : 'user',
+    referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+    points: 0,
+    reviews: 0,
+    products: 0,
+    referrer: referrer ? referrer.id : null,
+    emailVerified: false
+};
 
-                const docRef = await addDoc(collection(db, "users"), newUser);
-        window.currentUser = { id: docRef.id, ...newUser };
-        localStorage.setItem('currentUserId', docRef.id);
+const docRef = await addDoc(collection(db, "users"), newUser);
+
+// 🔒 4. ПРИВАТНЫЕ контакты (email + телефон) — в защищённую подколлекцию
+await setDoc(doc(db, "users", docRef.id, "private", "data"), {
+    email: email,
+    paymentNumber: null
+});
+
+// Сохраняем локально (email только в памяти текущего юзера)
+window.currentUser = { id: docRef.id, ...newUser, email: email };
+localStorage.setItem('currentUserId', docRef.id);
 
         if (referrer) localStorage.removeItem('pendingRef');
 
@@ -5001,10 +5027,13 @@ image: image,
             if (!number) { showErrorMessage('Введите номер!'); return; }
             if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
 
-            try {
-                await updateDoc(doc(db, "users", window.currentUser.id), {
+                        try {
+                // 🔒 Сохраняем телефон в ЗАЩИЩЁННУЮ подколлекцию
+                await setDoc(doc(db, "users", window.currentUser.id, "private", "data"), {
                     paymentNumber: number
-                });
+                }, { merge: true });
+                window.currentUser.paymentNumber = number;
+                closeCongratsModal();
                 closeCongratsModal();
                 showSuccessMessage('✅ Номер сохранён! Спасибо!');
                 document.getElementById('paymentNumberInput').value = '';
@@ -5342,10 +5371,26 @@ window.handleReviewSubmit = async function(e) {
                 card.style.display = text.includes(q) ? '' : 'none';
             });
         };
-        window.updateAdmin = function() {
+               window.updateAdmin = async function() {
             if (!window.currentUser || window.currentUser.role !== 'admin') return;
             document.getElementById('adminNotification').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
+
+            // 🔒 Админ подгружает приватные контакты всех юзеров (1 раз)
+            if (!window.privateCache) window.privateCache = {};
+            for (const u of window.users) {
+                if (!window.privateCache[u.id]) {
+                    try {
+                        const snap = await getDoc(doc(db, "users", u.id, "private", "data"));
+                        window.privateCache[u.id] = snap.exists() ? snap.data() : {};
+                    } catch (e) {
+                        window.privateCache[u.id] = {};
+                    }
+                }
+                // Прикрепляем контакты к объекту юзера
+                u.email = window.privateCache[u.id].email || u.email;
+                u.paymentNumber = window.privateCache[u.id].paymentNumber || u.paymentNumber;
+            }
             
                        document.getElementById('usersList').innerHTML = window.users.map(u => `
                 <div class="card mb-2 flex-between">
