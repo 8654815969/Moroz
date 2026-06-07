@@ -6110,9 +6110,10 @@ window.submitPartnerRequest = async function(e) {
         showErrorMessage('Ошибка: ' + err.message);
     }
 };
-        // 🎬 ДОБАВИТЬ БЛОГГЕРА
-        window.toggleAddBloggerModal = () => 
+                // 🎬 ДОБАВИТЬ БЛОГГЕРА
+        window.toggleAddBloggerModal = function() {
             document.getElementById('addBloggerModal').classList.toggle('active');
+        };
 
         window.handleAddBlogger = async function(e) {
             e.preventDefault();
@@ -6135,7 +6136,6 @@ window.submitPartnerRequest = async function(e) {
             }
         };
 
-        // 🗑 УДАЛИТЬ БЛОГГЕРА
         window.deleteBlogger = async function(id) {
             if (!confirm("Удалить этого блоггера?")) return;
             try {
@@ -6146,7 +6146,6 @@ window.submitPartnerRequest = async function(e) {
             }
         };
 
-        // 📋 СПИСОК БЛОГГЕРОВ В АДМИНКЕ
         window.renderAdminBloggers = function() {
             const list = document.getElementById('adminBloggersList');
             if (!list) return;
