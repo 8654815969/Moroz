@@ -2876,7 +2876,7 @@ main, .section, .card, .btn, button, a {
 }
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>    
 </head>
 <body>
         <!-- 🎉 Большой текст при регистрации -->
@@ -3183,6 +3183,37 @@ main, .section, .card, .btn, button, a {
     #congratsModal .modal-content > div[style*="position: absolute"] {
         font-size: 3rem !important;
         opacity: 0.1 !important;
+    }
+}
+                    /* 🎨 КРАСИВАЯ АНИМАЦИЯ КАРТОЧЕК ТОВАРОВ */
+
+/* Карточки появляются плавно по очереди */
+#productGrid .card,
+#verifiedProductGrid .card {
+    animation: cardAppear 0.5s ease backwards;
+}
+#productGrid .card:nth-child(1), #verifiedProductGrid .card:nth-child(1) { animation-delay: 0.05s; }
+#productGrid .card:nth-child(2), #verifiedProductGrid .card:nth-child(2) { animation-delay: 0.1s; }
+#productGrid .card:nth-child(3), #verifiedProductGrid .card:nth-child(3) { animation-delay: 0.15s; }
+#productGrid .card:nth-child(4), #verifiedProductGrid .card:nth-child(4) { animation-delay: 0.2s; }
+#productGrid .card:nth-child(5), #verifiedProductGrid .card:nth-child(5) { animation-delay: 0.25s; }
+#productGrid .card:nth-child(6), #verifiedProductGrid .card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes cardAppear {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Картинка "оживает" при наведении */
+#productGrid .card .verified-image img,
+#verifiedProductGrid .card .verified-image img {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 
+
+/* На телефоне — реакция на нажатие */
+@media (max-width: 768px) {
+    #productGrid .card:active,
+    #verifiedProductGrid .card:active {
+        transform: scale(0.97);
     }
 }
 </style>
@@ -3826,63 +3857,62 @@ main, .section, .card, .btn, button, a {
         </div>
     </div>
 
-    <!-- Edit Product Modal -->
-    <div id="editProductModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Редактировать товар</h2>
-                <button class="close-btn" onclick="closeEditProductModal()">×</button>
-            </div>
-            <form onsubmit="handleEditProduct(event)">
-                <input type="hidden" id="editProductId">
-                                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="editProductName">
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="editProductDescription" required></textarea>
-                </div>
-                                               <div class="form-group">
-                    <label>Категория (пишите любую)</label>
-                    <input type="text" id="editProductCategory" placeholder="Например: Электроника, Игрушки..." required>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="editProductUrl" required>
-                </div>
-                                <div class="form-group">
-                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
-                    <input type="url" id="editProductVideo" placeholder="https://youtube.com/...">
-                </div>
-                                <div class="form-group">
-                    <label>💳 Ссылка для оформления карты</label>
-                    <input type="url" id="editProductCardUrl" placeholder="https://карта.ссылка/...">
-                </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="editProductStock" min="0" required>
-                </div>
-                <div class="form-group">
-    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-        <input type="checkbox" id="editProductShippingOnly" style="width: auto;">
-        🚚 Только оплата доставки (товар за счёт проекта)
-    </label>
-</div>
-                <div class="form-group">
-                    <label>Изображение товара</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="editProductImage" accept="image/*">
-                        <label for="editProductImage" class="file-input-label">
-                            📸 Нажмите для загрузки изображения
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
-            </form>
+   <!-- Edit Product Modal -->
+<div id="editProductModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Редактировать товар</h2>
+            <button class="close-btn" onclick="closeEditProductModal()">×</button>
         </div>
+        <form onsubmit="handleEditProduct(event)">
+            <input type="hidden" id="editProductId">
+            <div class="form-group">
+                <label>Название товара</label>
+                <input type="text" id="editProductName">
+            </div>
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea id="editProductDescription"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Категория (пишите любую)</label>
+                <input type="text" id="editProductCategory" placeholder="Например: Электроника, Игрушки...">
+            </div>
+            <div class="form-group">
+                <label>Ссылка на товар</label>
+                <input type="url" id="editProductUrl">
+            </div>
+            <div class="form-group">
+                <label>🎬 Ссылка на видеообзор (необязательно)</label>
+                <input type="url" id="editProductVideo" placeholder="https://youtube.com/...">
+            </div>
+            <div class="form-group">
+                <label>💳 Ссылка для оформления карты</label>
+                <input type="url" id="editProductCardUrl" placeholder="https://карта.ссылка/...">
+            </div>
+            <div class="form-group">
+                <label>Остаток на складе (шт.)</label>
+                <input type="number" id="editProductStock" min="0">
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="editProductShippingOnly" style="width: auto;">
+                    🚚 Только оплата доставки (товар за счёт проекта)
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Изображение товара</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="editProductImage" accept="image/*">
+                    <label for="editProductImage" class="file-input-label">
+                        📸 Нажмите для загрузки изображения
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
+        </form>
     </div>
-
+</div>
     <!-- Add Verified Product Modal -->
     <div id="addVerifiedProductModal" class="modal">
         <div class="modal-content">
@@ -3944,7 +3974,7 @@ main, .section, .card, .btn, button, a {
                 <input type="hidden" id="editVerifiedProductId">
                 <div class="form-group">
                     <label>Название товара</label>
-                    <input type="text" id="editVerifiedProductName" required>
+                    <input type="text" id="editVerifiedProductName" >
                 </div>
                                 <div class="form-group">
                     <label>Описание</label>
@@ -4534,17 +4564,29 @@ window.handleEditProduct = async function(e) {
     const id = document.getElementById('editProductId').value;
     const imageFile = document.getElementById('editProductImage').files[0];
     try {
-        const updateData = {
-            name: document.getElementById('editProductName').value,
-            description: document.getElementById('editProductDescription').value,
-            category: document.getElementById('editProductCategory').value,
-                       url: document.getElementById('editProductUrl').value,
-                        videoUrl: document.getElementById('editProductVideo').value || null,
-            cardUrl: document.getElementById('editProductCardUrl').value || null,
-            stock: parseInt(document.getElementById('editProductStock').value),
-            shippingOnly: document.getElementById('editProductShippingOnly').checked 
-        };
+        // 🔓 Сохраняем ТОЛЬКО заполненные поля (пустые пропускаем)
+        const updateData = {};
+        
+        const name = document.getElementById('editProductName').value.trim();
+        const desc = document.getElementById('editProductDescription').value.trim();
+        const cat = document.getElementById('editProductCategory').value.trim();
+        const url = document.getElementById('editProductUrl').value.trim();
+        const video = document.getElementById('editProductVideo').value.trim();
+        const cardUrl = document.getElementById('editProductCardUrl').value.trim();
+        const stock = document.getElementById('editProductStock').value;
+        
+        // Добавляем только если заполнено
+        if (name) updateData.name = name;
+        if (desc) updateData.description = desc;
+        if (cat) updateData.category = cat;
+        if (url) updateData.url = url;
+        updateData.videoUrl = video || null;
+        updateData.cardUrl = cardUrl || null;
+        if (stock !== '') updateData.stock = parseInt(stock);
+        updateData.shippingOnly = document.getElementById('editProductShippingOnly').checked;
+        
         if (imageFile) updateData.image = await compressImage(imageFile);
+        
         await updateDoc(doc(db, "products", id), updateData);
         closeEditProductModal();
         showSuccessMessage('✅ Товар обновлён!');
@@ -4559,15 +4601,25 @@ window.handleEditVerifiedProduct = async function(e) {
     const id = document.getElementById('editVerifiedProductId').value;
     const imageFile = document.getElementById('editVerifiedProductImage').files[0];
     try {
-        const updateData = {
-            name: document.getElementById('editVerifiedProductName').value,
-            description: document.getElementById('editVerifiedProductDescription').value,
-            category: document.getElementById('editVerifiedProductCategory').value,
-            stock: parseInt(document.getElementById('editVerifiedProductStock').value),
-                       url: document.getElementById('editVerifiedProductUrl').value,
-            videoUrl: document.getElementById('editVerifiedProductVideo').value || null
-        };
+        // 🔓 Сохраняем только заполненные поля
+        const updateData = {};
+        
+        const name = document.getElementById('editVerifiedProductName').value.trim();
+        const desc = document.getElementById('editVerifiedProductDescription').value.trim();
+        const cat = document.getElementById('editVerifiedProductCategory').value.trim();
+        const url = document.getElementById('editVerifiedProductUrl').value.trim();
+        const video = document.getElementById('editVerifiedProductVideo').value.trim();
+        const stock = document.getElementById('editVerifiedProductStock').value;
+        
+        if (name) updateData.name = name;
+        if (desc) updateData.description = desc;
+        if (cat) updateData.category = cat;
+        if (url) updateData.url = url;
+        updateData.videoUrl = video || null;
+        if (stock !== '') updateData.stock = parseInt(stock);
+        
         if (imageFile) updateData.image = await compressImage(imageFile);
+        
         await updateDoc(doc(db, "verifiedProducts", id), updateData);
         closeEditVerifiedProductModal();
         showSuccessMessage('✅ Проверенный товар обновлён!');
@@ -6184,12 +6236,9 @@ window.showErrorMessage = (msg) => {
                     launchFirework(touchEndX, touchEndY);
                     showSection(nextId);
                 } else {
-                    if (navigator.vibrate) navigator.vibrate(15);
-                    if (typeof playSwipeSound === 'function') playSwipeSound();  // 🔊
-                    launchFirework(touchEndX, touchEndY);
-                    showSection(nextId);
-                    showErrorMessage('📭 Это последний раздел');
-                }
+    if (navigator.vibrate) navigator.vibrate(15);
+    showErrorMessage('📭 Это последний раздел');
+}
             }
             // 👉 Свайп ВПРАВО = предыдущий раздел
             else if (diffX > 0) {
