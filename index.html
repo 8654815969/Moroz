@@ -3240,7 +3240,20 @@ main, .section, .card, .btn, button, a {
 /* Картинка "оживает" при наведении */
 #productGrid .card .verified-image img,
 #verifiedProductGrid .card .verified-image img {
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#productGrid .card:hover .verified-image img,
+#verifiedProductGrid .card:hover .verified-image img {
+    transform: scale(1.12);
+}
+
+/* На телефоне — реакция на нажатие */
+@media (max-width: 768px) {
+    #productGrid .card:active,
+    #verifiedProductGrid .card:active {
+        transform: scale(0.97);
+    }
+}
 
 /* На телефоне — реакция на нажатие */
 @media (max-width: 768px) {
@@ -4253,27 +4266,7 @@ main, .section, .card, .btn, button, a {
                // 🎠 БЛОГГЕРЫ (теперь из Firebase!)
         window.bloggers = [];
 
-        // Рисуем карусель блоггеров на главной
-        window.renderBloggers = function() {
-            const carousel = document.getElementById('bloggersCarousel');
-            if (!carousel) return;
-            if (window.bloggers.length === 0) {
-                carousel.innerHTML = '<p class="text-muted" style="margin:0 auto;">Блоггеры скоро появятся ⭐</p>';
-                return;
-            }
-            carousel.innerHTML = window.bloggers.map(b => `
-                <a href="${b.link}" target="_blank" rel="noopener" class="blogger-card">
-                    <img src="${b.photo}" alt="${b.name}" class="blogger-photo">
-                    <div class="blogger-info">
-                        <div class="blogger-name">${b.name}</div>
-                        <div class="blogger-role">${b.role}</div>
-                        <span class="blogger-btn">⭐ Смотреть 👆</span>
-                    </div>
-                </a>
-            `).join('');
-        };
-        
-        // Рисуем карусель блоггеров
+    // Рисуем карусель блоггеров
         window.renderBloggers = function() {
             const carousel = document.getElementById('bloggersCarousel');
             if (!carousel) return;
@@ -6117,6 +6110,65 @@ window.submitPartnerRequest = async function(e) {
         showErrorMessage('Ошибка: ' + err.message);
     }
 };
+        // 🎬 ДОБАВИТЬ БЛОГГЕРА
+        window.toggleAddBloggerModal = () => 
+            document.getElementById('addBloggerModal').classList.toggle('active');
+
+        window.handleAddBlogger = async function(e) {
+            e.preventDefault();
+            const photoFile = document.getElementById('bloggerPhoto').files[0];
+            const photo = await compressImage(photoFile);
+            try {
+                await addDoc(collection(db, "bloggers"), {
+                    name: document.getElementById('bloggerName').value,
+                    role: document.getElementById('bloggerRole').value,
+                    link: document.getElementById('bloggerLink').value,
+                    photo: photo,
+                    date: new Date().toLocaleString('ru-RU')
+                });
+                toggleAddBloggerModal();
+                showSuccessMessage('✅ Блоггер добавлен!');
+                document.querySelector('#addBloggerModal form').reset();
+            } catch (err) {
+                console.error('❌ Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        // 🗑 УДАЛИТЬ БЛОГГЕРА
+        window.deleteBlogger = async function(id) {
+            if (!confirm("Удалить этого блоггера?")) return;
+            try {
+                await deleteDoc(doc(db, "bloggers", id));
+                showSuccessMessage('Блоггер удалён!');
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        // 📋 СПИСОК БЛОГГЕРОВ В АДМИНКЕ
+        window.renderAdminBloggers = function() {
+            const list = document.getElementById('adminBloggersList');
+            if (!list) return;
+            if (!window.bloggers || window.bloggers.length === 0) {
+                list.innerHTML = '<p class="text-muted">Нет блоггеров</p>';
+                return;
+            }
+            list.innerHTML = window.bloggers.map(b => `
+                <div class="card mb-2 flex-between">
+                    <div class="flex gap-2" style="align-items:center;">
+                        <img src="${b.photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <h4 class="card-title">${b.name}</h4>
+                            <p class="text-muted">${b.role}</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-small" onclick="deleteBlogger('${b.id}')">🗑️</button>
+                </div>
+            `).join('');
+        };
+
+        
         window.deletePartnerRequest = async function(id) {
     if (!confirm("Удалить заявку?")) return;
     try {
