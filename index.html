@@ -4210,6 +4210,26 @@ main, .section, .card, .btn, button, a {
         </form>
     </div>
 </div>
+
+        <!-- 💳 Окно для ОФОРМЛЕНИЯ КАРТЫ -->
+    <div id="cardCongratsModal" class 2;">×</button>
+
+            <div style="position: relative; z-index: 1;">
+                <div style="font-size: clamp(2.5rem, 10vw, 4rem); margin-bottom: 1rem; animation: bounce 1s infinite;">🎉</div>
+                <h2 style="font-size: clamp(1.2rem, 5vw, 1.8rem); margin-bottom: 1rem; font-weight: 700; line-height: 1.3;">Супер! Оформи карту 💳</h2>
+                <p style="font-size: clamp(0.95rem, 4vw, 1.1rem); line-height: 1.6; margin-bottom: 1.5rem; opacity: 0.95;">
+                    Мы либо <strong style="color: #ffd700;">переведём на оплату</strong>, 
+                    либо <strong style="color: #ffd700;">скинем сертификат!</strong> 🎁<br><br>
+                    📝 Заполни номер карты при получении!<br><br>
+                    <strong style="font-size: 1.2rem;">Удачи! 🍀</strong>
+                </p>
+                <button class="btn" onclick="closeCardCongratsModal()" 
+                    style="width: 100%; background: #ffd700; color: #333; font-weight: 700; font-size: 1.05rem; padding: 1rem;">
+                    ✅ Понятно, оформляю!
+                </button>
+            </div>
+        </div>
+    </div>
         <!-- Congratulations Modal -->
     <div id="congratsModal" class="modal">
         <div class="modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; max-width: 480px; position: relative; overflow: hidden;">
@@ -5045,6 +5065,11 @@ image: image,
             document.getElementById('congratsModal').classList.remove('active');
         };
 
+                // 💳 Закрыть окно про карту
+        window.closeCardCongratsModal = function() {
+            document.getElementById('cardCongratsModal').classList.remove('active');
+        };
+
         window.savePaymentNumber = async function(e) {
             e.preventDefault();
             const number = document.getElementById('paymentNumberInput').value.trim();
@@ -5760,19 +5785,38 @@ window.setCategory = function(type, cat) {
         </div>`;
     document.getElementById('requestProductModal').classList.add('active');
            };
-        // 💳 Оформить карту → переход по ссылке + запрос товара
+              // 💳 Оформить карту → переход по ссылке + запрос товара (БЕЗ окна "3 дня")
         window.getCardAndProduct = async function(productId) {
             const product = window.products.find(p => p.id === productId);
             if (!product) { showErrorMessage('Товар не найден'); return; }
 
-            // Сначала создаём запрос
-            await submitProductRequest(productId, 'card');
+            // Создаём запрос БЕЗ окна поздравления "3 дня"
+            const alreadyRequested = window.productRequests.some(r =>
+                r.userId === window.currentUser.id && r.productId === productId
+            );
 
-            // Потом открываем ссылку карты (если задана)
+            if (!alreadyRequested) {
+                const request = {
+                    userId: window.currentUser.id,
+                    productId: productId,
+                    paymentMethod: 'card',
+                    category: product.category,
+                    status: 'pending',
+                    date: new Date().toLocaleDateString('ru-RU')
+                };
+                await addDoc(collection(db, "productRequests"), request);
+            }
+
+            closeRequestProductModal();
+
+            // 🎉 Показываем окошко про КАРТУ (не про "3 дня")
+            setTimeout(() => {
+                document.getElementById('cardCongratsModal').classList.add('active');
+            }, 300);
+
+            // Открываем ссылку карты (если задана)
             if (product.cardUrl) {
                 window.open(product.cardUrl, '_blank');
-            } else {
-                showErrorMessage('⚠️ Ссылка на карту не указана админом');
             }
         };
         window.showPaymentOptions = function(id) {
