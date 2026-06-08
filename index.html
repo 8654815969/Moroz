@@ -3,6 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- 🛡️ БЛОКИРУЕМ ЗАВИСАЮЩУЮ АНАЛИТИКУ NETLIFY (РКН) -->
+    <script>
+        // Перехватываем заблокированные сервисы, чтобы сайт не висел
+        window.DD_RUM = {
+            init: function(){}, 
+            addAction: function(){}, 
+            addError: function(){},
+            startView: function(){},
+            setUser: function(){}
+        };
+        window.analytics = {
+            track: function(){}, 
+            page: function(){}, 
+            load: function(){},
+            identify: function(){},
+            ready: function(){}
+        };
+        
+        // Блокируем запросы к заблокированным доменам
+        const originalFetch = window.fetch;
+        window.fetch = function(url, ...args) {
+            const u = String(url);
+            if (u.includes('segment.io') || 
+                u.includes('datadoghq.com') || 
+                u.includes('browser-intake')) {
+                // Не отправляем запрос — сразу возвращаем "успех"
+                return Promise.resolve(new Response('{}', {status: 200}));
+            }
+            return originalFetch.call(this, url, ...args);
+        };
+    </script>
+    
+    <title>...</title>
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
