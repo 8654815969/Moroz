@@ -4211,8 +4211,13 @@ main, .section, .card, .btn, button, a {
     </div>
 </div>
 
-        <!-- 💳 Окно для ОФОРМЛЕНИЯ КАРТЫ -->
-    <div id="cardCongratsModal" class 2;">×</button>
+          <!-- 💳 Окно для ОФОРМЛЕНИЯ КАРТЫ -->
+    <div id="cardCongratsModal" class="modal">
+        <div class="modal-content" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; text-align: center; max-width: 480px; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; font-size: 6rem; opacity: 0.15;">💳</div>
+            <div style="position: absolute; bottom: -30px; left: -30px; font-size: 6rem; opacity: 0.15;">🎁</div>
+
+            <button class="close-btn" onclick="closeCardCongratsModal()" style="position: absolute; top: 15px; right: 15px; color: white; z-index: 2;">×</button>
 
             <div style="position: relative; z-index: 1;">
                 <div style="font-size: clamp(2.5rem, 10vw, 4rem); margin-bottom: 1rem; animation: bounce 1s infinite;">🎉</div>
