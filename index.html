@@ -6166,28 +6166,6 @@ window.rejectReview = async function(id) {
             }).join('');
         };
 
-            container.innerHTML = Object.keys(byProduct).map(pid => {
-                const product = window.products.find(p => p.id === pid)
-                             || window.verifiedProducts.find(p => p.id === pid);
-                const list = byProduct[pid];
-                const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1);
-                const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
-
-                const reviewsHtml = list.map(r => {
-                    const user = window.users.find(u => u.id === r.userId);
-                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                    const name = user?.name ? user.name : 'Покупатель';
-                    return `
-                        <div class="card mb-2" style="background: var(--surface);">
-                            <div class="flex-between">
-                                <strong>👤 ${name}</strong>
-                                <span style="color: gold;">${stars}</span>
-                            </div>
-                            <p class="text-muted mt-2">${r.text}</p>
-                            <small class="text-muted">${r.date || ''}</small>
-                        </div>`;
-                }).join('');
-
                 // === КАРТИНКА ТОВАРА ===
                 const productImage = product?.image
                     ? `<img src="${product.image}" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;">`
@@ -6514,10 +6492,11 @@ window.submitPartnerRequest = async function(e) {
                             <p class="text-muted">${b.role}</p>
                         </div>
                     </div>
-                                        <div style="display:flex; gap:6px;">
+                                        <                                        <div style="display:flex; gap:6px;">
                         <button class="btn btn-small" style="background:#3498db; color:white;" onclick="openEditBlogger('${b.id}')">✏️</button>
                         <button class="btn btn-danger btn-small" onclick="deleteBlogger('${b.id}')">🗑️</button>
                     </div>
+                </div>
             `).join('');
         };
 
