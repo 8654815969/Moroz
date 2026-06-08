@@ -152,7 +152,57 @@
                 display: flex !important;
             }
         }
-
+/* ⚖️ ЮРИДИЧЕСКАЯ СТРАНИЦА */
+.legal-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.legal-tab {
+    padding: 10px 18px;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.legal-tab.active {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    border-color: transparent;
+}
+.legal-content {
+    line-height: 1.7;
+    color: var(--text);
+}
+.legal-content h2 {
+    margin-bottom: 16px;
+    color: var(--primary);
+    font-size: 1.4rem;
+}
+.legal-content h3 {
+    margin: 20px 0 10px;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+.legal-content p { margin-bottom: 12px; }
+.legal-content ul { margin: 10px 0 12px 20px; }
+.legal-content li { margin-bottom: 6px; }
+.legal-content .legal-date {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+.legal-content .legal-warn {
+    background: rgba(245,158,11,0.1);
+    border-left: 4px solid var(--warning);
+    padding: 14px;
+    border-radius: 10px;
+    margin: 16px 0;
+}
                              /* 🏳️ Флаг — помятый от ветра + переливается (как настоящая ткань) */
         .flag-ru {
             width: 44px;
@@ -3397,32 +3447,35 @@ main, .section, .card, .btn, button, a {
     <!-- 🎁 4 блока "Как это работает?" -->
     <div style="margin-top: 3rem;">
         <h2 style="text-align: center; margin-bottom: 2rem;">Как это работает?</h2>
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">🎁</div>
-                <h3>Реферальная система</h3>
-                <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">✅</div>
-                <h3>Проверенные товары</h3>
-                <p>Все товары проходят проверку качества перед публикацией</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">⭐</div>
-                <h3>Система отзывов</h3>
-                <p>Честные отзывы от реальных покупателей</p>
-            </div>
-
-            <div class="feature">
-                <div class="feature-icon">🔒</div>
-                <h3>Безопасность</h3>
-                <p>Защищённые платежи и надёжная доставка</p>
-            </div>
-        </div>
+       <div class="features">
+    <div class="feature" onclick="openFeatureModal('referral')" style="cursor:pointer;">
+        <div class="feature-icon">🎁</div>
+        <h3>Реферальная система</h3>
+        <p>Приглашайте друзей и зарабатывайте 5% с каждой их покупки</p>
+        <span class="feature-more">Подробнее →</span>
     </div>
+
+    <div class="feature" onclick="openFeatureModal('verified')" style="cursor:pointer;">
+        <div class="feature-icon">✅</div>
+        <h3>Проверенные товары</h3>
+        <p>Все товары проходят проверку качества перед публикацией</p>
+        <span class="feature-more">Подробнее →</span>
+    </div>
+
+    <div class="feature" onclick="openFeatureModal('reviews')" style="cursor:pointer;">
+        <div class="feature-icon">⭐</div>
+        <h3>Система отзывов</h3>
+        <p>Честные отзывы от реальных покупателей</p>
+        <span class="feature-more">Подробнее →</span>
+    </div>
+
+    <div class="feature" onclick="openFeatureModal('security')" style="cursor:pointer;">
+        <div class="feature-icon">🔒</div>
+        <h3>Безопасность</h3>
+        <p>Защищённые платежи и надёжная доставка</p>
+        <span class="feature-more">Подробнее →</span>
+    </div>
+</div>
 
     <!-- 🔘 Кнопки под карточками -->
     <div class="hero-buttons" style="margin-top: 2.5rem;">
@@ -3850,6 +3903,19 @@ main, .section, .card, .btn, button, a {
 </div>            
         </section>
     </main>
+
+    <!-- 💼 Feature Modal (презентация функций) -->
+<div id="featureModal" class="modal">
+    <div class="modal-content feature-modal-content">
+        <div class="fm-header">
+            <button class="fm-close" onclick="closeFeatureModal()">×</button>
+            <span class="fm-icon" id="fmIcon">🎁</span>
+            <h2 id="fmTitle">Заголовок</h2>
+        </div>
+        <div class="fm-body" id="fmBody"></div>
+    </div>
+</div>
+    
 <!-- Partner Modal -->
 <div id="partnerModal" class="modal">
     <div class="modal-content" style="text-align: center;">
@@ -3933,7 +3999,7 @@ main, .section, .card, .btn, button, a {
                     <div class="consent-check" id="consentCheck">✓</div>
                     <div class="consent-text">
                         Я соглашаюсь на обработку моих 
-                        <a href="#" onclick="event.stopPropagation(); showPrivacyInfo(); return false;">персональных данных</a> 
+                       <a href="#" onclick="event.stopPropagation(); toggleRegisterModal(); showLegalPage('privacy'); return false;">персональных данных</a>
                         в соответствии с 152-ФЗ «О персональных данных» 🔒
                     </div>
                 </div>
@@ -4256,6 +4322,22 @@ main, .section, .card, .btn, button, a {
             </div>
         </div>
     </div>
+
+    <!-- ⚖️ ЮРИДИЧЕСКАЯ СТРАНИЦА -->
+<section id="legal-page" class="section" style="display: none;">
+    <div class="container">
+        <button class="btn btn-secondary mb-3" onclick="goBack()">⬅️ Назад</button>
+        
+        <div class="legal-tabs">
+            <button class="legal-tab active" onclick="showLegalDoc('privacy', this)">🔒 Конфиденциальность</button>
+            <button class="legal-tab" onclick="showLegalDoc('terms', this)">📜 Соглашение</button>
+            <button class="legal-tab" onclick="showLegalDoc('rules', this)">⚖️ Правила и риски</button>
+        </div>
+
+        <div class="legal-content card" id="legalContent"></div>
+    </div>
+</section>
+    
 <!-- 🛍 СТРАНИЦА ОДНОГО ТОВАРА -->
 <section id="product-page" class="section" style="display: none;">
     <div class="container">
@@ -4289,8 +4371,16 @@ main, .section, .card, .btn, button, a {
 </nav>
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Честный Отзыв. Все права защищены.</p>
-    </footer>
+    <div style="max-width:1200px; margin:0 auto;">
+        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:16px;">
+            <a onclick="showLegalPage('privacy')" style="color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; font-size:0.85rem;">🔒 Конфиденциальность</a>
+            <a onclick="showLegalPage('terms')" style="color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; font-size:0.85rem;">📜 Пользовательское соглашение</a>
+            <a onclick="showLegalPage('rules')" style="color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; font-size:0.85rem;">⚖️ Правила и риски</a>
+        </div>
+        <p style="font-size:0.85rem; opacity:0.8;">&copy; 2026 Честный Отзыв. Все права защищены.</p>
+        <p style="font-size:0.75rem; opacity:0.6; margin-top:8px;">Платформа не является продавцом товаров и финансовой организацией.</p>
+    </div>
+</footer>
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -7761,6 +7851,324 @@ window.bottomNavGo = function(sectionId) {
                 msgBadge.style.display = newMessages > 0 ? 'inline-flex' : 'none';
             }
             };
+
+        // ⚖️ ЮРИДИЧЕСКИЕ ДОКУМЕНТЫ
+        window.legalDocs = {
+            privacy: `
+                <h2>🔒 Политика конфиденциальности</h2>
+                <p class="legal-date">Дата обновления: 01.01.2026 | Соответствует 152-ФЗ «О персональных данных»</p>
+
+                <h3>1. Общие положения</h3>
+                <p>Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей платформы «Честный Отзыв» (далее — Платформа).</p>
+
+                <h3>2. Какие данные мы собираем</h3>
+                <ul>
+                    <li>Имя (указанное при регистрации)</li>
+                    <li>Email (для входа и уведомлений)</li>
+                    <li>Номер телефона/карты (только если вы добавили для выплат)</li>
+                    <li>Данные об активности (отзывы, заявки, рефералы)</li>
+                </ul>
+
+                <h3>3. Цели обработки</h3>
+                <ul>
+                    <li>Регистрация и работа личного кабинета</li>
+                    <li>Начисление и выплата вознаграждений</li>
+                    <li>Связь с вами по вопросам сервиса</li>
+                    <li>Улучшение работы Платформы</li>
+                </ul>
+
+                <h3>4. Защита данных</h3>
+                <p>Ваши контактные данные (email, телефон) хранятся в защищённом разделе и доступны только вам и администрации. Мы НЕ передаём данные третьим лицам, кроме случаев, предусмотренных законом.</p>
+
+                <h3>5. Ваши права</h3>
+                <ul>
+                    <li>Запросить удаление своих данных</li>
+                    <li>Отозвать согласие на обработку</li>
+                    <li>Получить информацию о хранимых данных</li>
+                </ul>
+                <p>Для реализации прав напишите в чат поддержки в личном кабинете.</p>
+
+                <h3>6. Cookies и localStorage</h3>
+                <p>Платформа использует локальное хранилище браузера для сохранения сессии входа. Это необходимо для работы сервиса.</p>
+
+                <h3>7. Изменения</h3>
+                <p>Мы вправе обновлять Политику. Актуальная версия всегда доступна на этой странице.</p>
+            `,
+
+            terms: `
+                <h2>📜 Пользовательское соглашение</h2>
+                <p class="legal-date">Публичная оферта | Дата: 01.01.2026</p>
+
+                <h3>1. Предмет соглашения</h3>
+                <p>Платформа «Честный Отзыв» предоставляет сервис для тестирования товаров, написания честных отзывов и участия в реферальной программе. Регистрируясь, вы принимаете условия этого Соглашения.</p>
+
+                <h3>2. Регистрация</h3>
+                <ul>
+                    <li>Регистрация доступна лицам старше 18 лет</li>
+                    <li>Вы обязуетесь указывать достоверные данные</li>
+                    <li>Вы несёте ответственность за сохранность пароля</li>
+                </ul>
+
+                <h3>3. Тестирование товаров</h3>
+                <p>Платформа предоставляет доступ к товарам для тестирования. Пользователь самостоятельно оформляет покупку на маркетплейсах (Ozon, Wildberries и др.).</p>
+                <div class="legal-warn">
+                    <strong>⚠️ Важно:</strong> Платформа НЕ является продавцом товаров. Все покупки совершаются напрямую на маркетплейсах. Условия возврата товара регулируются правилами маркетплейса.
+                </div>
+
+                <h3>4. Отзывы</h3>
+                <ul>
+                    <li>Отзывы должны быть честными и основанными на реальном опыте</li>
+                    <li>Запрещены оскорбления, спам, ложная информация</li>
+                    <li>Администрация вправе модерировать и удалять отзывы</li>
+                    <li>Публикуя отзыв, вы передаёте Платформе право на его размещение</li>
+                </ul>
+
+                <h3>5. Реферальная программа</h3>
+                <p>Пользователь может приглашать друзей и получать вознаграждение с их подтверждённых покупок.</p>
+                <div class="legal-warn">
+                    <strong>⚠️ Условия:</strong> Размер и факт выплаты вознаграждения зависит от подтверждения покупок через системы аналитики маркетплейсов. Платформа вправе изменять процент вознаграждения с уведомлением пользователей.
+                </div>
+
+                <h3>6. Запрещено</h3>
+                <ul>
+                    <li>Создавать фейковые аккаунты</li>
+                    <li>Накручивать рефералов или отзывы</li>
+                    <li>Использовать Платформу в мошеннических целях</li>
+                </ul>
+                <p>За нарушение — блокировка аккаунта без выплаты накопленных средств.</p>
+
+                <h3>7. Ответственность</h3>
+                <p>Платформа предоставляется «как есть». Мы не гарантируем бесперебойную работу и не несём ответственности за действия маркетплейсов или третьих лиц.</p>
+
+                <h3>8. Изменение условий</h3>
+                <p>Администрация вправе изменять условия Соглашения. Продолжение использования Платформы означает согласие с изменениями.</p>
+            `,
+
+            rules: `
+                <h2>⚖️ Правила выплат и риски</h2>
+                <p class="legal-date">Важная информация для пользователей</p>
+
+                <h3>💰 Как работают выплаты</h3>
+                <p>При участии в программе тестирования вы можете получить возврат стоимости товара после выполнения условий:</p>
+                <ul>
+                    <li>Оформление покупки на маркетплейсе</li>
+                    <li>Написание честного отзыва</li>
+                    <li>Загрузка скриншота чека и отзыва</li>
+                </ul>
+
+                <div class="legal-warn">
+                    <strong>⚠️ Условия выплаты:</strong> Выплата производится в течение 3 рабочих дней ПОСЛЕ проверки администрацией предоставленных документов (чека и отзыва). Платформа вправе отказать в выплате при выявлении нарушений (поддельный чек, отзыв не опубликован, мошенничество).
+                </div>
+
+                <h3>🎁 Товары «за счёт проекта»</h3>
+                <p>Некоторые товары предоставляются с оплатой только доставки. Условия указываются индивидуально для каждого товара.</p>
+
+                <h3>📊 Реферальные начисления</h3>
+                <p>Начисления производятся на основе данных аналитики маркетплейсов (UTM-метки). Платформа не может гарантировать начисление, если:</p>
+                <ul>
+                    <li>Покупка не отслежена системой маркетплейса</li>
+                    <li>Реферал отменил заказ или вернул товар</li>
+                    <li>Нарушены правила реферальной программы</li>
+                </ul>
+
+                <h3>🔒 Защита от мошенничества</h3>
+                <p>Мы оставляем за собой право:</p>
+                <ul>
+                    <li>Проверять подлинность чеков и отзывов</li>
+                    <li>Блокировать подозрительные аккаунты</li>
+                    <li>Отказывать в выплатах при нарушениях</li>
+                </ul>
+
+                <div class="legal-warn">
+                    <strong>📌 Дисклеймер:</strong> Участие в программе является добровольным. Платформа не является финансовой организацией и не предоставляет инвестиционных услуг. Все вознаграждения — это маркетинговые поощрения за активность.
+                </div>
+
+                <h3>📞 Споры и поддержка</h3>
+                <p>По всем вопросам обращайтесь в чат поддержки в личном кабинете. Мы стремимся решать спорные ситуации индивидуально и честно.</p>
+            `
+        };
+
+        // Открыть юр.страницу
+        window.showLegalPage = function(doc = 'privacy') {
+            if (!window.navHistory) window.navHistory = [];
+            const active = document.querySelector('.section.active');
+            if (active && active.id !== 'legal-page') window.navHistory.push(active.id);
+
+            document.querySelectorAll('.section').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            const page = document.getElementById('legal-page');
+            page.classList.add('active');
+            page.style.display = 'block';
+
+            const partnerBtn = document.getElementById('partnerFloatBtn');
+            if (partnerBtn) partnerBtn.style.display = 'none';
+
+            showLegalDoc(doc);
+            // подсветка таба
+            document.querySelectorAll('.legal-tab').forEach(t => t.classList.remove('active'));
+            const tabBtn = Array.from(document.querySelectorAll('.legal-tab')).find(t => t.getAttribute('onclick')?.includes(`'${doc}'`));
+            if (tabBtn) tabBtn.classList.add('active');
+
+            updateBackButton();
+            closeMobileMenu();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.showLegalDoc = function(doc, btn) {
+            document.getElementById('legalContent').innerHTML = window.legalDocs[doc] || '';
+            if (btn) {
+                document.querySelectorAll('.legal-tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+            }
+        };
+                // 💼 ПРЕЗЕНТАЦИИ ФУНКЦИЙ
+        window.featureData = {
+            referral: {
+                icon: '🎁',
+                title: 'Реферальная система',
+                body: `
+                    <div class="fm-section">
+                        <h3>💡 Что это такое?</h3>
+                        <p>Приглашайте друзей по своей персональной ссылке и зарабатывайте процент с КАЖДОЙ их покупки на маркетплейсах — это пассивный доход, который работает на вас!</p>
+                    </div>
+
+                    <div class="fm-money">
+                        💰 5% с покупок друзей<br>
+                        +2% с покупок их друзей
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>🚀 Как начать зарабатывать?</h3>
+                        <div class="fm-steps">
+                            <div class="fm-step"><div class="fm-step-num">1</div><div class="fm-step-text">Зарегистрируйтесь и зайдите в <b>Личный кабинет → Рефералы</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">2</div><div class="fm-step-text">Скопируйте свою <b>реферальную ссылку</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">3</div><div class="fm-step-text">Делитесь в соцсетях, мессенджерах, с друзьями</div></div>
+                            <div class="fm-step"><div class="fm-step-num">4</div><div class="fm-step-text">Получайте <b>% автоматически</b> с их покупок!</div></div>
+                        </div>
+                    </div>
+
+                    <div class="fm-highlight">
+                        <strong>✅ Выгода:</strong> Не нужен свой товар или склад. Просто рекомендуете качественные товары РФ — и зарабатываете на обороте!
+                    </div>
+
+                    <button class="fm-cta" onclick="closeFeatureModal(); toggleRegisterModal();">🎁 Получить реферальную ссылку</button>
+                `
+            },
+            verified: {
+                icon: '✅',
+                title: 'Проверенные товары',
+                body: `
+                    <div class="fm-section">
+                        <h3>💡 Что это такое?</h3>
+                        <p>Каталог товаров, которые прошли проверку качества. Здесь только надёжные товары от производителей России 🇷🇺 — покупайте с уверенностью!</p>
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>🛒 Как пользоваться?</h3>
+                        <div class="fm-steps">
+                            <div class="fm-step"><div class="fm-step-num">1</div><div class="fm-step-text">Откройте раздел <b>«Каталог»</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">2</div><div class="fm-step-text">Выберите категорию или используйте <b>поиск</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">3</div><div class="fm-step-text">Изучите <b>отзывы и рейтинг</b> товара</div></div>
+                            <div class="fm-step"><div class="fm-step-num">4</div><div class="fm-step-text">Переходите на маркетплейс и покупайте!</div></div>
+                        </div>
+                    </div>
+
+                    <div class="fm-highlight">
+                        <strong>✅ Гарантия:</strong> Все товары проверены модерацией. Реальные фото, честные описания, проверенные продавцы.
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>🏭 Для производителей</h3>
+                        <p>Хотите разместить свой товар в каталоге проверенных? Получите доступ к аудитории, готовой покупать, и рост позиций на маркетплейсах!</p>
+                    </div>
+
+                    <button class="fm-cta" onclick="closeFeatureModal(); showSection('verified');">✅ Открыть каталог</button>
+                `
+            },
+            reviews: {
+                icon: '⭐',
+                title: 'Система отзывов',
+                body: `
+                    <div class="fm-section">
+                        <h3>💡 Что это такое?</h3>
+                        <p>Честные отзывы от реальных покупателей с фото-доказательствами. Вы тестируете товар, оставляете отзыв — и получаете вознаграждение!</p>
+                    </div>
+
+                    <div class="fm-money">
+                        🤑 Полный возврат стоимости товара<br>
+                        + 10 баллов за каждый отзыв
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>📝 Как получить деньги за отзыв?</h3>
+                        <div class="fm-steps">
+                            <div class="fm-step"><div class="fm-step-num">1</div><div class="fm-step-text">Выберите товар в разделе <b>«Товары на тест»</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">2</div><div class="fm-step-text">Запросите товар и купите на маркетплейсе</div></div>
+                            <div class="fm-step"><div class="fm-step-num">3</div><div class="fm-step-text">Напишите <b>честный отзыв</b> + загрузите чек и скриншот</div></div>
+                            <div class="fm-step"><div class="fm-step-num">4</div><div class="fm-step-text">Получите <b>возврат стоимости за 3 дня!</b> 💸</div></div>
+                        </div>
+                    </div>
+
+                    <div class="fm-highlight">
+                        <strong>✅ Честно:</strong> Только реальные отзывы реальных покупок. Каждый отзыв проходит модерацию.
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>🏭 Для брендов</h3>
+                        <p>Нужны живые отзывы для роста продаж? Наши тестировщики напишут честные отзывы с фото — это поднимет рейтинг ваших товаров на маркетплейсах!</p>
+                    </div>
+
+                    <button class="fm-cta" onclick="closeFeatureModal(); showReviewsPage();">⭐ Смотреть отзывы</button>
+                `
+            },
+            security: {
+                icon: '🔒',
+                title: 'Безопасность',
+                body: `
+                    <div class="fm-section">
+                        <h3>💡 Что это такое?</h3>
+                        <p>Мы серьёзно относимся к защите ваших данных и честности выплат. Ваша приватность и безопасность — наш приоритет!</p>
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>🛡️ Как мы вас защищаем?</h3>
+                        <div class="fm-steps">
+                            <div class="fm-step"><div class="fm-step-num">🔐</div><div class="fm-step-text">Ваш <b>email и телефон</b> видите только вы и админ</div></div>
+                            <div class="fm-step"><div class="fm-step-num">📜</div><div class="fm-step-text">Соответствие <b>152-ФЗ</b> «О персональных данных»</div></div>
+                            <div class="fm-step"><div class="fm-step-num">💳</div><div class="fm-step-text">Честные выплаты в <b>оговорённые сроки</b></div></div>
+                            <div class="fm-step"><div class="fm-step-num">🚫</div><div class="fm-step-text">Данные <b>не передаются</b> третьим лицам</div></div>
+                        </div>
+                    </div>
+
+                    <div class="fm-highlight">
+                        <strong>✅ Гарантия:</strong> Все покупки совершаются напрямую на проверенных маркетплейсах (Ozon, Wildberries) с их защитой покупателя.
+                    </div>
+
+                    <div class="fm-section">
+                        <h3>📄 Документы</h3>
+                        <p>Мы работаем прозрачно. Ознакомьтесь с нашими правилами, политикой конфиденциальности и условиями.</p>
+                    </div>
+
+                    <button class="fm-cta" onclick="closeFeatureModal(); showLegalPage('privacy');">📄 Читать документы</button>
+                `
+            }
+        };
+
+        window.openFeatureModal = function(key) {
+            const data = window.featureData[key];
+            if (!data) return;
+            document.getElementById('fmIcon').textContent = data.icon;
+            document.getElementById('fmTitle').textContent = data.title;
+            document.getElementById('fmBody').innerHTML = data.body;
+            document.getElementById('featureModal').classList.add('active');
+            if (navigator.vibrate) navigator.vibrate(15);
+        };
+
+        window.closeFeatureModal = function() {
+            document.getElementById('featureModal').classList.remove('active');
+        };
 </script>
     
     <script>
@@ -7926,7 +8334,151 @@ window.bottomNavGo = function(sectionId) {
         margin-top: 0.5rem;
     }
 }
+/* 💡 Кнопка "Подробнее" в блоках */
+.feature-more {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: transform 0.2s;
+}
+.feature:hover .feature-more {
+    transform: translateX(4px);
+}
+@media (max-width: 768px) {
+    .feature-more {
+        color: #ffd700 !important;
+        font-size: 0.78rem !important;
+    }
+}
 
+/* 💼 Модалка-презентация функции */
+.feature-modal-content {
+    max-width: 560px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+.fm-header {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    padding: 32px 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+}
+.fm-icon {
+    font-size: 3.5rem;
+    margin-bottom: 8px;
+    display: block;
+    animation: fmBounce 2s ease-in-out infinite;
+}
+@keyframes fmBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.fm-header h2 {
+    font-size: 1.6rem;
+    margin: 0;
+    color: white !important;
+}
+.fm-header .fm-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+}
+.fm-body {
+    padding: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.fm-section { margin-bottom: 20px; }
+.fm-section h3 {
+    font-size: 1.05rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fm-section p {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+.fm-steps {
+    counter-reset: step;
+}
+.fm-step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+}
+.fm-step-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.fm-step-text {
+    flex: 1;
+    line-height: 1.5;
+    padding-top: 4px;
+}
+.fm-step-text b { color: var(--primary); }
+.fm-highlight {
+    background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(37,99,235,0.08));
+    border-left: 4px solid var(--success);
+    padding: 14px;
+    border-radius: 12px;
+    margin: 16px 0;
+}
+.fm-highlight strong { color: var(--success); }
+.fm-money {
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    color: #333;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 700;
+    margin: 16px 0;
+    box-shadow: 0 4px 14px rgba(255,170,0,0.3);
+}
+.fm-cta {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.2s;
+}
+.fm-cta:hover { transform: translateY(-2px); }
+@media (max-width: 768px) {
+    .fm-header { padding: 24px 16px; }
+    .fm-icon { font-size: 2.8rem; }
+    .fm-header h2 { font-size: 1.3rem; }
+    .fm-body { padding: 18px; }
+}
     /* ⭐ КРАСИВАЯ СТРАНИЦА ОТЗЫВОВ */
 .reviews-hero {
     background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
