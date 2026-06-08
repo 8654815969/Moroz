@@ -5214,15 +5214,16 @@ image: image,
     closeRequestProductModal();
     if (typeof closeAllModals === 'function') closeAllModals();  // 🔑 закрываем всё лишнее
     
-    // 🎉 Показываем ТОЛЬКО поздравительное окно с задержкой
-    setTimeout(() => {
+       setTimeout(() => {
         document.querySelectorAll('.modal.active').forEach(m => {
             if (m.id !== 'congratsModal') m.classList.remove('active');
         });
         document.getElementById('congratsModal').classList.add('active');
         console.log('🎉 Окно поздравления показано!');
     }, 300);
-               window.processPayment = async function(productId, method) {
+};
+
+window.processPayment = async function(productId, method) {
             const product = window.verifiedProducts.find(p => p.id === productId);
             
             if (method === 'card') {
