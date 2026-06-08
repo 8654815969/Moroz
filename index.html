@@ -2957,6 +2957,67 @@ main, .section, .card, .btn, button, a {
     .admin-card-actions { flex-direction: column; }
     .admin-btn-approve, .admin-btn-reject { width: 100%; }
 }
+        /* ════════ 📐 РОВНЫЕ КАРТОЧКИ В КАТАЛОГАХ ════════ */
+
+/* Карточка — flex-колонка одинаковой высоты */
+#productGrid .card,
+#verifiedProductGrid .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Картинка — всегда одного размера */
+#productGrid .verified-image,
+#verifiedProductGrid .verified-image {
+    height: 180px;
+    flex-shrink: 0;
+}
+
+/* 🔑 Название — ровно 2 строки, не больше и не меньше */
+#productGrid .card-title,
+#verifiedProductGrid .card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.6em;   /* место под 2 строки ВСЕГДА */
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* Бейдж категории — фиксированная зона */
+#productGrid .badge,
+#verifiedProductGrid .badge {
+    align-self: flex-start;
+    margin: 4px 0;
+}
+
+/* 🔑 Кнопки ВСЕГДА прижаты к низу — ряд ровный */
+#productGrid .card-footer,
+#verifiedProductGrid .card-footer {
+    margin-top: auto;
+}
+
+/* Сетка — карточки тянутся на одну высоту */
+#productGrid,
+#verifiedProductGrid {
+    align-items: stretch;
+}
+
+/* 📱 На телефоне — тоже ровно (2 строки названия) */
+@media (max-width: 768px) {
+    #productGrid .verified-image,
+    #verifiedProductGrid .verified-image {
+        height: 130px;
+    }
+    #productGrid .card-title,
+    #verifiedProductGrid .card-title {
+        min-height: 2.4em;
+        font-size: 0.85rem;
+    }
+}
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>    
