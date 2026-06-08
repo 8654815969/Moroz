@@ -3072,6 +3072,46 @@ main, .section, .card, .btn, button, a {
 @keyframes loaderSpin {
     to { transform: rotate(360deg); }
 }
+
+/* 🎊 ПРАЗДНИЧНАЯ РАМКА — бегущие огоньки */     ← ВСТАВЛЯЕШЬ ОТСЮДА
+.festive-modal {
+    border: 3px solid transparent !important;
+}
+.festive-border {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    padding: 3px;
+    background: linear-gradient(90deg, 
+        #ff0080, #ff8c00, #ffd700, #00ff88, 
+        #00d4ff, #7c3aed, #ff0080);
+    background-size: 300% 100%;
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: festiveRun 3s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+@keyframes festiveRun {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+.festive-modal::after {
+    content: '✨';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 1.2rem;
+    animation: sparkleGlow 1.5s ease-in-out infinite;
+    z-index: 2;
+}
+@keyframes sparkleGlow {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+}                                                ← ДО СЮДА
 </style>
         <!-- 🎉 Большой текст при регистрации -->
     <div id="welcomeBurst">🎉<br>ДОБРО ПОЖАЛОВАТЬ!</div>
@@ -4391,36 +4431,39 @@ main, .section, .card, .btn, button, a {
     </div>
 </div>
         <!-- Congratulations Modal -->
-    <div id="congratsModal" class="modal">
-        <div class="modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; max-width: 480px; position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -30px; right: -30px; font-size: 6rem; opacity: 0.15;">🎉</div>
-            <div style="position: absolute; bottom: -30px; left: -30px; font-size: 6rem; opacity: 0.15;">🎁</div>
+<div id="congratsModal" class="modal">
+    <div class="modal-content festive-modal" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; max-width: 480px; position: relative; overflow: hidden;">
+        <!-- 🎊 Праздничная рамка-огоньки -->
+        <div class="festive-border"></div>
+
+        <div style="position: absolute; top: -30px; right: -30px; font-size: 6rem; opacity: 0.15;">🎉</div>
+        <div style="position: absolute; bottom: -30px; left: -30px; font-size: 6rem; opacity: 0.15;">🎁</div>
+        
+        <button class="close-btn" onclick="closeCongratsModal()" style="position: absolute; top: 15px; right: 15px; color: white; z-index: 3;">×</button>
+        
+        <div style="position: relative; z-index: 2;">
+            <div style="font-size: clamp(2.5rem, 10vw, 4rem); margin-bottom: 1rem; animation: bounce 1s infinite;">🎉</div>
+            <h2 style="font-size: clamp(1.2rem, 5vw, 1.8rem); margin-bottom: 1rem; font-weight: 700; line-height: 1.3; word-wrap: break-word;">Поздравляем! Заявка принята! 🎫</h2>
+            <p style="font-size: clamp(0.9rem, 4vw, 1.05rem); line-height: 1.6; margin-bottom: 1.5rem; opacity: 0.95;">
+                После оформления карты мы отправим на вашу 
+                <strong style="color: #ffd700;">почту сертификат</strong> 
+                для получения товара на тест! 📧✨
+            </p>
+            <p style="font-size: clamp(0.9rem, 3.5vw, 1rem); margin-bottom: 1rem; font-weight: 600;">
+                💳 Укажите номер, куда перевести средства:
+            </p>
             
-            <button class="close-btn" onclick="closeCongratsModal()" style="position: absolute; top: 15px; right: 15px; color: white; z-index: 2;">×</button>
-            
-            <div style="position: relative; z-index: 1;">
-    <div style="font-size: clamp(2.5rem, 10vw, 4rem); margin-bottom: 1rem; animation: bounce 1s infinite;">🎉</div>
-    <h2 style="font-size: clamp(1.2rem, 5vw, 1.8rem); margin-bottom: 1rem; font-weight: 700; line-height: 1.3; word-wrap: break-word;">Поздравляем! Дождитесь одобрения!</h2>
-    <p style="font-size: clamp(0.9rem, 4vw, 1.05rem); line-height: 1.6; margin-bottom: 1.5rem; opacity: 0.95;">
-        После того как вы оставите отзыв и загрузите скрин чека и отзыва, 
-        <strong style="color: #ffd700;">в течение 3 дней</strong> мы переведём вам 
-        <strong style="color: #ffd700;">полную сумму товара!</strong> 🤑
-    </p>
-    <p style="font-size: clamp(0.9rem, 3.5vw, 1rem); margin-bottom: 1rem; font-weight: 600;">
-        💳 Укажите номер, куда перевести средства:
-    </p>
-                
-                <form onsubmit="savePaymentNumber(event)">
-                    <input type="text" id="paymentNumberInput" placeholder="Номер карты или телефона" required 
-                        style="text-align: center; font-size: 1.1rem; padding: 1rem; border: none; border-radius: 12px; margin-bottom: 1rem; color: #333; font-weight: 600;">
-                    <button type="submit" class="btn" 
-                        style="width: 100%; background: #ffd700; color: #333; font-weight: 700; font-size: 1.05rem; padding: 1rem;">
-                        ✅ Сохранить номер
-                    </button>
-                </form>
-            </div>
+            <form onsubmit="savePaymentNumber(event)">
+                <input type="text" id="paymentNumberInput" placeholder="Номер карты или телефона" required 
+                    style="text-align: center; font-size: 1.1rem; padding: 1rem; border: none; border-radius: 12px; margin-bottom: 1rem; color: #333; font-weight: 600;">
+                <button type="submit" class="btn" 
+                    style="width: 100%; background: #ffd700; color: #333; font-weight: 700; font-size: 1.05rem; padding: 1rem;">
+                    ✅ Сохранить номер
+                </button>
+            </form>
         </div>
     </div>
+</div>
     <!-- Payment Modal -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
@@ -5171,17 +5214,20 @@ image: image,
         date: new Date().toLocaleDateString('ru-RU')
     };
     
-   await addDoc(collection(db, "productRequests"), request);
+     await addDoc(collection(db, "productRequests"), request);
     
     closeRequestProductModal();
+    if (typeof closeAllModals === 'function') closeAllModals();  // 🔑 закрываем всё лишнее
     
-    // 🎉 Показываем поздравительное окно с задержкой
+    // 🎉 Показываем ТОЛЬКО поздравительное окно с задержкой
     setTimeout(() => {
+        // Сначала убеждаемся что другие окна закрыты
+        document.querySelectorAll('.modal.active').forEach(m => {
+            if (m.id !== 'congratsModal') m.classList.remove('active');
+        });
         document.getElementById('congratsModal').classList.add('active');
-        console.log('🎉 Окно поздравления должно появиться!');
+        console.log('🎉 Окно поздравления показано!');
     }, 300);
-};
-
                window.processPayment = async function(productId, method) {
             const product = window.verifiedProducts.find(p => p.id === productId);
             
@@ -5976,9 +6022,9 @@ window.setCategory = function(type, cat) {
     
        document.getElementById('requestProductOptions').innerHTML = shippingWarning + `
                <div class="payment-option">
-            <h4>💳 Оформить карту и получить товар</h4>
+            <h4>💳 Оформить карту</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); margin:8px 0;">
-                💰 После покупки загрузите <strong>скриншот отзыва с маркетплейса</strong>!
+                💰 После оформления сразу получите товар</strong>!
             </p>
             <button class="btn btn-primary" onclick="getCardAndProduct('${id}')">✅ Оформить и получить</button>
         </div>
@@ -5991,10 +6037,13 @@ window.setCategory = function(type, cat) {
         </div>`;
     document.getElementById('requestProductModal').classList.add('active');
            };
-        // 💳 Оформить карту → переход по ссылке + запрос товара
+       // 💳 Оформить карту → переход по ссылке + запрос товара
         window.getCardAndProduct = async function(productId) {
             const product = window.products.find(p => p.id === productId);
             if (!product) { showErrorMessage('Товар не найден'); return; }
+
+            // 🔑 ЗАКРЫВАЕМ ВСЕ открытые модалки перед показом поздравления
+            closeAllModals();
 
             // Сначала создаём запрос
             await submitProductRequest(productId, 'card');
@@ -6005,6 +6054,16 @@ window.setCategory = function(type, cat) {
             } else {
                 showErrorMessage('⚠️ Ссылка на карту не указана админом');
             }
+        };
+
+        // 🔒 Закрыть ВСЕ модальные окна (чтобы не накладывались)
+        window.closeAllModals = function() {
+            document.querySelectorAll('.modal.active').forEach(m => {
+                // Не трогаем поздравительное окно (оно откроется само)
+                if (m.id !== 'congratsModal') {
+                    m.classList.remove('active');
+                }
+            });
         };
         window.showPaymentOptions = function(id) {
             if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
