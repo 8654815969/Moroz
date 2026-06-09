@@ -5820,7 +5820,9 @@ window.requireVerifiedEmail = function() {
 };
 
 // 🔄 Повторная отправка письма подтверждения
-window
+window.resendVerification = async function() {
+    const authUser = window.firebaseAuth?.currentUser;
+    if (!authUser) { 
         showErrorMessage('Сначала войдите в аккаунт'); 
         return; 
     }
@@ -5865,8 +5867,8 @@ window
     document.getElementById('requestProductModal').classList.add('active');
            };
               // 💳 Оформить карту → переход по ссылке + запрос товара (БЕЗ окна "3 дня")
-        wwindow.getCardAndProduct = async function(productId) {
-    if (!requireVerifiedEmail()) return;  // 🔒 проверка email
+               window.getCardAndProduct = async function(productId) {
+            if (!requireVerifiedEmail()) return;  // 🔒 проверка email
     const product = window.products.find(p => p.id === productId);
     if (!product) { showErrorMessage('Товар не найден'); return; }
 
