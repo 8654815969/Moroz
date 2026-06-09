@@ -4543,7 +4543,17 @@ window.checkReferralNotifications = async function() {
         // Initialize App
                // Initialize App
         setupListeners();
-        
+        // 🔄 Каждые 10 сек проверяем — не подтвердил ли юзер почту
+setInterval(async () => {
+    const authUser = window.firebaseAuth?.currentUser;
+    if (authUser && !authUser.emailVerified) {
+        await authUser.reload();
+        if (authUser.emailVerified) {
+            showSuccessMessage('✅ Email подтверждён! Теперь можно запрашивать товары 🎁');
+            updateCabinet();
+        }
+    }
+}, 10000);
         // ⏳ Прячем загрузчик когда данные готовы
         let loaderHidden = false;
         function hideLoader() {
@@ -4597,16 +4607,6 @@ window.handleResetPassword = handleResetPassword;
         // 🔐 Вход через Firebase Auth
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const authUser = userCredential.user;
-
-        // 🔒 ПРОВЕРКА: подтверждена ли почта? (админа пускаем всегда)
-        const dbUser = window.users.find(u => u.email === email);
-        const isAdmin = dbUser && dbUser.role === 'admin';
-
-        if (!authUser.emailVerified && !isAdmin) {
-            showErrorMessage('📧 Сначала подтвердите email! Проверьте почту (и папку Спам)');
-            await signOut(auth);
-            return;
-        }
 
         // Ищем пользователя в Firestore
         let user = window.users.find(u => u.authUid === authUser.uid);
@@ -5109,7 +5109,7 @@ image: image,
 window.selectedRating = 0;
 
 window.openReviewModal = function(productId) {
-    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+    if (!requireVerifiedEmail()) return;  // 🔒 проверка email
     document.getElementById('reviewProductId').value = productId;
     window.selectedRating = 0;
     updateReviewStars();
@@ -5324,7 +5324,24 @@ window.handleReviewSubmit = async function(e) {
 
             document.getElementById('notLoggedInMessage').style.display = 'none';
             document.getElementById('cabinetContent').style.display = 'block';
-            
+            // 📧 Показываем напоминание, если email не подтверждён
+const authUser = window.firebaseAuth?.currentUser;
+const oldBanner = document.getElementById('verifyBanner');
+if (oldBanner) oldBanner.remove();
+
+if (authUser && !authUser.emailVerified && window.currentUser.role !== 'admin') {
+    const banner = document.createElement('div');
+    banner.id = 'verifyBanner';
+    banner.className = 'alert';
+    banner.style.cssText = 'background: rgba(245,158,11,0.12); border-left: 4px solid var(--warning); color: #92400e; cursor:pointer;';
+    banner.innerHTML = `
+        <span style="font-size:1.5rem;">📧</span>
+        <span><strong>Подтвердите email!</strong> Без этого нельзя запросить товар на тест. 
+        <u>Нажмите, чтобы отправить письмо снова →</u></span>`;
+    banner.onclick = () => resendVerification();
+    const content = document.getElementById('cabinetContent');
+    content.insertBefore(banner, content.firstChild);
+}
             document.getElementById('userName').textContent = window.currentUser.name;
             document.getElementById('userEmail').textContent = window.currentUser.email;
             document.getElementById('userAvatar').textContent = window.currentUser.name.charAt(0);
@@ -5757,9 +5774,66 @@ window.setCategory = function(type, cat) {
         renderProducts();
     }
 };
+// 🔒 Проверка: подтверждён ли email перед запросом товара
+window.requireVerifiedEmail = function() {
+    const authUser = window.firebaseAuth?.currentUser;
+    const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+    
+    // Админа пускаем всегда
+    if (isAdmin) return true;
+    
+    // Если вошёл через Firebase и email НЕ подтверждён
+    if (authUser && !authUser.emailVerified) {
+        const email = window.currentUser?.email || authUser.email;
+        const mailUrl = window.getMailUrl(email);
+        showFullscreenNotify(
+            '📧',
+            'Подтвердите почту!',
+            `Чтобы запросить товар, подтвердите email <strong>${email}</strong>.<br><br>
+             <a href="${mailUrl}" target="_blank" 
+                style="display:inline-block; background:#fff; color:#2563eb; 
+                       font-weight:700; padding:14px 32px; border-radius:50px; 
+                       text-decoration:none; font-size:1.1rem; margin-top:10px;
+                       box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+                ✉️ Открыть почту
+             </a>
+             <br><br>
+             <button onclick="resendVerification()" 
+                style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); 
+                       padding:10px 24px; border-radius:50px; cursor:pointer; margin-top:8px;">
+                🔄 Отправить письмо снова
+             </button>
+             <br><br>
+             <span style="font-size:0.85rem; opacity:0.8;">(проверьте папку «Спам»)</span>`
+        );
+        return false;
+    }
+    
+    // Если вообще не вошёл
+    if (!window.currentUser) {
+        showErrorMessage('🔒 Войдите в аккаунт');
+        toggleLoginModal();
+        return false;
+    }
+    
+    return true;
+};
 
-       window.showRequestProductOptions = function(id) {
-    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); toggleLoginModal(); return; }
+// 🔄 Повторная отправка письма подтверждения
+window
+        showErrorMessage('Сначала войдите в аккаунт'); 
+        return; 
+    }
+    try {
+        const { sendEmailVerification } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+        await sendEmailVerification(authUser);
+        showSuccessMessage('✅ Письмо отправлено повторно!');
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+      window.showRequestProductOptions = function(id) {
+    if (!requireVerifiedEmail()) return;  // 🔒 проверка email
     
     const product = window.products.find(p => p.id === id);
     
@@ -5791,9 +5865,10 @@ window.setCategory = function(type, cat) {
     document.getElementById('requestProductModal').classList.add('active');
            };
               // 💳 Оформить карту → переход по ссылке + запрос товара (БЕЗ окна "3 дня")
-        window.getCardAndProduct = async function(productId) {
-            const product = window.products.find(p => p.id === productId);
-            if (!product) { showErrorMessage('Товар не найден'); return; }
+        wwindow.getCardAndProduct = async function(productId) {
+    if (!requireVerifiedEmail()) return;  // 🔒 проверка email
+    const product = window.products.find(p => p.id === productId);
+    if (!product) { showErrorMessage('Товар не найден'); return; }
 
             // Создаём запрос БЕЗ окна поздравления "3 дня"
             const alreadyRequested = window.productRequests.some(r =>
