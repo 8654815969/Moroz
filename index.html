@@ -3535,13 +3535,89 @@ main, .section, .card, .btn, button, a {
                 </div>
 
                                <div class="tabs">
+                                    <button class="tab" onclick="switchTab('profile')">👤 Профиль</button>
                     <button class="tab active" onclick="switchTab('referral')">🎁 Рефералы</button>
                     <button class="tab" onclick="switchTab('messages')">💬 Сообщения</button>
                     <button class="tab" onclick="switchTab('reviews')">⭐ Мои отзывы</button>
                     <button class="tab" onclick="switchTab('requests')">📦 Мои запросы</button>
                     <button class="tab" onclick="switchTab('commissions')">💰 Комиссии</button>
                 </div>
+<!-- Profile Tab -->
+<div id="profile" class="tab-content">
+    <div class="card">
+        <h3 class="card-title mb-3">✏️ Редактировать профиль</h3>
 
+        <!-- Изменить имя -->
+        <div class="form-group">
+            <label>👤 Имя</label>
+            <input type="text" id="editNameInput" placeholder="Ваше имя">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-bottom:1.5rem;" 
+                onclick="updateUserName()">
+            💾 Сохранить имя
+        </button>
+
+        <hr style="margin-bottom:1.5rem; border-color:var(--border);">
+
+        <!-- Изменить email -->
+        <div class="form-group">
+            <label>📧 Новый Email</label>
+            <input type="email" id="editEmailInput" placeholder="новый@email.ru">
+        </div>
+        <div class="form-group">
+            <label>🔒 Текущий пароль (для подтверждения)</label>
+            <div style="position:relative;">
+                <input type="password" id="emailConfirmPassword" 
+                       placeholder="Введите пароль" style="padding-right:45px;">
+                <span onclick="togglePassword('emailConfirmPassword', this)"
+                      style="position:absolute; right:12px; top:50%; 
+                             transform:translateY(-50%); cursor:pointer; font-size:1.3rem;">👁️</span>
+            </div>
+        </div>
+        <button class="btn btn-warning" style="width:100%; margin-bottom:1.5rem;" 
+                onclick="updateUserEmail()">
+            📧 Изменить Email
+        </button>
+
+        <hr style="margin-bottom:1.5rem; border-color:var(--border);">
+
+        <!-- Изменить пароль -->
+        <div class="form-group">
+            <label>🔑 Текущий пароль</label>
+            <div style="position:relative;">
+                <input type="password" id="currentPassword" 
+                       placeholder="Текущий пароль" style="padding-right:45px;">
+                <span onclick="togglePassword('currentPassword', this)"
+                      style="position:absolute; right:12px; top:50%; 
+                             transform:translateY(-50%); cursor:pointer; font-size:1.3rem;">👁️</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>🔐 Новый пароль</label>
+            <div style="position:relative;">
+                <input type="password" id="newPassword" 
+                       placeholder="Минимум 6 символов" style="padding-right:45px;">
+                <span onclick="togglePassword('newPassword', this)"
+                      style="position:absolute; right:12px; top:50%; 
+                             transform:translateY(-50%); cursor:pointer; font-size:1.3rem;">👁️</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>🔐 Повторите новый пароль</label>
+            <div style="position:relative;">
+                <input type="password" id="confirmNewPassword" 
+                       placeholder="Повторите пароль" style="padding-right:45px;">
+                <span onclick="togglePassword('confirmNewPassword', this)"
+                      style="position:absolute; right:12px; top:50%; 
+                             transform:translateY(-50%); cursor:pointer; font-size:1.3rem;">👁️</span>
+            </div>
+        </div>
+        <button class="btn btn-danger" style="width:100%;" 
+                onclick="updateUserPassword()">
+            🔑 Изменить пароль
+        </button>
+    </div>
+</div>
                 <!-- Referral Tab -->
                 <div id="referral" class="tab-content active">
                     <div class="card">
@@ -4356,6 +4432,11 @@ main, .section, .card, .btn, button, a {
         const db = getFirestore(app);
         const auth = getAuth(app);
         window.firebaseAuth = auth;
+        // 🔑 Экспортируем в window для доступа из обычных скриптов
+window.db = db;
+window.fbUpdateDoc = updateDoc;
+window.fbDoc = doc;
+window.fbIncrement = increment;
         // Data Storage (Synced with Firebase)
         window.currentUser = null;
         window.users = [];
@@ -5344,6 +5425,11 @@ if (authUser && !authUser.emailVerified && window.currentUser.role !== 'admin') 
 }
             document.getElementById('userName').textContent = window.currentUser.name;
             document.getElementById('userEmail').textContent = window.currentUser.email;
+                    // Заполняем поля редактирования профиля
+const editName = document.getElementById('editNameInput');
+const editEmail = document.getElementById('editEmailInput');
+if (editName) editName.value = window.currentUser.name || '';
+if (editEmail) editEmail.placeholder = window.currentUser.email || '';
             document.getElementById('userAvatar').textContent = window.currentUser.name.charAt(0);
             animateNumber(document.getElementById('productsCount'), window.currentUser.products || 0);
             animateNumber(document.getElementById('reviewsCount'), window.currentUser.reviews || 0);
@@ -8190,6 +8276,127 @@ window.addEventListener('appinstalled', () => {
     installBtn.style.display = 'none';
     console.log('🎉 Приложение установлено!');
 });
+ // ========== ✏️ РЕДАКТИРОВАНИЕ ПРОФИЛЯ ==========
+
+// 📝 Обновить имя
+window.updateUserName = async function() {
+    const newName = document.getElementById('editNameInput').value.trim();
+    if (!newName) { showErrorMessage('Введите имя!'); return; }
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+
+    try {
+        await window.fbUpdateDoc(window.fbDoc(window.db, "users", window.currentUser.id), {
+            name: newName
+        });
+        window.currentUser.name = newName;
+        updateHeader();
+        updateCabinet();
+        showSuccessMessage('✅ Имя обновлено!');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+
+// 📧 Обновить Email
+window.updateUserEmail = async function() {
+    const newEmail = document.getElementById('editEmailInput').value.trim();
+    const password = document.getElementById('emailConfirmPassword').value;
+
+    if (!newEmail) { showErrorMessage('Введите новый email!'); return; }
+    if (!password) { showErrorMessage('Введите пароль для подтверждения!'); return; }
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+
+    try {
+        const { 
+            EmailAuthProvider, 
+            reauthenticateWithCredential, 
+            updateEmail,
+            sendEmailVerification
+        } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+
+        const authUser = window.firebaseAuth.currentUser;
+        if (!authUser) { showErrorMessage('Сессия истекла, войдите заново'); return; }
+
+        const credential = EmailAuthProvider.credential(authUser.email, password);
+        await reauthenticateWithCredential(authUser, credential);
+        await updateEmail(authUser, newEmail);
+        await sendEmailVerification(authUser);
+
+        await window.fbUpdateDoc(window.fbDoc(window.db, "users", window.currentUser.id), {
+            email: newEmail,
+            emailVerified: false
+        });
+
+        window.currentUser.email = newEmail;
+        document.getElementById('editEmailInput').value = '';
+        document.getElementById('emailConfirmPassword').value = '';
+
+        showSuccessMessage('✅ Email изменён! Проверьте почту 📧');
+        updateCabinet();
+
+    } catch (err) {
+        console.error('❌ Ошибка смены email:', err);
+        if (err.code === 'auth/wrong-password') {
+            showErrorMessage('❌ Неверный пароль!');
+        } else if (err.code === 'auth/email-already-in-use') {
+            showErrorMessage('❌ Этот email уже занят!');
+        } else if (err.code === 'auth/invalid-email') {
+            showErrorMessage('❌ Неверный формат email!');
+        } else if (err.code === 'auth/requires-recent-login') {
+            showErrorMessage('⚠️ Выйдите и войдите заново, затем повторите');
+        } else {
+            showErrorMessage('Ошибка: ' + err.message);
+        }
+    }
+};
+
+// 🔑 Обновить пароль
+window.updateUserPassword = async function() {
+    const currentPass = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmNewPassword').value;
+
+    if (!currentPass) { showErrorMessage('Введите текущий пароль!'); return; }
+    if (!newPass) { showErrorMessage('Введите новый пароль!'); return; }
+    if (newPass.length < 6) { showErrorMessage('🔒 Пароль минимум 6 символов!'); return; }
+    if (newPass !== confirmPass) { showErrorMessage('❌ Пароли не совпадают!'); return; }
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+
+    try {
+        const { 
+            EmailAuthProvider, 
+            reauthenticateWithCredential, 
+            updatePassword 
+        } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+
+        const authUser = window.firebaseAuth.currentUser;
+        if (!authUser) { showErrorMessage('Сессия истекла, войдите заново'); return; }
+
+        const credential = EmailAuthProvider.credential(authUser.email, currentPass);
+        await reauthenticateWithCredential(authUser, credential);
+        await updatePassword(authUser, newPass);
+
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+
+        showSuccessMessage('✅ Пароль успешно изменён! 🔐');
+        if (navigator.vibrate) navigator.vibrate([50, 30, 100]);
+
+    } catch (err) {
+        console.error('❌ Ошибка смены пароля:', err);
+        if (err.code === 'auth/wrong-password') {
+            showErrorMessage('❌ Неверный текущий пароль!');
+        } else if (err.code === 'auth/requires-recent-login') {
+            showErrorMessage('⚠️ Выйдите и войдите заново, затем повторите');
+        } else if (err.code === 'auth/weak-password') {
+            showErrorMessage('🔒 Слишком простой пароль!');
+        } else {
+            showErrorMessage('Ошибка: ' + err.message);
+        }
+    }
+};
 </script>
     <!-- 🎉 Полноэкранное уведомление о реферале -->
 <div id="fullscreenNotify">
