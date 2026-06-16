@@ -2949,6 +2949,15 @@ main, .section, .card, .btn, button, a {
 .wb-review-meta {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
+}
+.wb-review-name {
+    white-space: nowrap;        /* имя в одну строку */
+    overflow: hidden;
+    text-overflow: ellipsis;    /* если длинное — троеточие */
+}
+.wb-review-date {
+    white-space: nowrap;        /* дата в одну строку */
 }
 .wb-review-name {
     font-weight: 700;
@@ -2965,6 +2974,7 @@ main, .section, .card, .btn, button, a {
     font-size: 1.05rem;
     letter-spacing: 2px;
     white-space: nowrap;
+    flex-shrink: 0;          /* 🔑 звёзды НЕ сжимаются */
 }
 .wb-star-empty {
     color: #e0e0e0;
