@@ -2932,6 +2932,7 @@ main, .section, .card, .btn, button, a {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;            /* 🔑 звёзды переедут вниз, если тесно */
 }
 .wb-avatar {
     width: 42px;
@@ -2947,22 +2948,15 @@ main, .section, .card, .btn, button, a {
     flex-shrink: 0;
 }
 .wb-review-meta {
-    flex: 1;
+    flex: 1 1 120px;           /* 🔑 минимум 120px на имя+дату */
     min-width: 0;
-    overflow: hidden;
-}
-.wb-review-name {
-    white-space: nowrap;        /* имя в одну строку */
-    overflow: hidden;
-    text-overflow: ellipsis;    /* если длинное — троеточие */
-}
-.wb-review-date {
-    white-space: nowrap;        /* дата в одну строку */
 }
 .wb-review-name {
     font-weight: 700;
     font-size: 0.95rem;
     color: #1f2937;
+    /* 🔑 НЕ режем — пусть переносится, если нужно */
+    overflow-wrap: anywhere;
 }
 .wb-review-date {
     font-size: 0.8rem;
@@ -2974,7 +2968,7 @@ main, .section, .card, .btn, button, a {
     font-size: 1.05rem;
     letter-spacing: 2px;
     white-space: nowrap;
-    flex-shrink: 0;          /* 🔑 звёзды НЕ сжимаются */
+    flex-shrink: 0;
 }
 .wb-star-empty {
     color: #e0e0e0;
@@ -2989,6 +2983,7 @@ main, .section, .card, .btn, button, a {
     font-size: 0.9rem;
     color: #374151;
     line-height: 1.5;
+    overflow-wrap: break-word;
 }
 .wb-review-text b {
     color: #1f2937;
