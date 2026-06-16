@@ -959,10 +959,11 @@
 }
 
 .verified-image img {
-    width: 100%;              /* 🔑 на всю ширину */
-    height: 100%;             /* 🔑 на всю высоту */
-    object-fit: cover;        /* 🔑 заполняет всё, без серых полей */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;      /* 🔑 показывает ВСЮ картинку целиком */
     display: block;
+    padding: 6px;             /* лёгкий отступ от краёв */
 }
         /* Stock Badge */
         .stock-badge {
@@ -1854,12 +1855,13 @@ html, body {
                 padding: 8px !important;
                 border-radius: 12px !important;
             }
-/* 🖼️ На телефоне картинка тоже на всю карточку */
+/* 🖼️ На телефоне картинка целиком */
 #productGrid .verified-image img,
 #verifiedProductGrid .verified-image img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
+    padding: 5px;
 }
             /* Картинка компактнее */
             #productGrid .verified-image,
@@ -2916,6 +2918,70 @@ main, .section, .card, .btn, button, a {
 .legal-content .legal-warn {
     background: rgba(245,158,11,0.1); border-left: 4px solid var(--warning);
     padding: 14px; border-radius: 10px; margin: 16px 0;
+}
+        /* ⭐ WB-СТИЛЬ ОТЗЫВОВ */
+.wb-review {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.wb-review-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.wb-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e9edf2;
+    color: #8a94a3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.wb-review-meta {
+    flex: 1;
+    min-width: 0;
+}
+.wb-review-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+.wb-review-date {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+.wb-review-stars {
+    color: #ff8c00;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+.wb-star-empty {
+    color: #e0e0e0;
+}
+.wb-review-bought {
+    color: #16a34a;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 10px 0 8px;
+}
+.wb-review-text {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.5;
+}
+.wb-review-text b {
+    color: #1f2937;
 }
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
@@ -6228,20 +6294,27 @@ window.rejectReview = async function(id) {
                 const avg = (list.reduce((s, r) => s + r.rating, 0) / list.length).toFixed(1);
                 const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
 
-                const reviewsHtml = list.map(r => {
-                    const user = window.users.find(u => u.id === r.userId);
-                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                    const name = user?.name ? user.name : 'Покупатель';
-                    return `
-                        <div class="card mb-2" style="background: var(--surface);">
-                            <div class="flex-between">
-                                <strong>👤 ${name}</strong>
-                                <span style="color: gold;">${stars}</span>
-                            </div>
-                            <p class="text-muted mt-2">${r.text}</p>
-                            <small class="text-muted">${r.date || ''}</small>
-                        </div>`;
-                }).join('');
+               const reviewsHtml = list.map(r => {
+    const user = window.users.find(u => u.id === r.userId);
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const name = user?.name ? user.name : 'Покупатель';
+    const letter = name.charAt(0).toUpperCase();
+    return `
+        <div class="wb-review">
+            <div class="wb-review-head">
+                <div class="wb-avatar">${letter}</div>
+                <div class="wb-review-meta">
+                    <div class="wb-review-name">${name}</div>
+                    <div class="wb-review-date">${r.date || ''}</div>
+                </div>
+                <div class="wb-review-stars">${'★'.repeat(r.rating)}<span class="wb-star-empty">${'★'.repeat(5 - r.rating)}</span></div>
+            </div>
+            <div class="wb-review-bought">✓ Выкупил(а) товар</div>
+            <div class="wb-review-text">
+                <b>Достоинства:</b> ${r.text}
+            </div>
+        </div>`;
+}).join('');
 
                 // === КАРТИНКА ТОВАРА ===
                 const productImage = product?.image
