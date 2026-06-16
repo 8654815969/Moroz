@@ -503,7 +503,10 @@
         .btn-success:hover {
             background: #059669;
         }
-
+.btn-ozon { background: #005bff !important; color: white !important; }
+.btn-ozon:hover { background: #0047cc !important; }
+.btn-wb { background: #cb11ab !important; color: white !important; }
+.btn-wb:hover { background: #a50d8a !important; }
         .btn-warning {
             background: var(--warning);
             color: white;
@@ -4147,31 +4150,35 @@ main, .section, .card, .btn, button, a {
                 <h2 class="modal-title">Добавить проверенный товар</h2>
                 <button class="close-btn" onclick="toggleAddVerifiedProductModal()">×</button>
             </div>
-            <form onsubmit="handleAddVerifiedProduct(event)">
-                <div class="form-group">
-                    <label>Название товара</label>
-                    <input type="text" id="verifiedProductName" required>
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="verifiedProductDescription" required></textarea>
-                </div>
-                                                <div class="form-group">
-                    <label>Категория (пишите любую)</label>
-                    <input type="text" id="verifiedProductCategory" placeholder="Например: Электроника, Игрушки..." required>
-                </div>
-                <div class="form-group">
-                    <label>Цена ($)</label>
-                    <input type="number" id="verifiedProductPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Остаток на складе (шт.)</label>
-                    <input type="number" id="verifiedProductStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="verifiedProductUrl" required>
-                </div>
+           <form onsubmit="handleAddVerifiedProduct(event)">
+    <div class="form-group">
+        <label>Название товара</label>
+        <input type="text" id="verifiedProductName">
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea id="verifiedProductDescription"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Категория (пишите любую)</label>
+        <input type="text" id="verifiedProductCategory" placeholder="Например: Электроника, Игрушки...">
+    </div>
+    <div class="form-group">
+        <label>Цена ($)</label>
+        <input type="number" id="verifiedProductPrice" step="0.01">
+    </div>
+    <div class="form-group">
+        <label>Остаток на складе (шт.)</label>
+        <input type="number" id="verifiedProductStock" min="0">
+    </div>
+    <div class="form-group">
+        <label>🟦 Ссылка на Ozon (необязательно)</label>
+        <input type="url" id="verifiedProductOzon" placeholder="https://ozon.ru/...">
+    </div>
+    <div class="form-group">
+        <label>🟪 Ссылка на Wildberries (необязательно)</label>
+        <input type="url" id="verifiedProductWb" placeholder="https://wildberries.ru/...">
+    </div>
                 <div class="form-group">
     <label>🎬 Ссылка на видеообзор (необязательно)</label>
     <input type="url" id="verifiedProductVideo" placeholder="https://youtube.com/...">
@@ -4215,10 +4222,18 @@ main, .section, .card, .btn, button, a {
                     <label>Остаток на складе (шт.)</label>
                     <input type="number" id="editVerifiedProductStock" min="0">
                 </div>
-                <div class="form-group">
-                    <label>Ссылка на товар</label>
-                    <input type="url" id="editVerifiedProductUrl">
-                </div>
+<div class="form-group">
+    <label>💲 Цена (необязательно)</label>
+    <input type="number" id="editVerifiedProductPrice" step="0.01">
+</div>
+<div class="form-group">
+    <label>🟦 Ссылка на Ozon (необязательно)</label>
+    <input type="url" id="editVerifiedProductOzon" placeholder="https://ozon.ru/...">
+</div>
+<div class="form-group">
+    <label>🟪 Ссылка на Wildberries (необязательно)</label>
+    <input type="url" id="editVerifiedProductWb" placeholder="https://wildberries.ru/...">
+</div>
                                 <div class="form-group">
                     <label>🎬 Ссылка на видеообзор (необязательно)</label>
                     <input type="url" id="editVerifiedProductVideo" placeholder="https://youtube.com/...">
@@ -4940,19 +4955,24 @@ window.handleEditVerifiedProduct = async function(e) {
         // 🔓 Сохраняем только заполненные поля
         const updateData = {};
         
-        const name = document.getElementById('editVerifiedProductName').value.trim();
-        const desc = document.getElementById('editVerifiedProductDescription').value.trim();
-        const cat = document.getElementById('editVerifiedProductCategory').value.trim();
-        const url = document.getElementById('editVerifiedProductUrl').value.trim();
-        const video = document.getElementById('editVerifiedProductVideo').value.trim();
-        const stock = document.getElementById('editVerifiedProductStock').value;
-        
-        if (name) updateData.name = name;
-        if (desc) updateData.description = desc;
-        if (cat) updateData.category = cat;
-        if (url) updateData.url = url;
-        updateData.videoUrl = video || null;
-        if (stock !== '') updateData.stock = parseInt(stock);
+       const name = document.getElementById('editVerifiedProductName').value.trim();
+const desc = document.getElementById('editVerifiedProductDescription').value.trim();
+const cat = document.getElementById('editVerifiedProductCategory').value.trim();
+const video = document.getElementById('editVerifiedProductVideo').value.trim();
+const stock = document.getElementById('editVerifiedProductStock').value;
+const price = document.getElementById('editVerifiedProductPrice').value;
+const ozon = document.getElementById('editVerifiedProductOzon').value.trim();
+const wb = document.getElementById('editVerifiedProductWb').value.trim();
+
+if (name) updateData.name = name;
+if (desc) updateData.description = desc;
+if (cat) updateData.category = cat;
+updateData.videoUrl = video || null;
+if (stock !== '') updateData.stock = parseInt(stock);
+if (price !== '') updateData.price = parseFloat(price);
+// Ссылки сохраняем всегда (даже пустые — чтобы можно было очистить)
+updateData.ozonLink = ozon;
+updateData.wbLink = wb;
         
         if (imageFile) updateData.image = await compressImage(imageFile);
         
@@ -4994,18 +5014,21 @@ window.handleEditVerifiedProduct = async function(e) {
     async function saveProduct(image) {
         try {
             console.log('1️⃣ Старт');
-            const newProduct = {
-                name: document.getElementById('verifiedProductName').value,
-                category: document.getElementById('verifiedProductCategory').value,
-                description: document.getElementById('verifiedProductDescription').value,
-                price: parseFloat(document.getElementById('verifiedProductPrice').value),
-                stock: parseInt(document.getElementById('verifiedProductStock').value),
-                url: document.getElementById('verifiedProductUrl').value,
-videoUrl: document.getElementById('verifiedProductVideo').value || null,
-image: image,
-                rating: 0,
-                reviews: 0
-            };
+           const priceVal = document.getElementById('verifiedProductPrice').value;
+const stockVal = document.getElementById('verifiedProductStock').value;
+const newProduct = {
+    name: document.getElementById('verifiedProductName').value.trim() || 'Без названия',
+    category: document.getElementById('verifiedProductCategory').value.trim() || '',
+    description: document.getElementById('verifiedProductDescription').value.trim() || '',
+    price: priceVal !== '' ? parseFloat(priceVal) : 0,
+    stock: stockVal !== '' ? parseInt(stockVal) : 0,
+    ozonLink: document.getElementById('verifiedProductOzon').value.trim() || '',
+    wbLink: document.getElementById('verifiedProductWb').value.trim() || '',
+    videoUrl: document.getElementById('verifiedProductVideo').value || null,
+    image: image,
+    rating: 0,
+    reviews: 0
+};
             const docRef = await addDoc(collection(db, "verifiedProducts"), newProduct);
             console.log('3️⃣ ✅ СОХРАНЕНО, ID:', docRef.id);
             toggleAddVerifiedProductModal();
@@ -5820,15 +5843,27 @@ window.renderVerifiedProducts = function() {
         return;
     }
 
-    grid.innerHTML = filtered.map(p => `
-        <div class="card position-relative">
-            <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
-            <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
-            ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
-            <div class="card-footer">
-                <a href="${p.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>
-            </div>
-        </div>`).join('');
+   grid.innerHTML = filtered.map(p => {
+    const ozon = p.ozonLink || '';
+    const wb = p.wbLink || '';
+    const oldUrl = (!ozon && !wb && p.url) ? p.url : ''; // старый товар без новых ссылок
+
+    let buttons = '';
+    if (ozon) buttons += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon btn-small" style="text-decoration:none;">🟦 Ozon</a>`;
+    if (wb) buttons += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb btn-small" style="text-decoration:none;">🟪 WB</a>`;
+    if (oldUrl) buttons += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>`;
+    if (!buttons) buttons = `<span class="text-muted" style="font-size:0.8rem;">Ссылка скоро будет</span>`;
+
+    return `
+    <div class="card position-relative">
+        <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+        <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}', true)">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
+        ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
+        <div class="card-footer" style="display:flex; gap:6px; flex-wrap:wrap;">
+            ${buttons}
+        </div>
+    </div>`;
+}).join('');
 };
 
 // 🏷️ Рисуем кнопки-фильтры категорий
@@ -6010,17 +6045,21 @@ window.resendVerification = async function() {
             document.getElementById('editProductModal').classList.add('active');
         };
 
-                window.openEditVerifiedProductModal = (id) => {
-            const p = window.verifiedProducts.find(x => x.id === id);
-            document.getElementById('editVerifiedProductId').value = p.id;
-            document.getElementById('editVerifiedProductName').value = p.name;
-            document.getElementById('editVerifiedProductDescription').value = p.description;
-            document.getElementById('editVerifiedProductCategory').value = p.category;
-            document.getElementById('editVerifiedProductStock').value = p.stock;
-            document.getElementById('editVerifiedProductUrl').value = p.url;
-            document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
-            document.getElementById('editVerifiedProductModal').classList.add('active');
-        };
+               window.openEditVerifiedProductModal = (id) => {
+    const p = window.verifiedProducts.find(x => x.id === id);
+    document.getElementById('editVerifiedProductId').value = p.id;
+    document.getElementById('editVerifiedProductName').value = p.name || '';
+    document.getElementById('editVerifiedProductDescription').value = p.description || '';
+    document.getElementById('editVerifiedProductCategory').value = p.category || '';
+    document.getElementById('editVerifiedProductStock').value = p.stock ?? '';
+    document.getElementById('editVerifiedProductPrice').value = p.price ?? '';
+    // 🔗 Ссылки: если новых нет — подставляем старую url в Ozon (для совместимости)
+    document.getElementById('editVerifiedProductOzon').value = p.ozonLink || p.url || '';
+    document.getElementById('editVerifiedProductWb').value = p.wbLink || '';
+    document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
+    document.getElementById('editVerifiedProductModal').classList.add('active');
+};
+
 
        window.approveReview = async function(id) {
     try {
@@ -6239,10 +6278,18 @@ window.openProductPage = function(productId, isVerified = false) {
     );
 
     // кнопка действия
-    let actionBtn = '';
-    if (isVerified) {
-        actionBtn = `<a href="${product.url || '#'}" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none; font-size:1.1rem; padding:1rem 2rem;">🛒 Купить →</a>`;
-    } else if (isRequested) {
+   let actionBtn = '';
+if (isVerified) {
+    const ozon = product.ozonLink || '';
+    const wb = product.wbLink || '';
+    const oldUrl = (!ozon && !wb && product.url) ? product.url : '';
+    let btns = '';
+    if (ozon) btns += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟦 Купить на Ozon</a>`;
+    if (wb) btns += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟪 Купить на WB</a>`;
+    if (oldUrl) btns += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🛒 Купить →</a>`;
+    if (!btns) btns = `<span class="text-muted">Ссылка скоро будет добавлена</span>`;
+    actionBtn = `<div style="display:flex; gap:10px; flex-wrap:wrap;">${btns}</div>`;
+} else if (isRequested) {
         // Уже запрошен → показываем "Купить на маркетплейсе"
         actionBtn = `
             <div style="display:flex; flex-direction:column; gap:10px;">
