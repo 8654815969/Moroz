@@ -1014,6 +1014,66 @@
             border-color: var(--primary);
             background: rgba(37, 99, 235, 0.05);
         }
+        /* 🟪 КАТАЛОГ В СТИЛЕ WB (только ПК) */
+@media (min-width: 769px) {
+    /* Больше карточек в ряд, плотнее */
+    #productGrid,
+    #verifiedProductGrid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    /* Карточка — компактная, без лишнего воздуха */
+    #productGrid .card,
+    #verifiedProductGrid .card {
+        padding: 10px !important;
+        border-radius: 10px !important;
+    }
+
+    /* 🖼️ Фото — крупное, во всю ширину карточки */
+    #productGrid .verified-image,
+    #verifiedProductGrid .verified-image {
+        height: 230px !important;
+        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Название — мелкое, 2 строки максимум */
+    #productGrid .card-title,
+    #verifiedProductGrid .card-title {
+        font-size: 0.82rem !important;
+        line-height: 1.3 !important;
+        font-weight: 500 !important;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 4px;
+        min-height: 2.1em;
+    }
+
+    /* Бейдж "Проверено" — крошечный, не ломает строку */
+    #verifiedProductGrid .verified-badge {
+        font-size: 0.6rem !important;
+        padding: 1px 6px !important;
+        margin-left: 4px;
+    }
+
+    /* Категория — мелкая */
+    #productGrid .badge-primary,
+    #verifiedProductGrid .badge-primary {
+        font-size: 0.65rem !important;
+        padding: 2px 7px !important;
+    }
+
+    /* Кнопки — компактные */
+    #productGrid .card-footer .btn,
+    #verifiedProductGrid .card-footer .btn {
+        font-size: 0.78rem !important;
+        padding: 8px 10px !important;
+    }
+}
 /* 🖥️ ПК: компактные названия в каталоге (как на маркетплейсе) */
 @media (min-width: 769px) {
     #productGrid .card-title,
