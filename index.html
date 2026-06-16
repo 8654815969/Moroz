@@ -932,11 +932,11 @@
             height: 100%;
             object-fit: cover;
         }
-/* === Компактная картинка одинакового размера === */
+/* === Картинка на ВСЮ карточку (как WB/Ozon) === */
 .verified-image {
     width: 100%;
-    height: 180px;             /* фиксированная высота для всех */
-    background: #f9fafb;       /* светлый фон */
+    height: 200px;
+    background: #f9fafb;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
@@ -947,9 +947,10 @@
 }
 
 .verified-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;       /* фото целиком, не обрезается */
+    width: 100%;              /* 🔑 на всю ширину */
+    height: 100%;             /* 🔑 на всю высоту */
+    object-fit: cover;        /* 🔑 заполняет всё, без серых полей */
+    display: block;
 }
         /* Stock Badge */
         .stock-badge {
@@ -1841,7 +1842,13 @@ html, body {
                 padding: 8px !important;
                 border-radius: 12px !important;
             }
-
+/* 🖼️ На телефоне картинка тоже на всю карточку */
+#productGrid .verified-image img,
+#verifiedProductGrid .verified-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
             /* Картинка компактнее */
             #productGrid .verified-image,
             #verifiedProductGrid .verified-image {
@@ -4465,7 +4472,22 @@ window.fbIncrement = increment;
         window.activeVerifiedCategory = 'all';
                // 🎠 БЛОГГЕРЫ (теперь из Firebase!)
         window.bloggers = [];
+import { setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// 💾 Сохранить приватные данные пользователя
+window.savePrivateData = async function(userId, data) {
+    await setDoc(doc(db, "users", userId, "private", "data"), data, { merge: true });
+};
+
+// 📖 Прочитать приватные данные (свои или как админ)
+window.getPrivateData = async function(userId) {
+    try {
+        const snap = await getDoc(doc(db, "users", userId, "private", "data"));
+        return snap.exists() ? snap.data() : {};
+    } catch (e) {
+        return {};
+    }
+};
     // Рисуем карусель блоггеров
               window.renderBloggers = function() {
             const carousel = document.getElementById('bloggersCarousel');
@@ -4552,29 +4574,35 @@ window.checkReferralNotifications = async function() {
 };
         // Firebase Sync Listeners
         function setupListeners() {
-            onSnapshot(collection(db, "users"), (snapshot) => {
-                window.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (!window.currentUser) {
+           onSnapshot(collection(db, "users"), async (snapshot) => {
+    window.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    if (!window.currentUser) {
         const savedId = localStorage.getItem('currentUserId');
         if (savedId) {
             const savedUser = window.users.find(u => u.id === savedId);
             if (savedUser) {
                 window.currentUser = { ...savedUser };
-                console.log('✅ Сессия восстановлена:', savedUser.email);
+                // 🔒 подгружаем свой email
+                const priv = await getPrivateData(savedUser.id);
+                window.currentUser.email = priv.email || '';
+                window.currentUser.paymentNumber = priv.paymentNumber || '';
             }
         }
     }
-                if (window.currentUser) {
-                    const updatedUser = window.users.find(u => u.id === window.currentUser.id);
-                    if (updatedUser) window.currentUser = updatedUser;
-                }
-                updateHeader();
-                updateCabinet();
-                updateAdmin();
-                if (typeof checkReferralNotifications === 'function') {
-                    checkReferralNotifications();
-                }
-            });
+    if (window.currentUser) {
+        const updatedUser = window.users.find(u => u.id === window.currentUser.id);
+        if (updatedUser) {
+            const email = window.currentUser.email; // сохраняем
+            const pay = window.currentUser.paymentNumber;
+            window.currentUser = { ...updatedUser, email, paymentNumber: pay };
+        }
+    }
+    updateHeader();
+    updateCabinet();
+    updateAdmin();
+    if (typeof checkReferralNotifications === 'function') checkReferralNotifications();
+});
 
             onSnapshot(collection(db, "products"), (snapshot) => {
                 window.products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -4694,17 +4722,15 @@ async function handleResetPassword() {
 // Делаем функцию доступной для кнопки
 window.handleResetPassword = handleResetPassword;
         // Authentication Functions
-       window.handleLogin = async function(e) {
+  window.handleLogin = async function(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
     try {
-        // 🔐 Вход через Firebase Auth
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const authUser = userCredential.user;
 
-        // Ищем пользователя в Firestore
         let user = window.users.find(u => u.authUid === authUser.uid);
         if (!user) {
             user = window.users.find(u => u.email === email);
@@ -4712,6 +4738,11 @@ window.handleResetPassword = handleResetPassword;
 
         if (user) {
             window.currentUser = { ...user };
+            // 🔒 Подгружаем приватные данные (email, карта)
+            const priv = await getPrivateData(user.id);
+            window.currentUser.email = priv.email || email;
+            window.currentUser.paymentNumber = priv.paymentNumber || '';
+
             localStorage.setItem('currentUserId', user.id);
             toggleLoginModal();
             showSection('home');
@@ -4817,7 +4848,6 @@ window.getMailUrl = function(email) {
         const newUser = {
             authUid: authUser.uid,
             name,
-            email,
             role: email.toLowerCase() === 'marketology2019@mail.ru' ? 'admin' : 'user',
             referralCode: 'REF' + Math.random().toString(36).substr(2, 9).toUpperCase(),
             points: 0,
@@ -4828,8 +4858,10 @@ window.getMailUrl = function(email) {
         };
 
                 const docRef = await addDoc(collection(db, "users"), newUser);
-        window.currentUser = { id: docRef.id, ...newUser };
-        localStorage.setItem('currentUserId', docRef.id);
+// 🔒 Сохраняем email в приватную подколлекцию
+await savePrivateData(docRef.id, { email: email });
+window.currentUser = { id: docRef.id, ...newUser, email: email };
+localStorage.setItem('currentUserId', docRef.id);
 
         if (referrer) localStorage.removeItem('pendingRef');
 
@@ -5179,24 +5211,33 @@ const newProduct = {
             document.getElementById('cardCongratsModal').classList.remove('active');
         };
 
-        window.savePaymentNumber = async function(e) {
-            e.preventDefault();
-            const number = document.getElementById('paymentNumberInput').value.trim();
-            if (!number) { showErrorMessage('Введите номер!'); return; }
-            if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+      window.savePaymentNumber = async function(e) {
+    e.preventDefault();
+    const number = document.getElementById('paymentNumberInput').value.trim();
+    if (!number) { showErrorMessage('Введите номер!'); return; }
+    if (!window.currentUser) { showErrorMessage('Войдите в аккаунт'); return; }
+    try {
+        // 🔒 в приватную подколлекцию
+        await savePrivateData(window.currentUser.id, { paymentNumber: number });
+        window.currentUser.paymentNumber = number;
+        closeCongratsModal();
+        showSuccessMessage('✅ Номер сохранён! Спасибо!');
+        document.getElementById('paymentNumberInput').value = '';
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+window.adminPrivateCache = {}; // { userId: {email, paymentNumber} }
 
-            try {
-                await updateDoc(doc(db, "users", window.currentUser.id), {
-                    paymentNumber: number
-                });
-                closeCongratsModal();
-                showSuccessMessage('✅ Номер сохранён! Спасибо!');
-                document.getElementById('paymentNumberInput').value = '';
-            } catch (err) {
-                showErrorMessage('Ошибка: ' + err.message);
-            }
-        };
-
+window.loadAllPrivateForAdmin = async function() {
+    if (!window.currentUser || window.currentUser.role !== 'admin') return;
+    for (const u of window.users) {
+        if (!window.adminPrivateCache[u.id]) {
+            window.adminPrivateCache[u.id] = await getPrivateData(u.id);
+        }
+    }
+    updateAdmin(); // перерисовать с email
+};
         window.rejectRequest = async function(requestId) {
             await updateDoc(doc(db, "productRequests", requestId), { status: 'rejected' });
             showSuccessMessage('Запрос отклонен!');
@@ -5340,7 +5381,10 @@ window.handleReviewSubmit = async function(e) {
     if (sectionId === 'catalog') renderProducts();
     else if (sectionId === 'verified') renderVerifiedProducts();
     else if (sectionId === 'cabinet') updateCabinet();
-    else if (sectionId === 'admin') updateAdmin();
+    else if (sectionId === 'admin') {
+    updateAdmin();
+    loadAllPrivateForAdmin();  // 🔒 подгрузить контакты
+}
        if (sectionId !== 'home') showSwipeHint();  // 💡 подсказка про свайп (не на главной)
     if (typeof updateBottomNav === 'function') updateBottomNav();  // 📱 подсветка нижнего меню
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -5484,15 +5528,15 @@ if (editEmail) editEmail.placeholder = window.currentUser.email || '';
                     </div>`;
 
                 // Карточки рефералов
-                const cardsHtml = myReferrals.map(u => `
-                    <div class="referral-card">
-                        <div class="referral-avatar">${u.name.charAt(0).toUpperCase()}</div>
-                        <div class="referral-info">
-                            <div class="referral-name">${u.name}</div>
-                            <div class="referral-email">${u.email}</div>
-                        </div>
-                        <span class="referral-status">✅ Активен</span>
-                    </div>`).join('');
+               const cardsHtml = myReferrals.map(u => `
+    <div class="referral-card">
+        <div class="referral-avatar">${u.name.charAt(0).toUpperCase()}</div>
+        <div class="referral-info">
+            <div class="referral-name">${u.name}</div>
+            <!-- email убрали -->
+        </div>
+        <span class="referral-status">✅ Активен</span>
+    </div>`).join('');
 
                 referralsList.innerHTML = counterHtml + cardsHtml;
             }
@@ -5548,30 +5592,26 @@ if (editEmail) editEmail.placeholder = window.currentUser.email || '';
                 card.style.display = text.includes(q) ? '' : 'none';
             });
         };
-        window.updateAdmin = function() {
-            if (!window.currentUser || window.currentUser.role !== 'admin') return;
-            document.getElementById('adminNotification').style.display = 'none';
-            document.getElementById('adminContent').style.display = 'block';
-            
-                       document.getElementById('usersList').innerHTML = window.users.map(u => `
-                <div class="card mb-2 flex-between">
-                    <div>
-                        <h4 class="card-title">${u.name}</h4>
-                        <p class="text-muted">${u.email}</p>
-                        ${u.paymentNumber ? `<p style="color: var(--success); font-weight: 600;">💳 ${u.paymentNumber}</p>` : '<p class="text-muted">💳 номер не указан</p>'}
-                    </div>
-                    <span class="badge badge-primary">${u.role}</span>
-                </div>`).join('');
+    
+                       window.updateAdmin = function() {
+    if (!window.currentUser || window.currentUser.role !== 'admin') return;
+    document.getElementById('adminNotification').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
 
-            document.getElementById('adminProductsList').innerHTML = window.products.map(p => `
-                <div class="card mb-2 flex-between">
-                    <div><h4 class="card-title">${p.name}</h4><p class="text-muted">Склад: ${p.stock}</p></div>
-                    <div class="action-buttons">
-                        <button class="btn btn-warning btn-small" onclick="openEditProductModal('${p.id}')">✏️</button>
-                        <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">🗑️</button>
-                    </div>
-                </div>`).join('');
-
+    // === СПИСОК ПОЛЬЗОВАТЕЛЕЙ (с приватными контактами) ===
+    document.getElementById('usersList').innerHTML = window.users.map(u => {
+        const priv = window.adminPrivateCache[u.id] || {};
+        return `
+        <div class="card mb-2 flex-between">
+            <div>
+                <h4 class="card-title">${u.name}</h4>
+                <p class="text-muted">${priv.email || '⏳ загрузка...'}</p>
+                ${priv.paymentNumber ? `<p style="color:var(--success);font-weight:600;">💳 ${priv.paymentNumber}</p>` : '<p class="text-muted">💳 не указан</p>'}
+            </div>
+            <span class="badge badge-primary">${u.role}</span>
+        </div>`;
+    }).join('');
+                           
             document.getElementById('adminVerifiedProductsList').innerHTML = window.verifiedProducts.map(p => `
                 <div class="card mb-2 flex-between">
                     <div><h4 class="card-title">${p.name}</h4><p class="text-muted">Склад: ${p.stock}</p></div>
@@ -5607,9 +5647,10 @@ if (editEmail) editEmail.placeholder = window.currentUser.email || '';
                             : r.status === 'approved' ? '✅ Одобрено'
                             : '❌ Отклонено';
 
-                        const paymentInfo = user?.paymentNumber
-                            ? `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--success);font-weight:600;">${user.paymentNumber}</span></div>`
-                            : `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--danger);font-weight:600;">⚠️ не указан</span></div>`;
+                        const priv = window.adminPrivateCache[r.userId] || {};
+const paymentInfo = priv.paymentNumber
+    ? `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--success);font-weight:600;">${priv.paymentNumber}</span></div>`
+    : `<div class="admin-card-field"><b>💳 Перевод:</b> <span style="color:var(--danger);font-weight:600;">⚠️ не указан</span></div>`;
 
                         return `
                         <div class="admin-card ${r.status === 'pending' ? 'is-new' : ''}">
@@ -5622,7 +5663,7 @@ if (editEmail) editEmail.placeholder = window.currentUser.email || '';
                             </div>
                             <div class="admin-card-body">
                                 <div class="admin-card-field"><b>📦 Товар:</b> ${product?.name || '—'}</div>
-                                <div class="admin-card-field"><b>✉️ Email:</b> ${user?.email || '—'}</div>
+                                <div class="admin-card-field"><b>✉️ Email:</b> ${priv.email || '—'}</div>
                                 <div class="admin-card-field"><b>💰 Способ:</b> ${r.paymentMethod === 'card' ? '💳 Карта' : '⏰ Позже'}</div>
                                 <div class="admin-card-field"><b>🕒 Дата:</b> ${r.date || '—'}</div>
                                 ${paymentInfo}
