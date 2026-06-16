@@ -4866,11 +4866,6 @@ setInterval(async () => {
         setTimeout(() => {
             if (typeof updateBottomNav === 'function') updateBottomNav();
         }, 500);
-        
-        // 📱 Подсветка нижнего меню при старте
-        setTimeout(() => {
-            if (typeof updateBottomNav === 'function') updateBottomNav();
-        }, 500);
 // Функция сброса пароля
 async function handleResetPassword() {
     const email = prompt("Введите ваш email:");
@@ -7164,15 +7159,13 @@ window.showErrorMessage = (msg) => {
     showErrorMessage('📭 Это последний раздел');
 }
             }
-            // 👉 Свайп ВПРАВО = предыдущий раздел
+                        // 👉 Свайп ВПРАВО = предыдущий раздел
             else if (diffX > 0) {
                 if (currentIndex > 0) {
-                                        window.lastSwipeTime = now;
+                    window.lastSwipeTime = now;
                     const prevId = menuOrder[currentIndex - 1];
                     if (navigator.vibrate) navigator.vibrate(30);
-                    launchFirework(touchEndX, touchEndY);
-                    showSection(prevId);
-                     if (typeof playSwipeSound === 'function') playSwipeSound();  // 🔊
+                    if (typeof playSwipeSound === 'function') playSwipeSound();  // 🔊
                     launchFirework(touchEndX, touchEndY);
                     showSection(prevId);
                 } else {
@@ -7879,7 +7872,12 @@ window.showErrorMessage = (msg) => {
             window.parsedReport = [];
             for (const refCode in buyersMap) {
                 // Ищем покупателя по его referralCode
-                const buyer = window.users.find(u => u.referralCode === refCode);
+               const buyer = window.users.find(u => {
+    const code = u.referralCode;
+    if (!code) return false;
+    // Точное совпадение ИЛИ код содержится в метке
+    return refCode === code || refCode.includes(code);
+});
                 const totalSum = buyersMap[refCode];
 
                 window.parsedReport.push({
