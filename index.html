@@ -38,7 +38,8 @@
     text-align: center;
     animation: vpnTipIn 0.2s ease;
 }
-.video-btn-wrap:hover .video-vpn-tip { display: block; }
+/* убираем CSS hover — теперь через JS */
+.video-btn-wrap .video-vpn-tip { display: none; }
 .video-vpn-tip-arrow {
     position: absolute;
     bottom: -7px;
@@ -8852,5 +8853,42 @@ window.updateUserPassword = async function() {
     <div class="notify-text" id="notifyText">Текст</div>
     <button class="notify-btn" onclick="closeFullscreenNotify()">✨ Круто, спасибо!</button>
 </div>
+    <script>
+// 🎬 VPN тултип для видеообзора — через JS (работает с динамическим контентом)
+document.addEventListener('mouseover', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    const tip = wrap.querySelector('.video-vpn-tip');
+    if (tip) tip.style.display = 'block';
+});
+
+document.addEventListener('mouseout', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    // Проверяем — не уходим ли внутрь самого тултипа
+    if (!wrap.contains(e.relatedTarget)) {
+        const tip = wrap.querySelector('.video-vpn-tip');
+        if (tip) tip.style.display = 'none';
+    }
+});
+
+// 📱 На телефоне — тап по кнопке показывает тултип на 3 секунды
+document.addEventListener('touchstart', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    const tip = wrap.querySelector('.video-vpn-tip');
+    if (!tip) return;
+    
+    e.preventDefault();
+    tip.style.display = 'block';
+    
+    setTimeout(() => {
+        tip.style.display = 'none';
+        // После закрытия тултипа — открываем ссылку
+        const link = wrap.querySelector('a[href]');
+        if (link) window.open(link.href, '_blank');
+    }, 3000);
+}, { passive: false });
+</script>
 </body>
 </html>
