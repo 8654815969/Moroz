@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇷🇺</text></svg>">
+<link rel="apple-touch-icon" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Честный Отзыв - Платформа для честных отзывов о товарах</title>
@@ -21,6 +22,41 @@
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
+        .video-vpn-tip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 270px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    z-index: 9999;
+    text-align: center;
+    animation: vpnTipIn 0.2s ease;
+}
+.video-btn-wrap:hover .video-vpn-tip { display: block; }
+.video-vpn-tip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    width: 13px;
+    height: 13px;
+    background: white;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    transform: translateX(-50%) rotate(45deg);
+}
+@keyframes vpnTipIn {
+    from { opacity:0; transform:translateX(-50%) translateY(8px); }
+    to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+@media (max-width: 768px) {
+    .video-vpn-tip { width: 220px; font-size: 0.8rem; }
+}
                 /* 🫧 Согласие на обработку данных — мыльный шарик */
         .consent-bubble {
             margin: 1rem 0 1.5rem;
@@ -5495,12 +5531,24 @@ window.handleReviewSubmit = async function(e) {
     });
 };
 
-        // Expose Global UI Functions (originally in <script>)
-        window.getUrlParams = function() {
-            const params = new URLSearchParams(window.location.search);
-            return { ref: params.get('ref') };
-        };
-
+       window.getUrlParams = function() {
+    const params = new URLSearchParams(window.location.search);
+    const refFromUrl = params.get('ref');
+    
+    // Если реф есть в URL — сразу сохраняем в localStorage И sessionStorage
+    if (refFromUrl) {
+        localStorage.setItem('pendingRef', refFromUrl);
+        sessionStorage.setItem('pendingRef', refFromUrl);
+        console.log('✅ Реф сохранён из URL:', refFromUrl);
+    }
+    
+    // Читаем из URL или из обоих хранилищ
+    const ref = refFromUrl 
+        || sessionStorage.getItem('pendingRef') 
+        || localStorage.getItem('pendingRef');
+    
+    return { ref };
+};
        window.showSection = function(sectionId) {
                // 📚 Запоминаем историю переходов
     if (!window.navHistory) window.navHistory = [];
@@ -6446,18 +6494,32 @@ window.openProductPage = function(productId, isVerified = false) {
         : '0';
     const avgStars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
 
-    // блок видеообзора (если есть ссылка)
-    let videoBlock = '';
-    if (product.videoUrl) {
-        videoBlock = `
-            <div class="card mb-3">
-                <h3 class="card-title mb-2">🎬 Видеообзор</h3>
-                <a href="${product.videoUrl}" target="_blank" rel="noopener" 
-                   class="btn btn-primary" style="text-decoration:none; display:inline-block;">
+   let videoBlock = '';
+if (product.videoUrl) {
+    videoBlock = `
+        <div class="card mb-3">
+            <h3 class="card-title mb-2">🎬 Видеообзор</h3>
+            <div style="position:relative; display:inline-block;" class="video-btn-wrap">
+                <a href="${product.videoUrl}" target="_blank" rel="noopener"
+                   class="btn btn-primary video-trigger"
+                   style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
                     ▶️ Смотреть видеообзор
                 </a>
-            </div>`;
-    }
+                <div class="video-vpn-tip">
+                    <div style="font-size:2rem; margin-bottom:8px;">🎬</div>
+                    <p style="font-size:0.95rem; font-weight:600; margin:0 0 6px;">Может потребоваться VPN</p>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 14px; line-height:1.5;">
+                        Видео на YouTube. Если не открывается — включите VPN или расширение.
+                    </p>
+                    <a href="${product.videoUrl}" target="_blank" rel="noopener"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#ef4444; color:white; border-radius:50px; padding:9px 22px; font-size:0.85rem; font-weight:600; text-decoration:none;">
+                        ▶️ Открыть видео
+                    </a>
+                    <div class="video-vpn-tip-arrow"></div>
+                </div>
+            </div>
+        </div>`;
+}
 
     // блок отзывов
     let reviewsBlock = '';
@@ -6959,12 +7021,14 @@ window.showErrorMessage = (msg) => {
                 });
             });
 
-            const ref = getUrlParams().ref;
-            if (ref) {
-                localStorage.setItem('pendingRef', ref);
-                console.log('💾 Реферальный код сохранён:', ref);
-            }
-
+            // Сохраняем реф сразу при загрузке страницы
+const urlParams = new URLSearchParams(window.location.search);
+const refFromUrl = urlParams.get('ref');
+if (refFromUrl) {
+    localStorage.setItem('pendingRef', refFromUrl);
+    sessionStorage.setItem('pendingRef', refFromUrl);
+    console.log('💾 Реф сохранён при загрузке:', refFromUrl);
+}
             // 🤝 Показать кнопку Сотрудничество на старте (главная активна)
             const partnerBtn = document.getElementById('partnerFloatBtn');
             if (partnerBtn) partnerBtn.style.display = 'flex';
