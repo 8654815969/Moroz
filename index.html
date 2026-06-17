@@ -3075,7 +3075,8 @@ main, .section, .card, .btn, button, a {
 }
     </style>
     <!-- 📊 Библиотека для чтения Excel-отчётов Ozon -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- ⏳ Экран загрузки (убирает "выкидывание") -->
@@ -3453,14 +3454,6 @@ main, .section, .card, .btn, button, a {
         transform: scale(0.97);
     }
 }
-
-/* На телефоне — реакция на нажатие */
-@media (max-width: 768px) {
-    #productGrid .card:active,
-    #verifiedProductGrid .card:active {
-        transform: scale(0.97);
-    }
-}
 </style>
     <!-- Header -->
     <header>
@@ -3719,6 +3712,7 @@ main, .section, .card, .btn, button, a {
                     <button class="tab" onclick="switchTab('reviews')">⭐ Мои отзывы</button>
                     <button class="tab" onclick="switchTab('requests')">📦 Мои запросы</button>
                     <button class="tab" onclick="switchTab('commissions')">💰 Комиссии</button>
+                                   <button class="tab" onclick="switchTab('stats')">📊 Статистика</button>
                 </div>
 <!-- Profile Tab -->
 <div id="profile" class="tab-content">
@@ -3841,7 +3835,8 @@ main, .section, .card, .btn, button, a {
                         <p class="text-muted">Вы ещё не запрашивали товары</p>
                     </div>
                 </div>
-
+<!-- Stats Tab -->
+<div id="stats" class="tab-content"></div>
                 <!-- Commissions Tab -->
                 <div id="commissions" class="tab-content">
                     <div class="grid grid-3">
@@ -6334,7 +6329,13 @@ window.rejectReview = async function(id) {
             if (name === 'messages') {
                 markMessagesAsRead();
             }
-        };
+     // 📊 График рефералов
+if (name === 'stats') {
+    setTimeout(() => {
+        if (typeof renderReferralChart === 'function') renderReferralChart();
+    }, 100);
+}   
+                                    };
 
         // 🔔 Помечаем все сообщения прочитанными + прячем звоночек
         window.markMessagesAsRead = async function() {
@@ -8047,6 +8048,127 @@ window.showErrorMessage = (msg) => {
         window.checkApiPurchases = function() {
             showErrorMessage('Используйте загрузку отчёта Ozon выше 📊');
         };
+        // 📊 ГРАФИК РЕФЕРАЛОВ
+window.renderReferralChart = function() {
+    if (!window.currentUser) return;
+    
+    const myReferrals = window.users.filter(u => 
+        u.referrer === window.currentUser.id
+    );
+    
+    const myCommissions = window.commissions.filter(c => 
+        c.referrerId === window.currentUser.id
+    );
+    
+    const months = ['Янв','Фев','Мар','Апр','Май','Июн',
+                    'Июл','Авг','Сен','Окт','Ноя','Дек'];
+    const byMonth = new Array(12).fill(0);
+    
+    myCommissions.forEach(c => {
+        const month = new Date(c.date).getMonth();
+        if (!isNaN(month)) byMonth[month] += c.amount;
+    });
+    
+    const topReferrals = myReferrals.map(u => {
+        const earned = myCommissions
+            .filter(c => c.referredUserId === u.id)
+            .reduce((sum, c) => sum + c.amount, 0);
+        return { name: u.name, earned };
+    }).sort((a, b) => b.earned - a.earned).slice(0, 5);
+
+    document.getElementById('stats').innerHTML = `
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;">
+            <div class="stat-card" style="text-align:center;">
+                <div class="stat-label">Рефералов</div>
+                <div class="stat-value">${myReferrals.length}</div>
+            </div>
+            <div class="stat-card" style="text-align:center; border-left-color:var(--success);">
+                <div class="stat-label">Заработано</div>
+                <div class="stat-value" style="color:var(--success);">
+                    ${myCommissions.reduce((s,c) => s+c.amount, 0).toFixed(0)}₽
+                </div>
+            </div>
+            <div class="stat-card" style="text-align:center; border-left-color:var(--warning);">
+                <div class="stat-label">К выплате</div>
+                <div class="stat-value" style="color:var(--warning);">
+                    ${myCommissions.filter(c=>!c.paid).reduce((s,c)=>s+c.amount,0).toFixed(0)}₽
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <h3 class="card-title mb-2">📈 Заработок по месяцам</h3>
+            <canvas id="referralChart" height="200"></canvas>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title mb-2">🏆 Топ рефералов</h3>
+            ${topReferrals.length === 0 
+                ? '<p class="text-muted">Пока нет данных</p>'
+                : topReferrals.map((r, i) => `
+                    <div style="display:flex; justify-content:space-between; 
+                                align-items:center; padding:10px 0; 
+                                border-bottom:1px solid var(--border);">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.5rem;">
+                                ${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}
+                            </span>
+                            <span style="font-weight:600;">${r.name}</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:700; color:var(--success);">
+                                +${r.earned.toFixed(0)}₽
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">
+                                вам 5%
+                            </div>
+                        </div>
+                    </div>`).join('')
+            }
+        </div>
+    `;
+
+    const ctx = document.getElementById('referralChart')?.getContext('2d');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Заработок (₽)',
+                    data: byMonth,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `💰 ${ctx.raw.toFixed(0)}₽`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (val) => val + '₽'
+                        }
+                    }
+                }
+            }
+        });
+    }
+};
                          // 🔊 ЗВУК СВАЙПА/ПЕРЕХОДА
 window.playSwipeSound = function() {
     try {
