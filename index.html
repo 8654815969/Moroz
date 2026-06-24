@@ -5818,7 +5818,24 @@ if (editEmail) editEmail.placeholder = window.currentUser.email || '';
             <span class="badge badge-primary">${u.role}</span>
         </div>`;
     }).join('');
-                           
+                           // === ТОВАРЫ ДЛЯ ТЕСТИРОВАНИЯ ===
+const adminProductsList = document.getElementById('adminProductsList');
+if (adminProductsList) {
+    adminProductsList.innerHTML = window.products.length === 0
+        ? '<p class="text-muted">Нет товаров</p>'
+        : window.products.map(p => `
+            <div class="card mb-2 flex-between">
+                <div>
+                    <h4 class="card-title">${p.name}</h4>
+                    <p class="text-muted">Склад: ${p.stock ?? 0} | ${p.category || '—'}</p>
+                    ${p.shippingOnly ? '<span class="badge badge-warning">🚚 Только доставка</span>' : ''}
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-warning btn-small" onclick="openEditProductModal('${p.id}')">✏️</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">🗑️</button>
+                </div>
+            </div>`).join('');
+}
             document.getElementById('adminVerifiedProductsList').innerHTML = window.verifiedProducts.map(p => `
                 <div class="card mb-2 flex-between">
                     <div><h4 class="card-title">${p.name}</h4><p class="text-muted">Склад: ${p.stock}</p></div>
