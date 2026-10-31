@@ -3478,6 +3478,12 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    /* ═══ Стиль «чёткие грани» ═══ */
+    .sharp { background: #fff; border: 2px solid #0b2a6f; border-radius: 0; box-shadow: 6px 6px 0 #0b2a6f; }
+    .sharp-title { display: inline-block; background: #0b2a6f; color: #fff !important; padding: 6px 22px 6px 14px; margin: 0 0 1.2rem; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.5px; clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+    .report-card { transition: transform 0.15s, box-shadow 0.15s; }
+    .report-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 #d52b1e; }
+    .producer-quote { border-left: 5px solid #d52b1e; margin: 0.8rem 0 0; padding: 0.4rem 0 0.4rem 1rem; font-style: italic; }
     /* ═══ Цифры в баннере ═══ */
     .stat-box { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.3); border-radius: 14px; padding: 0.55rem 1.2rem; min-width: 120px; }
     .stat-box b { display: block; font-size: 1.7rem; line-height: 1.1; color: #fff; }
@@ -3552,6 +3558,7 @@ main, .section, .card, .btn, button, a {
 
             <nav id="mainNav">
                 <a onclick="showSection('verified'); closeMobileMenu()">Каталог</a>
+                <a onclick="scrollToReports(); closeMobileMenu()">Репортажи</a>
                 <a onclick="openPartnerModal(); closeMobileMenu()">Сотрудничество</a>
                 <a onclick="showSection('about-page'); closeMobileMenu()">О проекте</a>
                 <a id="adminNavLink" onclick="showSection('admin'); closeMobileMenu()" style="display: none;">Админ</a>
@@ -3611,13 +3618,13 @@ main, .section, .card, .btn, button, a {
                 <button class="btn btn-secondary" onclick="randomProduct()" style="font-size: 1rem;">🎲 Удиви меня — случайный товар</button>
             </div>
 
+            <div id="reportsBlock" style="display: none; margin-bottom: 2rem;">
+                <h2 class="sharp-title">🎬 Репортажи с производств</h2>
+                <div id="reportsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.4rem;"></div>
+            </div>
+
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 1rem;">
                 <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px; flex: 1 1 240px;">
-                <select id="verifiedSort" onchange="renderVerifiedProducts()" style="min-width: 260px;">
-                    <option value="default">Сортировка: по умолчанию</option>
-                    <option value="video">Сначала с репортажем</option>
-                    <option value="name">По алфавиту</option>
-                </select>
                 <button class="btn btn-secondary btn-small" id="favToggle" onclick="toggleFavFilter()">🤍 Избранное</button>
             </div>
             <div id="verifiedCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
@@ -3805,6 +3812,18 @@ main, .section, .card, .btn, button, a {
         <label>🌐 Сайт продавца (необязательно)</label>
         <input type="url" id="verifiedProductSite" placeholder="https://сайт-производителя.рф">
     </div>
+    <div class="form-group">
+        <label>🏭 Производитель: название (необязательно)</label>
+        <input type="text" id="verifiedProductProducer" placeholder="Например, Кофейня «Горы»">
+    </div>
+    <div class="form-group">
+        <label>📍 Город производства</label>
+        <input type="text" id="verifiedProductCity" placeholder="Сочи">
+    </div>
+    <div class="form-group">
+        <label>💬 Цитата из интервью</label>
+        <textarea id="verifiedProductQuote" rows="2" placeholder="Что сказал производитель на камеру"></textarea>
+    </div>
                 <div class="form-group">
     <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
     <input type="url" id="verifiedProductVideo" placeholder="https://vk.ru/video... или https://youtube.com/...">
@@ -3862,6 +3881,18 @@ main, .section, .card, .btn, button, a {
     <div class="form-group">
         <label>🌐 Сайт продавца (необязательно)</label>
         <input type="url" id="editVerifiedProductSite" placeholder="https://сайт-производителя.рф">
+    </div>
+    <div class="form-group">
+        <label>🏭 Производитель: название (необязательно)</label>
+        <input type="text" id="editVerifiedProductProducer" placeholder="Например, Кофейня «Горы»">
+    </div>
+    <div class="form-group">
+        <label>📍 Город производства</label>
+        <input type="text" id="editVerifiedProductCity" placeholder="Сочи">
+    </div>
+    <div class="form-group">
+        <label>💬 Цитата из интервью</label>
+        <textarea id="editVerifiedProductQuote" rows="2" placeholder="Что сказал производитель на камеру"></textarea>
     </div>
                                 <div class="form-group">
                     <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
@@ -4199,6 +4230,33 @@ window.catIcon = function(c) {
     return '🏷️';
 };
 
+window.renderReports = function() {
+    const block = document.getElementById('reportsBlock');
+    const grid = document.getElementById('reportsGrid');
+    if (!block || !grid) return;
+    const list = window.verifiedProducts.filter(p => p.videoUrl).slice(0, 6);
+    block.style.display = list.length ? 'block' : 'none';
+    grid.innerHTML = list.map(p => {
+        const who = [p.producerName, p.producerCity].filter(Boolean).join(', ');
+        return `
+        <div class="sharp report-card" style="overflow:hidden;">
+            <div onclick="window.open('${p.videoUrl}', '_blank', 'noopener')" style="position:relative; height:165px; background:#0b2a6f; cursor:pointer;">
+                ${p.image ? `<img src="${p.image}" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">` : ''}
+                <span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:3.2rem; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.6);">▶</span>
+            </div>
+            <div style="padding:0.8rem 1rem;">
+                <div onclick="openProductPage('${p.id}')" style="font-weight:800; cursor:pointer;">${p.name || ''}</div>
+                ${who ? `<div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">🏭 ${who}</div>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+};
+
+window.scrollToReports = function() {
+    const go = () => { const el = document.getElementById('reportsBlock'); if (el && el.style.display !== 'none') el.scrollIntoView({ behavior: 'smooth', block: 'start' }); else showErrorMessage('Репортажи скоро появятся'); };
+    if (!document.getElementById('verified').classList.contains('active')) { showSection('verified'); setTimeout(go, 400); } else go();
+};
+
 window.updateStats = function() {
     const list = window.verifiedProducts;
     const cats = new Set(list.map(p => (p.category || '').trim()).filter(Boolean));
@@ -4221,6 +4279,7 @@ window.randomProduct = function() {
 
 window.renderVerifiedProducts = function() {
     updateStats();
+    renderReports();
     const grid = document.getElementById('verifiedProductGrid');
     if (!grid) return;
     const searchEl = document.getElementById('verifiedSearchInput');
@@ -4340,6 +4399,14 @@ window.openProductPage = function(productId) {
         </div>`;
     }
 
+    const who = [product.producerName, product.producerCity].filter(Boolean).join(', ');
+    const producerBlock = (who || product.producerQuote) ? `
+        <div class="sharp mt-3" style="padding:1.2rem 1.4rem; margin-top:1.5rem;">
+            <h3 class="sharp-title" style="font-size:1rem;">🏭 Производитель</h3>
+            ${who ? `<div style="font-size:1.15rem; font-weight:800;">${who}</div>` : ''}
+            ${product.producerQuote ? `<blockquote class="producer-quote">«${product.producerQuote}»</blockquote>` : ''}
+        </div>` : '';
+
     const imageHtml = product.image
         ? `<img src="${product.image}" style="width:100%; max-height:400px; object-fit:contain; border-radius:16px;">`
         : `<div style="height:300px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:5rem;">✅</div>`;
@@ -4356,6 +4423,7 @@ window.openProductPage = function(productId) {
             </div>
         </div>
         ${videoBlock}
+        ${producerBlock}
     `;
     showSection('product-page');
 };
@@ -4549,6 +4617,9 @@ window.switchAdminTab = (name) => {
     document.getElementById('editVerifiedProductOzon').value = p.ozonLink || p.url || '';
     document.getElementById('editVerifiedProductWb').value = p.wbLink || '';
     document.getElementById('editVerifiedProductSite').value = p.siteLink || '';
+    document.getElementById('editVerifiedProductProducer').value = p.producerName || '';
+    document.getElementById('editVerifiedProductCity').value = p.producerCity || '';
+    document.getElementById('editVerifiedProductQuote').value = p.producerQuote || '';
     document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
     document.getElementById('editVerifiedProductModal').classList.add('active');
 };
@@ -4580,6 +4651,9 @@ if (price !== '') updateData.price = parseFloat(price);
 updateData.ozonLink = ozon;
 updateData.wbLink = wb;
 updateData.siteLink = document.getElementById('editVerifiedProductSite').value.trim();
+updateData.producerName = document.getElementById('editVerifiedProductProducer').value.trim();
+updateData.producerCity = document.getElementById('editVerifiedProductCity').value.trim();
+updateData.producerQuote = document.getElementById('editVerifiedProductQuote').value.trim();
         
         if (imageFile) updateData.image = await compressImage(imageFile);
         
@@ -4632,6 +4706,9 @@ const newProduct = {
     ozonLink: document.getElementById('verifiedProductOzon').value.trim() || '',
     wbLink: document.getElementById('verifiedProductWb').value.trim() || '',
     siteLink: document.getElementById('verifiedProductSite').value.trim() || '',
+    producerName: document.getElementById('verifiedProductProducer').value.trim(),
+    producerCity: document.getElementById('verifiedProductCity').value.trim(),
+    producerQuote: document.getElementById('verifiedProductQuote').value.trim(),
     videoUrl: document.getElementById('verifiedProductVideo').value || null,
     image: image,
     rating: 0,
