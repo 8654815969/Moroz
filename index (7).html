@@ -1,0 +1,5076 @@
+<!DOCTYPE html>
+<html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇷🇺</text></svg>">
+<link rel="apple-touch-icon" href="icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Честный Отзыв — качественные товары российских производителей</title>
+        <!-- 📱 ПРЕВЬЮ ПРИ ОТПРАВКЕ ССЫЛКИ (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="🇷🇺 Честный Отзыв — Только Лучшие!">
+    <meta property="og:description" content="Мы сами приезжаем на производство и подтверждаем качество на видео">
+    <meta property="og:image" content="Untitled (19).png">
+    <meta property="og:url" content="https://xn--80aaam6aijn7a9c.xn--p1ai/">
+
+    <!-- Для Twitter/X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="🇷🇺 Честный Отзыв — Только Лучшие!">
+    <meta name="twitter:description" content="Мы сами приезжаем на производство и подтверждаем качество на видео">
+    <meta name="twitter:image" content="preview.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        .video-vpn-tip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 270px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    z-index: 9999;
+    text-align: center;
+    animation: vpnTipIn 0.2s ease;
+}
+/* убираем CSS hover — теперь через JS */
+.video-btn-wrap .video-vpn-tip { display: none; }
+.video-vpn-tip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    width: 13px;
+    height: 13px;
+    background: white;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    transform: translateX(-50%) rotate(45deg);
+}
+@keyframes vpnTipIn {
+    from { opacity:0; transform:translateX(-50%) translateY(8px); }
+    to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+@media (max-width: 768px) {
+    .video-vpn-tip { width: 220px; font-size: 0.8rem; }
+}
+                /* 🫧 Согласие на обработку данных — мыльный шарик */
+        .consent-bubble {
+            margin: 1rem 0 1.5rem;
+            padding: 14px 16px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(37,99,235,0.08), rgba(124,58,237,0.08));
+            border: 1px solid rgba(37,99,235,0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 16px rgba(37,99,235,0.08), inset 0 1px 2px rgba(255,255,255,0.6);
+            animation: bubbleFloatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .consent-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37,99,235,0.15), inset 0 1px 2px rgba(255,255,255,0.6);
+        }
+        /* Кружок-галочка */
+        .consent-check {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(37,99,235,0.4);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: transparent;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        /* Когда отмечено — мягко "надувается" */
+        .consent-bubble.checked .consent-check {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-color: transparent;
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+            animation: bubblePop 0.4s ease;
+        }
+        .consent-bubble.checked {
+            background: linear-gradient(145deg, rgba(16,185,129,0.1), rgba(37,99,235,0.08));
+            border-color: rgba(16,185,129,0.3);
+        }
+        .consent-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .consent-text a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        @keyframes bubbleFloatIn {
+            0%   { opacity: 0; transform: translateY(15px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes bubblePop {
+            0%   { transform: scale(0.8); }
+            60%  { transform: scale(1.3); }
+            100% { transform: scale(1.15); }
+        }
+        /* Тряска, если забыл поставить галку */
+        @keyframes bubbleShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .consent-bubble.shake {
+            animation: bubbleShake 0.4s ease;
+            border-color: var(--danger) !important;
+        }        
+        /* 🖥️ Умная панель быстрой навигации (только ПК) */
+        #quickNav {
+            display: none;
+            position: fixed;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--border);
+            z-index: 95;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        #quickNav.show {
+            opacity: 1;
+        }
+        #quickNav button {
+            width: 46px;
+            height: 46px;
+            border: none;
+            border-radius: 12px;
+            background: var(--surface);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #quickNav button:hover {
+            background: var(--primary);
+            transform: scale(1.12);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+        /* Показываем только на ПК */
+        @media (min-width: 769px) {
+            #quickNav.show {
+                display: flex;
+            }
+        }
+                /* 🖥️ Надпись над рамкой — прячем на телефоне (показываем только на ПК) */
+        @media (max-width: 768px) {
+            .desktop-only-title {
+                display: none !important;
+            }
+        }
+
+                /* ========== 🇷🇺 НАРОДНЫЙ ПРОЕКТ С ФЛАГОМ ========== */
+        .folk-project {
+            display: none; /* по умолчанию скрыт */
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        /* Показываем только на телефоне */
+        @media (max-width: 768px) {
+            .folk-project {
+                display: flex !important;
+            }
+        }
+
+                             /* 🏳️ Флаг — помятый от ветра + переливается (как настоящая ткань) */
+        .flag-ru {
+            width: 44px;
+            height: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            /* лёгкое общее покачивание */
+            animation: flagSwing 5s ease-in-out infinite;
+        }
+        .flag-stripe {
+            flex: 1;
+            display: block;
+            width: 100%;
+            position: relative;
+        }
+        .flag-stripe.white { background: #ffffff; }
+        .flag-stripe.blue  { background: #0039A6; }
+        .flag-stripe.red   { background: #D52B1E; }
+
+        /* 🌊 СЛОЙ "ПОМЯТОСТИ" — тени-волны бегут по ткани */
+        .flag-ru::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(0,0,0,0)      0px,
+                rgba(0,0,0,0.18)   8px,
+                rgba(255,255,255,0.15) 16px,
+                rgba(0,0,0,0)      24px
+            );
+            background-size: 200% 100%;
+            mix-blend-mode: overlay;
+            animation: flagFolds 4s linear infinite;
+        }
+
+        /* ✨ СЛОЙ ПЕРЕЛИВА — блик солнца скользит по флагу */
+        .flag-ru::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: linear-gradient(
+                115deg,
+                rgba(255,255,255,0) 35%,
+                rgba(255,255,255,0.55) 50%,
+                rgba(255,255,255,0) 65%
+            );
+            background-size: 250% 100%;
+            background-position: 200% 0;
+            animation: flagShine 4s ease-in-out infinite;
+        }
+
+        /* 🌊 Волны "помятости" бегут слева направо */
+        @keyframes flagFolds {
+            0%   { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ✨ Перелив-блик */
+        @keyframes flagShine {
+            0%   { background-position: 200% 0; }
+            55%  { background-position: -100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* 🍃 Лёгкое покачивание всего флага (как на флагштоке) */
+        @keyframes flagSwing {
+            0%, 100% { transform: rotate(0deg) skewY(0deg); }
+            25%      { transform: rotate(-1deg) skewY(0.5deg); }
+            50%      { transform: rotate(0deg) skewY(0deg); }
+            75%      { transform: rotate(1deg) skewY(-0.5deg); }
+        }
+
+        /* Текст «Народный проект» */
+                .folk-text {
+            font-size: 0.72rem;
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(90deg, #0039A6, #D52B1E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.3px;
+        }
+        .hero-title-plate {
+    display: inline-block;
+    padding: 1.2rem 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 18px;
+    /* стеклянно-металлический фон */
+    background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.3);
+}
+
+.hero-title-plate h1 {
+    margin: 0;
+    font-size: 1.9rem;           /* меньше, чем было */
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    /* металлический градиентный текст */
+    background: linear-gradient(180deg, #ffffff 0%, #cfe0ff 60%, #9bb8e8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* 📱 На телефонах — заголовок красивый и гармоничный (фэншуй ✨) */
+@media (max-width: 600px) {
+    /* Каждая смысловая строка — на своей строчке */
+    .hero-title-plate .hero-line {
+        display: block;
+    }
+}
+
+/* На компьютере — строки сливаются в обычный текст */
+@media (min-width: 601px) {
+    .hero-title-plate .hero-line {
+        display: inline;
+    }
+}
+    .hero-title-plate h1 {
+        font-size: 1.35rem !important;
+        line-height: 1.45 !important;
+        letter-spacing: 0.2px !important;
+        text-align: center !important;
+        /* 🎯 Красивый перенос — слова не рвутся по одному */
+        text-wrap: balance;          /* строки одинаковой длины */
+        word-break: keep-all;        /* не рвёт слова */
+        overflow-wrap: break-word;
+        hyphens: none;
+    }
+    /* ⭐ Крутящаяся звезда — по центру над текстом */
+    .hero-title-plate .spinning-star {
+        display: block !important;
+        margin: 0 auto 8px auto !important;
+    }
+}
+
+/* 📱 Очень узкие экраны (старые/маленькие телефоны) */
+@media (max-width: 380px) {
+    .hero-title-plate h1 {
+        font-size: 1.2rem !important;
+        line-height: 1.4 !important;
+    }
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #f97316;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --background: #ffffff;
+            --surface: #f9fafb;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+                /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        /* 🔼 Скрытая шапка (уехала вверх) */
+        header.header-hidden {
+            transform: translateY(-100%);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+        /* 🍔 Кнопка бургер (скрыта на ПК) */
+        .burger-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 101;
+        }
+
+        .burger-btn span {
+            display: block;
+            width: 26px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* Анимация бургера в крестик */
+        .burger-btn.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .burger-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .burger-btn.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+.btn-ozon { background: #005bff !important; color: white !important; }
+.btn-ozon:hover { background: #0047cc !important; }
+.btn-wb { background: #cb11ab !important; color: white !important; }
+.btn-wb:hover { background: #a50d8a !important; }
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+              /* Main Content */
+        main {
+            padding: 4.5rem 0 3rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOutToast {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .card-content {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Rating */
+        .rating {
+            display: flex;
+            gap: 0.25rem;
+            font-size: 1.2rem;
+        }
+
+        .star {
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #d1d5db;
+        }
+
+        .star.filled {
+            color: #fbbf24;
+        }
+
+        .star:hover {
+            color: #fbbf24;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+     
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .close-btn:hover {
+            color: var(--text);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            color: #047857;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 4px solid var(--primary);
+            color: #1e40af;
+        }
+
+        /* Product Image */
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+/* === Картинка на ВСЮ карточку (как WB/Ozon) === */
+.verified-image {
+    width: 100%;
+    height: 200px;
+    background: #f9fafb;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    font-size: 3rem;
+}
+
+.verified-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;      /* 🔑 показывает ВСЮ картинку целиком */
+    display: block;
+    padding: 6px;             /* лёгкий отступ от краёв */
+}
+        /* Stock Badge */
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stock-badge.low {
+            background: var(--warning);
+        }
+
+        .stock-badge.out {
+            background: var(--danger);
+        }
+
+        /* File Input */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.75rem;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+        /* 🟪 КАТАЛОГ В СТИЛЕ WB (только ПК) */
+@media (min-width: 769px) {
+    /* Больше карточек в ряд, плотнее */
+    #productGrid,
+    #verifiedProductGrid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    /* Карточка — компактная, без лишнего воздуха */
+    #productGrid .card,
+    #verifiedProductGrid .card {
+        padding: 10px !important;
+        border-radius: 10px !important;
+    }
+
+    /* 🖼️ Фото — крупное, во всю ширину карточки */
+    #productGrid .verified-image,
+    #verifiedProductGrid .verified-image {
+        height: 230px !important;
+        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Название — мелкое, 2 строки максимум */
+    #productGrid .card-title,
+    #verifiedProductGrid .card-title {
+        font-size: 0.82rem !important;
+        line-height: 1.3 !important;
+        font-weight: 500 !important;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 4px;
+        min-height: 2.1em;
+    }
+
+    /* Бейдж "Проверено" — крошечный, не ломает строку */
+    #verifiedProductGrid .verified-badge {
+        font-size: 0.6rem !important;
+        padding: 1px 6px !important;
+        margin-left: 4px;
+    }
+
+    /* Категория — мелкая */
+    #productGrid .badge-primary,
+    #verifiedProductGrid .badge-primary {
+        font-size: 0.65rem !important;
+        padding: 2px 7px !important;
+    }
+
+    /* Кнопки — компактные */
+    #productGrid .card-footer .btn,
+    #verifiedProductGrid .card-footer .btn {
+        font-size: 0.78rem !important;
+        padding: 8px 10px !important;
+    }
+}
+/* 🖥️ ПК: компактные названия в каталоге (как на маркетплейсе) */
+@media (min-width: 769px) {
+    #productGrid .card-title,
+    #verifiedProductGrid .card-title {
+        font-size: 0.98rem !important;   /* было 1.25rem — мельче */
+        line-height: 1.3 !important;
+        font-weight: 600;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;           /* максимум 2 строки */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 6px;
+        min-height: 2.6em;               /* 🔑 ровная высота у всех карточек */
+    }
+    /* Бейдж "Проверено" — не прилипает к тексту, своя строка */
+    #verifiedProductGrid .verified-badge {
+        font-size: 0.68rem !important;
+        padding: 2px 8px !important;
+        vertical-align: middle;
+    }
+    /* Чуть компактнее картинка */
+    #productGrid .verified-image,
+    #verifiedProductGrid .verified-image {
+        height: 180px;
+    }
+}
+        /* 💙 На телефоне — главный экран полностью синий */
+@media (max-width: 768px) {
+    body:has(#home.active) {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+    }
+    
+    /* Hero сливается с фоном */
+    #home.active .hero {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 3rem 1rem 2rem !important;
+    }
+    
+    /* Убираем белый круг сверху-справа (он лишний на синем) */
+    #home.active .hero::before {
+        display: none !important;
+    }
+    
+    /* Заголовок "Как это работает?" — белым */
+    #home.active h2 {
+        color: white !important;
+    }
+    
+    /* Текст под карточками — тоже белым */
+    #home.active main,
+    #home.active section p {
+        color: rgba(255,255,255,0.95) !important;
+    }
+    
+    /* Карточки "Как это работает?" — уже стеклянные, оставляем */
+    /* Кнопки внизу — добавим белую обводку */
+    #home.active .btn-secondary {
+        background: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.4) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Футер тоже подгоним под синий */
+    body:has(#home.active) footer {
+        background: rgba(0,0,0,0.3) !important;
+    }
+}
+        @media (max-width: 768px) {
+                       #partnerFloatBtn {
+    position: static !important;      /* обычное место в потоке страницы */
+    margin: 30px auto 20px !important; /* по центру + отступы */
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    z-index: 1 !important;
+    padding: 14px 28px !important;
+    font-size: 1rem !important;
+    width: fit-content !important;
+    animation: pulseWhite 1.8s infinite !important;
+}
+
+#partnerFloatBtn:hover {
+    transform: scale(1.05) !important;
+}
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .logo-icon {
+                width: 26px;
+                height: 26px;
+            }
+
+                        /* 🍔 Бургер слева в углу + красивая обводка */
+            .burger-btn {
+                display: flex;
+                position: absolute;
+                top: 50%;
+                left: 12px;
+                right: auto;
+                transform: translateY(-50%);
+                width: 44px;
+                height: 44px;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+            }
+
+            /* 🎯 БОНУС 1: Нажатие — "сжимается" */
+            .burger-btn:active {
+                transform: translateY(-50%) scale(0.9);
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            /* 🎯 БОНУС 2: Пульсация — привлекает внимание */
+            .burger-btn {
+                animation: burgerPulse 2.5s ease-in-out infinite;
+            }
+
+            @keyframes burgerPulse {
+                0%, 100% { box-shadow: 0 2px 8px rgba(255,255,255,0.2); }
+                50% { box-shadow: 0 2px 16px rgba(255,255,255,0.6); }
+            }
+
+            /* 📱 Меню по умолчанию СКРЫТО */
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 8px !important;
+                margin-top: 10px;
+            }
+
+            /* Меню ОТКРЫТО (по клику на бургер) */
+            nav.mobile-open {
+                display: flex;
+            }
+
+                        nav a {
+                font-size: 0.95rem !important;
+                padding: 14px 16px !important;
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 14px;
+                white-space: nowrap;
+                text-align: left;
+                color: white;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.25s ease;
+                animation: menuSlideIn 0.4s ease backwards;
+            }
+
+            /* Плавное появление по очереди */
+            #mainNav a:nth-child(1) { animation-delay: 0.05s; }
+            #mainNav a:nth-child(2) { animation-delay: 0.10s; }
+            #mainNav a:nth-child(3) { animation-delay: 0.15s; }
+            #mainNav a:nth-child(4) { animation-delay: 0.20s; }
+            #mainNav a:nth-child(5) { animation-delay: 0.25s; }
+
+            /* Нажатие */
+            nav a:active {
+                transform: scale(0.97);
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+            @keyframes menuSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            /* 📱 ПОРЯДОК МЕНЮ ТОЛЬКО НА ТЕЛЕФОНЕ */
+            #mainNav {
+                display: none;
+                flex-direction: column;
+            }
+            #mainNav.mobile-open {
+                display: flex;
+            }
+            /* Меняем порядок (1 = первый, 2 = второй...) */
+            #mainNav a:nth-child(1) { order: 1; } /* Главная */
+            #mainNav a:nth-child(2) { order: 2; } /* Каталог */
+            #mainNav a:nth-child(3) { order: 3; } /* Товары на тест */
+            #mainNav a:nth-child(4) { order: 4; } /* Личный кабинет */
+            #mainNav a:nth-child(5) { order: 5; } /* Админ */
+            nav a:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+                        .header-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;   /* ← по центру */
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                position: relative;
+            }
+
+            /* 📱 Логотип строго по центру */
+            .logo {
+                margin: 0 auto;
+            }
+
+                                               .auth-buttons {
+                width: 100%;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            /* 🎯 БОНУС: компактные кнопки Вход/Регистрация */
+            .auth-buttons .btn-small {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                width: auto !important;
+            }
+
+            /* 🙈 На телефоне прячем имя пользователя в шапке (оно есть в ЛК) */
+            .auth-buttons .flex.gap-2 {
+                display: none !important;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+                                 /* 📱 На телефоне — 2 карточки в ряд, по центру */
+            .features {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.8rem !important;
+                margin: 1.5rem auto !important;
+                max-width: 100% !important;
+                justify-content: center !important;
+            }
+            
+            /* 🔵 Синие карточки (в тон фону) */
+            .feature {
+                padding: 1.2rem 0.8rem !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+            }
+            .feature-icon {
+                font-size: 2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            .feature h3 {
+                font-size: 0.95rem !important;
+                color: white !important;
+            }
+            .feature p {
+                font-size: 0.8rem !important;
+                color: rgba(255, 255, 255, 0.85) !important;
+            }
+            
+            /* 🔵 Синие карточки (в тон фону) */
+            .feature {
+                padding: 1.2rem 0.8rem !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+            }
+            .feature-icon {
+                font-size: 2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            /* Текст белый — на синем фоне */
+            .feature h3 {
+                font-size: 0.95rem !important;
+                color: white !important;
+            }
+            .feature p {
+                font-size: 0.8rem !important;
+                color: rgba(255, 255, 255, 0.85) !important;
+            }
+                        /* 📱 Каталог — 2 товара в ряд (как WB/Ozon) */
+            #productGrid,
+            #verifiedProductGrid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+
+                        /* 📱 Убираем белые бока на телефоне (только для каталогов) */
+            #verified .container,
+            #catalog .container {
+                padding: 0 !important;
+            }
+            
+            /* Текстовым секциям — нормальные отступы */
+            #verified, #catalog, #cabinet, #admin, #reviews-page {
+                padding: 0 0.8rem !important;
+            }
+
+            /* 📱 ФИКС: всё внутри кабинета и админки не вылазит */
+            #cabinet .card,
+            #admin .card,
+            #cabinet .stat-card,
+            #admin .stat-card {
+                padding: 0.9rem !important;
+                font-size: 0.9rem;
+            }
+
+            /* Заголовки кабинета/админки — компактнее */
+            #cabinet h1, #admin h1 {
+                font-size: 1.4rem !important;
+            }
+            #cabinet .card-title, #admin .card-title {
+                font-size: 1rem !important;
+            }
+
+            /* Цифры в статистике — меньше */
+            #cabinet .stat-value, #admin .stat-value {
+                font-size: 1.5rem !important;
+            }
+
+            /* Кнопки в карточках — мельче */
+            #cabinet .btn, #admin .btn {
+                font-size: 0.8rem !important;
+                padding: 0.5rem 0.8rem !important;
+            }
+
+            /* Поля ввода не вылазят */
+            #cabinet input, #admin input,
+            #cabinet textarea, #admin textarea,
+            #cabinet select, #admin select {
+                font-size: 0.9rem !important;
+                max-width: 100% !important;
+            }
+
+            /* Картинки чеков/отзывов в админке — меньше */
+            #admin img {
+                max-width: 100px !important;
+            }
+
+            /* Длинные слова переносятся */
+            #cabinet *, #admin * {
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn:not(#partnerFloatBtn) {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+
+        /* Utility */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .verified-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .payment-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .payment-option h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .payment-option p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .payment-option .btn {
+            width: 100%;
+        }
+
+        .referral-link-box {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .referral-link-input {
+            background: white;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .user-info {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .request-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .request-status.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .request-status.approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .request-status.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        .features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+                /* 📦 Каталог товаров — сетка (как verified) */
+        #productGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+.feature {
+    background: #fff;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.feature p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+        	/* === Боковые картинки === */
+.side-image {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 240px;
+    z-index: 10;
+}
+
+.side-image img {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.side-left {
+    left: 20px;
+}
+
+.side-right {
+    right: 20px;
+}
+
+/* На узких экранах — прячем, чтобы не мешали */
+@media (max-width: 1400px) {
+    .side-image {
+        display: none;
+    }
+}
+                /* 👉 Подсказка для свайпа в каталоге */
+        .swipe-hint {
+            display: none;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            animation: swipeMove 1.5s ease-in-out infinite;
+        }
+
+        @keyframes swipeMove {
+            0%, 100% { transform: translateX(0); opacity: 0.6; }
+            50% { transform: translateX(15px); opacity: 1; }
+        }
+
+               /* Старые подсказки в каталоге — больше не нужны */
+        .swipe-hint {
+            display: none !important;
+        }
+                /* 🍔 Фиксированный бургер — всегда на экране */
+        #fixedBurger {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 9999;
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s;
+        }
+
+        #fixedBurger:active {
+            transform: scale(0.9);
+        }
+
+        #fixedBurger span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        #fixedBurger.open span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        #fixedBurger.open span:nth-child(2) {
+            opacity: 0;
+        }
+        #fixedBurger.open span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Показываем только на телефоне */
+        @media (max-width: 768px) {
+            #fixedBurger {
+                display: flex;
+            }
+            /* Прячем старый бургер */
+            .burger-btn {
+                display: none !important;
+            }
+        }
+                /* ⭐ Отзывы — адаптив для мобильных */
+        @media (max-width: 768px) {
+            /* Шапка карточки отзыва — в столбик */
+            #publicReviewsList .card > .flex-between {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            /* Блок с товаром (картинка + название) */
+            #publicReviewsList .card > .flex-between > .flex {
+                width: 100%;
+            }
+
+            /* Блок с рейтингом (звёзды + оценка) — слева, не справа */
+            #publicReviewsList .card > .flex-between > div[style*="text-align: right"] {
+                text-align: left !important;
+                width: 100%;
+                padding-top: 8px;
+                border-top: 1px solid var(--border);
+            }
+
+            /* Звёзды чуть меньше, чтобы точно влезли */
+            #publicReviewsList .card span[style*="gold"] {
+                font-size: 1.1rem !important;
+            }
+
+            /* Название товара — перенос, не обрезается */
+            #publicReviewsList .card-title {
+                font-size: 1.05rem !important;
+                word-break: break-word;
+            }
+        }
+                                /* 🔥 ОГНЕННЫЙ активный пункт меню */
+        @media (max-width: 768px) {
+            nav a.nav-active {
+                background: linear-gradient(135deg, #ff6b00 0%, #ff0000 50%, #ff9500 100%) !important;
+                background-size: 200% 200% !important;
+                color: #ffffff !important;
+                font-weight: 700 !important;
+                border: 1px solid rgba(255, 200, 0, 0.6) !important;
+                box-shadow: 0 0 12px rgba(255, 100, 0, 0.8),
+                            0 0 24px rgba(255, 50, 0, 0.5) !important;
+                text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
+                animation: fireGlow 1.5s ease-in-out infinite,
+                           fireGradient 3s ease infinite !important;
+                position: relative;
+            }
+
+            /* 🔥 Иконка огня перед активным пунктом */
+            nav a.nav-active::before {
+                content: "🔥";
+                margin-right: 4px;
+                animation: fireFlicker 0.6s ease-in-out infinite alternate;
+            }
+        }
+
+        /* 🔥 Пульсация свечения */
+        @keyframes fireGlow {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(255, 100, 0, 0.8),
+                            0 0 24px rgba(255, 50, 0, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 150, 0, 1),
+                            0 0 40px rgba(255, 80, 0, 0.8);
+            }
+        }
+
+        /* 🔥 Движение градиента (как пламя) */
+        @keyframes fireGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 🔥 Мерцание иконки огня */
+        @keyframes fireFlicker {
+            0% { transform: scale(1) rotate(-3deg); opacity: 0.9; }
+            100% { transform: scale(1.15) rotate(3deg); opacity: 1; }
+        }
+                /* 🌑 Затемнение фона при открытом меню */
+        #menuOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+            animation: fadeIn 0.3s ease;
+        }
+        #menuOverlay.active {
+            display: block;
+        }
+        /* 🛠 ФИКС: убираем горизонтальную прокрутку везде */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* 📦 Все карточки не вылезают за край */
+.card {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* 👥 Реферальная программа — пользователи внутри карточки */
+#referralsList .card,
+#referralsList .flex-between {
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 100%;
+}
+
+#referralsList .flex {
+    min-width: 0;        /* разрешаем сжиматься */
+    flex: 1;
+}
+
+/* Email и имя — переносятся, не вылезают */
+#referralsList .card p,
+#referralsList .card h4 {
+    word-break: break-all;   /* длинный email переносится */
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* 💳 Реферальная ссылка не вылезает */
+.referral-link-input {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* 📱 На телефоне — карточки рефералов в столбик */
+@media (max-width: 768px) {
+    #referralsList .flex-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    #referralsList .badge {
+        align-self: flex-start;
+    }
+    
+    /* Личный кабинет — всё внутри экрана */
+    #cabinet, #cabinet * {
+        max-width: 100%;
+    }
+}
+        /* ⭐ Крутящаяся двухсторонняя звезда */
+.spinning-star {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    transform-style: preserve-3d;
+    animation: starSpin 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes starSpin {
+    /* 1-й резкий прокрут */
+    0%   { transform: rotateY(0deg); }
+    12%  { transform: rotateY(360deg); }
+    /* 2-й резкий прокрут */
+    24%  { transform: rotateY(720deg); }
+    /* плавное замедление */
+    40%  { transform: rotateY(810deg); }
+    /* пауза (стоит на месте) */
+    100% { transform: rotateY(810deg); }
+}
+                    /* 📱 Карточки каталога на телефоне (как WB/Ozon) */
+        @media (max-width: 768px) {
+            #productGrid .card,
+            #verifiedProductGrid .card {
+                padding: 8px !important;
+                border-radius: 12px !important;
+            }
+/* 🖼️ На телефоне картинка целиком */
+#productGrid .verified-image img,
+#verifiedProductGrid .verified-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    padding: 5px;
+}
+            /* Картинка компактнее */
+            #productGrid .verified-image,
+            #verifiedProductGrid .verified-image {
+                height: 130px !important;
+                margin-bottom: 8px !important;
+                border-radius: 10px !important;
+            }
+
+            /* Название товара — мельче, 2 строки макс */
+            #productGrid .card-title,
+            #verifiedProductGrid .card-title {
+                font-size: 0.85rem !important;
+                line-height: 1.25 !important;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-bottom: 4px;
+            }
+
+            /* Бейдж "Проверено" — мельче */
+            #verifiedProductGrid .verified-badge {
+                font-size: 0.65rem !important;
+                padding: 2px 6px !important;
+                margin-left: 4px;
+            }
+
+            /* Бейдж склада — компактный */
+            #productGrid .stock-badge {
+                font-size: 0.7rem !important;
+                padding: 3px 8px !important;
+                top: 6px;
+                right: 6px;
+            }
+
+            /* Кнопки внутри карточки — мельче */
+            #productGrid .card-footer,
+            #verifiedProductGrid .card-footer {
+                padding-top: 8px !important;
+                gap: 6px;
+            }
+            #productGrid .card-footer .btn,
+            #verifiedProductGrid .card-footer .btn {
+                font-size: 0.75rem !important;
+                padding: 8px 6px !important;
+            }
+
+            /* Бейдж "🚚 Только доставка" — мельче */
+            #productGrid .badge-warning {
+                font-size: 0.65rem !important;
+                padding: 2px 6px !important;
+            }
+        }
+                /* 🔔 ПЛАШКА-ЗВОНОЧЕК О СООБЩЕНИИ */
+        #bellNotify {
+            display: none;
+            position: fixed;
+            top: 100px;
+            right: 16px;
+            z-index: 99996;
+            background: linear-gradient(135deg, rgba(37,99,235,0.92) 0%, rgba(30,64,175,0.92) 100%);
+            color: white;
+            padding: 12px 18px 12px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.25);
+            max-width: 280px;
+            animation: bellFloat 3s ease-in-out infinite, bellFadePulse 2.5s ease-in-out infinite;
+        }
+        #bellNotify.show {
+            display: flex;
+        }
+        #bellNotify:active {
+            transform: scale(0.93);
+        }
+        .bell-icon {
+            font-size: 1.8rem;
+            animation: bellRing 1s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        .bell-text { line-height: 1.2; }
+        .bell-title { font-weight: 700; font-size: 0.95rem; }
+        .bell-sub { font-size: 0.72rem; opacity: 0.9; }
+        .bell-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+            box-shadow: 0 0 0 2px white;
+        }
+
+        /* 🔔 Звоночек качается как звонит */
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(18deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(-8deg); }
+        }
+
+        /* 🔔 Полупрозрачное появление/исчезновение */
+        @keyframes bellFadePulse {
+            0%, 100% { opacity: 0.55; }
+            50% { opacity: 1; }
+        }
+
+        /* 🔔 Плавно "ездит" вверх-вниз */
+        @keyframes bellFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+               /* 📱 На телефоне — чуть ниже, чтобы не мешал бургеру */
+        @media (max-width: 768px) {
+            #bellNotify {
+                top: auto;
+                bottom: 90px;
+                right: 12px;
+                max-width: 240px;
+                padding: 10px 14px 10px 12px;
+            }
+            .bell-title { font-size: 0.88rem; }
+            .bell-sub { font-size: 0.68rem; }
+        }
+                /* ========== 🛠️ КРАСИВАЯ АДМИНКА НА ТЕЛЕФОНЕ ========== */
+        @media (max-width: 768px) {
+            /* 📑 ВКЛАДКИ АДМИНКИ — плашка-сетка как в кабинете */
+            #admin .tabs,
+            #adminPanel .tabs {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                border-bottom: none !important;
+                background: var(--surface);
+                padding: 10px !important;
+                border-radius: 18px;
+                margin-bottom: 1.5rem !important;
+                overflow: visible !important;
+                box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+            }
+            #admin .tabs .tab,
+            #adminPanel .tabs .tab {
+                margin: 0 !important;
+                padding: 12px 8px !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 14px !important;
+                background: white !important;
+                font-size: 0.78rem !important;
+                font-weight: 600 !important;
+                color: var(--text-muted) !important;
+                text-align: center;
+                white-space: normal !important;
+                line-height: 1.2;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                transition: all 0.2s ease;
+            }
+            #admin .tabs .tab:active,
+            #adminPanel .tabs .tab:active {
+                transform: scale(0.96);
+            }
+            /* Активная вкладка — фиолетовая (чтобы отличалась от кабинета) */
+            #admin .tabs .tab.active,
+            #adminPanel .tabs .tab.active {
+                background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+                color: white !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4) !important;
+            }
+
+            /* 🪪 Шапка админки — цельная плашка */
+            #admin .admin-header,
+            #adminPanel .admin-header {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px;
+                padding: 1.3rem !important;
+                background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+                text-align: center;
+            }
+            #admin .admin-header h1,
+            #admin .admin-header h2,
+            #adminPanel .admin-header h1,
+            #adminPanel .admin-header h2 {
+                color: white !important;
+                font-size: 1.2rem !important;
+            }
+
+            /* 📊 Карточки статистики админки — 2 в ряд */
+            #admin .stats,
+            #adminPanel .stats,
+            #admin .admin-stats,
+            #adminPanel .admin-stats {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            #admin .stat-card,
+            #adminPanel .stat-card {
+                border-radius: 16px !important;
+                text-align: center;
+                border-left: none !important;
+                border-top: 3px solid #7c3aed !important;
+            }
+
+            /* 📋 Таблицы в админке — чтобы не вылезали за экран */
+            #admin table,
+            #adminPanel table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        /* ========== 👤 КРАСИВЫЙ ЛИЧНЫЙ КАБИНЕТ НА ТЕЛЕФОНЕ ========== */
+        @media (max-width: 768px) {
+            /* 🪪 Карточка профиля — цельная и эстетичная */
+            #cabinet .user-info {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 14px;
+                padding: 1.3rem !important;
+                background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+                border: none !important;
+                border-radius: 20px !important;
+                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+            }
+
+            /* Имя + почта по центру, белым */
+            #cabinet .user-info > .flex {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center;
+                gap: 10px !important;
+            }
+            #cabinet .user-info .user-avatar {
+                width: 64px !important;
+                height: 64px !important;
+                font-size: 1.8rem !important;
+                background: rgba(255,255,255,0.25) !important;
+                border: 2px solid rgba(255,255,255,0.4);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+            #cabinet .user-info #userName {
+                color: white !important;
+                font-size: 1.2rem !important;
+                font-weight: 700 !important;
+            }
+            #cabinet .user-info #userEmail {
+                color: rgba(255,255,255,0.85) !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* Кнопка Выход — широкая, под профилем */
+            #cabinet .user-info .btn-danger {
+                width: 100% !important;
+                background: rgba(255,255,255,0.18) !important;
+                border: 1px solid rgba(255,255,255,0.4) !important;
+                color: white !important;
+                font-weight: 600 !important;
+                padding: 0.7rem !important;
+                backdrop-filter: blur(10px);
+            }
+            #cabinet .user-info .btn-danger:active {
+                transform: scale(0.97);
+                background: rgba(255,255,255,0.3) !important;
+            }
+
+            /* 📑 ВКЛАДКИ — красивая плашка-сетка вместо узкой полоски */
+            #cabinet .tabs {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                border-bottom: none !important;
+                background: var(--surface);
+                padding: 10px !important;
+                border-radius: 18px;
+                margin-bottom: 1.5rem !important;
+                overflow: visible !important;
+                box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+            }
+            #cabinet .tabs .tab {
+                margin: 0 !important;
+                padding: 12px 8px !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 14px !important;
+                background: white !important;
+                font-size: 0.8rem !important;
+                font-weight: 600 !important;
+                color: var(--text-muted) !important;
+                text-align: center;
+                white-space: normal !important;
+                line-height: 1.2;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+                transition: all 0.2s ease;
+            }
+            #cabinet .tabs .tab:active {
+                transform: scale(0.96);
+            }
+            /* Активная вкладка — синяя, с тенью */
+            #cabinet .tabs .tab.active {
+                background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+                color: white !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+            }
+            /* Бейджи (красные кружки) внутри вкладок */
+            #cabinet .tabs .tab .msg-badge,
+            #cabinet .tabs .tab .notif-badge {
+                margin-left: 4px !important;
+            }
+
+            /* 📊 Статистика — 2 в ряд, красивее */
+            #cabinet .stats {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            #cabinet .stat-card {
+                border-radius: 16px !important;
+                text-align: center;
+                border-left: none !important;
+                border-top: 3px solid var(--primary) !important;
+            }
+            #cabinet .stat-label {
+                font-size: 0.7rem !important;
+            }
+        }
+        /* 🏷️ Кнопки-фильтры категорий */
+        .cat-filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .cat-filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .cat-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 🚚 Плашка "Только доставка" — сверху слева на картинке */
+        .shipping-badge-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            background: var(--warning);
+            color: white;
+            padding: 0.35rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 768px) {
+            .cat-filter-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .shipping-badge-top { font-size: 0.62rem; padding: 3px 7px; top: 6px; left: 6px; }
+        }
+                /* 📱 Компактная рассылка в админке на телефоне */
+        @media (max-width: 768px) {
+            #messages-admin .card {
+                padding: 0.9rem !important;
+            }
+            #messages-admin select,
+            #messages-admin textarea,
+            #messages-admin input {
+                font-size: 0.85rem !important;
+                padding: 0.6rem !important;
+            }
+            #messages-admin textarea {
+                min-height: 70px !important;
+            }
+            #userCheckboxList {
+                max-height: 180px !important;
+                padding: 6px !important;
+            }
+            #userCheckboxList label {
+                padding: 6px !important;
+                font-size: 0.8rem !important;
+            }
+            /* Переписка — компактнее */
+            #adminMessagesList .card {
+                padding: 0.8rem !important;
+            }
+            #adminMessagesList .card-title {
+                font-size: 0.95rem !important;
+            }
+            #adminMessagesList input {
+                font-size: 0.85rem !important;
+            }
+            /* Кнопка отправки чуть меньше */
+            #messages-admin .btn {
+                font-size: 0.9rem !important;
+                padding: 0.7rem !important;
+            }
+        }
+                /* 🎋 Фэншуй-текст подзаголовка (только ПК) */
+        @media (min-width: 769px) {
+            .hero-subtitle {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                font-size: 1.15rem !important;
+                line-height: 1.7 !important;
+                max-width: 620px;
+                margin: 1.5rem auto 0 !important;
+            }
+            .hero-sub-line {
+                display: block;
+                opacity: 0;
+                animation: subLineIn 0.6s ease forwards;
+            }
+            /* Появляются по очереди — плавно и гармонично */
+            .hero-sub-line:nth-child(1) { animation-delay: 0.2s; }
+            .hero-sub-line:nth-child(2) { animation-delay: 0.4s; }
+            .hero-sub-line:nth-child(3) { animation-delay: 0.6s; }
+
+            /* Девиз — выделенный, золотистый */
+            .hero-sub-motto {
+                display: block;
+                margin-top: 12px;
+                font-size: 1.3rem;
+                font-weight: 700;
+                background: linear-gradient(90deg, #ffd700, #fff5cc, #ffd700);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                opacity: 0;
+                animation: subLineIn 0.6s ease 0.8s forwards, mottoShine 4s linear infinite 1.5s;
+                text-shadow: 0 2px 12px rgba(255,215,0,0.3);
+            }
+            @keyframes subLineIn {
+                0%   { opacity: 0; transform: translateY(10px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes mottoShine {
+                0%   { background-position: 0% center; }
+                100% { background-position: 200% center; }
+            }
+        }
+
+        /* 📱 На телефоне — оставляем как было (просто обычный текст) */
+        @media (max-width: 768px) {
+            .hero-subtitle {
+                display: block;
+            }
+            .hero-sub-line, .hero-sub-motto {
+                display: inline;
+                animation: none !important;
+                opacity: 1 !important;
+            }
+            .hero-sub-motto {
+                -webkit-text-fill-color: #ffd700;
+                font-weight: 700;
+            }
+        }
+                /* 🎁 КРАСИВЫЕ КАРТОЧКИ РЕФЕРАЛОВ */
+        .referral-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.06));
+            border: 1px solid rgba(37,99,235,0.15);
+            box-shadow: 0 4px 14px rgba(37,99,235,0.08);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .referral-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(37,99,235,0.18);
+        }
+        /* Цветная полоска слева */
+        .referral-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, #2563eb, #7c3aed);
+        }
+        /* Аватарка реферала */
+        .referral-avatar {
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+        }
+        /* Инфо о реферале */
+        .referral-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .referral-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .referral-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        /* Бейдж "Приглашён" */
+        .referral-status {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+        }
+
+        /* 📊 Шапка-счётчик рефералов */
+        .referral-counter {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+        }
+        .referral-counter .big-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .referral-counter .counter-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* 📱 На телефоне — компактнее */
+        @media (max-width: 768px) {
+            .referral-card { padding: 12px; gap: 10px; }
+            .referral-avatar { width: 44px; height: 44px; font-size: 1.2rem; }
+            .referral-name { font-size: 0.92rem; }
+            .referral-email { font-size: 0.72rem; }
+            .referral-status { font-size: 0.62rem; padding: 4px 9px; }
+            .referral-counter .big-number { font-size: 2rem; }
+        }
+                /* 🇷🇺 РАЗВЕВАЮЩИЙСЯ ФЛАГ РФ (только ПК) */
+        .rf-flag-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 30px;
+            perspective: 1000px;
+        }
+        .rf-flag {
+            position: relative;
+            width: 340px;
+            height: 226px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            animation: flagFloat 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+        /* Три полосы флага */
+        .rf-flag .stripe {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 33.34%;
+        }
+        .rf-flag .white  { top: 0;        background: #ffffff; }
+        .rf-flag .blue   { top: 33.33%;   background: #0039A6; }
+        .rf-flag .red    { top: 66.66%;   background: #D52B1E; }
+
+        /* Эффект ТКАНИ — тени складок */
+        .rf-flag .wave-shadow {
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(0,0,0,0.18) 0px,
+                    rgba(0,0,0,0) 40px,
+                    rgba(255,255,255,0.15) 80px,
+                    rgba(0,0,0,0) 120px,
+                    rgba(0,0,0,0.18) 160px
+                );
+            background-size: 200px 100%;
+            animation: waveShadow 5s linear infinite;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+        /* ПЕРЕЛИВ (блик скользит по флагу) */
+        .rf-flag .shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                115deg,
+                transparent 30%,
+                rgba(255,255,255,0.45) 48%,
+                rgba(255,255,255,0.65) 50%,
+                rgba(255,255,255,0.45) 52%,
+                transparent 70%
+            );
+            background-size: 250% 250%;
+            animation: shineMove 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* === АНИМАЦИИ === */
+        /* Колыхание всего флага (как на ветру) */
+        @keyframes flagFloat {
+            0%   { transform: rotateY(0deg)   rotateX(0deg)   skewY(0deg); }
+            25%  { transform: rotateY(8deg)   rotateX(-2deg)  skewY(1.2deg); }
+            50%  { transform: rotateY(0deg)   rotateX(2deg)   skewY(-1deg); }
+            75%  { transform: rotateY(-8deg)  rotateX(-2deg)  skewY(1deg); }
+            100% { transform: rotateY(0deg)   rotateX(0deg)   skewY(0deg); }
+        }
+        /* Движение складок ткани */
+        @keyframes waveShadow {
+            0%   { background-position: 0 0; }
+            100% { background-position: 200px 0; }
+        }
+        /* Скольжение блика-перелива */
+        @keyframes shineMove {
+            0%   { background-position: 150% 150%; }
+            50%  { background-position: -50% -50%; }
+            100% { background-position: 150% 150%; }
+        }
+
+        /* Лёгкое свечение вокруг */
+        .rf-flag::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.15);
+            pointer-events: none;
+        }
+
+        /* 📱 На телефоне флаг скрываем */
+        @media (max-width: 768px) {
+            .rf-flag-wrap { display: none; }
+        }
+        /* ════════ 📱 НИЖНЕЕ МЕНЮ-НАВИГАЦИЯ (как в приложениях) ════════ */
+#bottomNav {
+    display: none;
+}
+@media (max-width: 768px) {
+    #bottomNav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 64px;
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        z-index: 9990;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+        justify-content: space-around;
+        align-items: center;
+    }
+    .bottom-nav-item {
+        flex: 1;
+        background: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        cursor: pointer;
+        padding: 6px 0;
+        color: var(--text-muted);
+        transition: all 0.25s ease;
+        position: relative;
+        height: 100%;
+    }
+    .bottom-nav-item .bn-icon {
+        font-size: 1.4rem;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        filter: grayscale(0.4);
+    }
+    .bottom-nav-item .bn-label {
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+    /* Активная иконка — поднимается + цветная */
+    .bottom-nav-item.active {
+        color: var(--primary);
+    }
+    .bottom-nav-item.active .bn-icon {
+        transform: translateY(-4px) scale(1.25);
+        filter: grayscale(0) drop-shadow(0 4px 8px rgba(37,99,235,0.4));
+    }
+    .bottom-nav-item.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 36px;
+        height: 3px;
+        border-radius: 0 0 4px 4px;
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+    }
+    .bottom-nav-item:active .bn-icon {
+        transform: scale(0.85);
+    }
+    /* Красный бейдж на "Кабинет" */
+    .bn-badge {
+        position: absolute;
+        top: 4px;
+        right: 22%;
+        background: #ef4444;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        box-shadow: 0 0 0 2px white;
+        animation: pulse 1.5s infinite;
+    }
+
+           main {
+        padding-top: 70px !important;
+        padding-bottom: 90px !important;
+    }
+    /* Кнопки в самом низу секций — не прячутся */
+    .section {
+        padding-bottom: 20px;
+    }
+    .hero-buttons {
+        margin-bottom: 30px !important;
+    }
+    footer {
+        margin-bottom: 64px;
+    }
+    /* Кнопки наверх/назад — выше меню */
+    #scrollTopBtn {
+        bottom: 80px !important;
+    }
+    #bellNotify {
+        bottom: 130px !important;
+    }
+}
+        /* 🛡️ ФИКС: невидимые элементы НЕ блокируют клики */
+#swipeHint {
+    pointer-events: none !important;
+}
+#welcomeBurst {
+    pointer-events: none !important;
+}
+.confetti-piece,
+.firework {
+    pointer-events: none !important;
+}
+/* Оверлей меню кликается только когда активен */
+#menuOverlay:not(.active) {
+    display: none !important;
+    pointer-events: none !important;
+}
+/* Нижнее меню — клики работают */
+#bottomNav,
+.bottom-nav-item {
+    pointer-events: auto !important;
+}
+/* Контент над нижним меню — кликабелен */
+main, .section, .card, .btn, button, a {
+    pointer-events: auto;
+}
+              /* 🛡️ ФИКС: меню НЕ блокирует клики по странице */
+@media (max-width: 768px) {
+    #bottomNav {
+        height: 64px !important;
+        max-height: 64px !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+    }
+    /* 🔑 Гарантия: ВСЕ 5 кнопок видны и равны */
+    #bottomNav .bottom-nav-item {
+        display: flex !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+    /* Невидимые элементы НЕ ловят нажатия */
+    #swipeHint, #welcomeBurst,
+    .confetti-piece, .firework {
+        pointer-events: none !important;
+    }
+    /* Оверлей скрыт когда неактивен */
+    #menuOverlay:not(.active) {
+        display: none !important;
+    }
+    /* Всё кликабельно */
+    body, main, .section, .btn, button, a, .card {
+        pointer-events: auto !important;
+    }
+}
+        /* 🔴 КРАСНЫЕ БЕЙДЖИ-СЧЁТЧИКИ */
+.nav-badge {
+    position: absolute;
+    top: 6px;
+    right: 50%;
+    transform: translateX(18px);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(255, 23, 68, 0.6);
+    animation: badgePulse 2s infinite;
+    z-index: 10;
+}
+
+/* Бейдж в обычном меню (десктоп) */
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 8px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(255, 23, 68, 0.5);
+    animation: badgePulse 2s infinite;
+}
+
+/* Бейдж на подразделах внутри админки */
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin-left: 8px;
+    background: linear-gradient(135deg, #ff3b5c, #ff1744);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 11px;
+    box-shadow: 0 2px 10px rgba(255, 23, 68, 0.6);
+    animation: badgePulse 2s infinite;
+    vertical-align: middle;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* для menu-badge не нужен translateX */
+.menu-badge { transform: none; }
+.menu-badge { animation: badgePulseSimple 2s infinite; }
+@keyframes badgePulseSimple {
+    0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255,23,68,0.5); }
+    50% { transform: scale(1.12); box-shadow: 0 2px 14px rgba(255,23,68,0.8); }
+}
+        /* 📊 КРАСИВЫЕ КАРТОЧКИ ЗАПРОСОВ И ОТЗЫВОВ */
+.admin-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.admin-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+}
+.admin-card.is-new::before {
+    background: linear-gradient(180deg, #ff5e7e, #ff1744);
+}
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(124,58,237,0.15);
+}
+.admin-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.admin-card-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text);
+}
+.admin-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+}
+.admin-card-body {
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+.admin-card-field {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+.admin-card-field b {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.admin-stars {
+    color: #ffd43b;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+.admin-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.admin-btn-approve, .admin-btn-reject {
+    flex: 1;
+    min-width: 110px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.admin-btn-approve {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #fff;
+}
+.admin-btn-approve:hover {
+    box-shadow: 0 6px 18px rgba(46,204,113,0.4);
+    transform: translateY(-2px);
+}
+.admin-btn-reject {
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239,68,68,0.3);
+}
+.admin-btn-reject:hover {
+    background: rgba(239,68,68,0.15);
+    transform: translateY(-2px);
+}
+.admin-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+.admin-empty-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+    .admin-card-actions { flex-direction: column; }
+    .admin-btn-approve, .admin-btn-reject { width: 100%; }
+}
+        /* ⚖️ ЮРИДИЧЕСКАЯ СТРАНИЦА */
+.legal-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.legal-tab {
+    padding: 10px 18px; border-radius: 14px; border: 2px solid var(--border);
+    background: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+}
+.legal-tab.active {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white; border-color: transparent;
+}
+.legal-content { line-height: 1.7; color: var(--text); }
+.legal-content h2 { margin-bottom: 16px; color: var(--primary); font-size: 1.4rem; }
+.legal-content h3 { margin: 20px 0 10px; font-size: 1.1rem; color: var(--text); }
+.legal-content p { margin-bottom: 12px; }
+.legal-content ul { margin: 10px 0 12px 20px; }
+.legal-content li { margin-bottom: 6px; }
+.legal-content .legal-date { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+.legal-content .legal-warn {
+    background: rgba(245,158,11,0.1); border-left: 4px solid var(--warning);
+    padding: 14px; border-radius: 10px; margin: 16px 0;
+}
+        /* ⭐ WB-СТИЛЬ ОТЗЫВОВ */
+.wb-review {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.wb-review-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;            /* 🔑 звёзды переедут вниз, если тесно */
+}
+.wb-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e9edf2;
+    color: #8a94a3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.wb-review-meta {
+    flex: 1 1 120px;           /* 🔑 минимум 120px на имя+дату */
+    min-width: 0;
+}
+.wb-review-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1f2937;
+    /* 🔑 НЕ режем — пусть переносится, если нужно */
+    overflow-wrap: anywhere;
+}
+.wb-review-date {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+.wb-review-stars {
+    color: #ff8c00;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.wb-star-empty {
+    color: #e0e0e0;
+}
+.wb-review-bought {
+    color: #16a34a;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 10px 0 8px;
+}
+.wb-review-text {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
+.wb-review-text b {
+    color: #1f2937;
+}
+    </style>
+</head>
+<body>
+    <!-- ⏳ Экран загрузки (убирает "выкидывание") -->
+<div id="appLoader" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+">
+    <div style="
+        width: 60px; height: 60px;
+        border: 5px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: loaderSpin 0.8s linear infinite;
+    "></div>
+    <div style="
+        color: white;
+        margin-top: 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    ">⭐ Честный Отзыв</div>
+</div>
+
+<style>
+@keyframes loaderSpin {
+    to { transform: rotate(360deg); }
+}
+</style>
+        <!-- 🌑 Затемнение фона для меню -->
+    <div id="menuOverlay" onclick="closeMobileMenu()"></div>
+    <!-- ⬅️ Кнопка Назад -->
+<button id="backBtn" onclick="goBack()">⬅️ Назад</button>
+        <!-- ⬆️ Кнопка Наверх -->
+    <button id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">⬆️</button>
+    
+    <!-- 🍔 Фиксированный бургер -->
+<button id="fixedBurger" onclick="toggleMobileMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+    
+<!-- Анимация пульсации для кнопки -->
+                <style>
+    /* 📱 МЕНЮ — фиксированное, видно везде + эстетичное */
+    @media (max-width: 768px) {
+                #mainNav.mobile-open {
+            display: flex !important;
+            position: fixed !important;
+            top: 68px;
+            left: 10px;
+            width: 240px !important;
+            max-width: calc(100vw - 20px);
+            margin: 0 !important;
+            padding: 10px !important;
+            background: linear-gradient(160deg, rgba(37,99,235,0.98) 0%, rgba(30,64,175,0.98) 100%);
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9998;
+            gap: 5px !important;
+            max-height: 75vh;
+            overflow-y: auto;
+            animation: menuPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes menuPop {
+            0%   { opacity: 0; transform: translateY(-15px) scale(0.92); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        #mainNav.mobile-open a {
+            font-size: 0.92rem !important;
+            padding: 11px 16px !important;
+            background: rgba(255,255,255,0.1) !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.3px;
+            box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
+        #mainNav.mobile-open a:active {
+            transform: scale(0.97);
+            background: rgba(255,255,255,0.25) !important;
+        }
+    }
+
+    /* 💡 Подсказка про свайп (слева сверху, с фейерверком) */
+    #swipeHint {
+        position: fixed;
+        top: 120px;
+        left: 16px;
+        transform: translateX(-120%);
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        padding: 0.7rem 1.2rem;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+        display: flex !important;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    #swipeHint.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .swipe-arrow {
+        display: inline-block;
+        animation: arrowMove 1s ease-in-out infinite;
+        font-size: 1.2rem;
+    }
+    @keyframes arrowMove {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(6px); }
+    }
+    /* 🎊 СУПЕР-КОНФЕТТИ (полноэкранное) */
+    .confetti-piece {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        top: -20px;
+        z-index: 99999;
+        pointer-events: none;
+        opacity: 0;
+    }
+    @keyframes confettiFall {
+        0% {
+            opacity: 1;
+            transform: translateY(0) rotate(0deg) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(110vh) rotate(720deg) scale(0.5);
+        }
+    }
+
+    /* 🎉 Большой текст "УРА!" */
+    #welcomeBurst {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        z-index: 99998;
+        font-size: 4rem;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 30px rgba(37,99,235,0.9), 0 4px 20px rgba(0,0,0,0.4);
+        pointer-events: none;
+        text-align: center;
+        opacity: 0;
+    }
+    #welcomeBurst.show {
+        animation: burstPop 2s ease forwards;
+    }
+    @keyframes burstPop {
+        0%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+        20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        40%  { transform: translate(-50%, -50%) scale(1); }
+        80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); }
+    }
+    /* 🎆 Фейерверк — частицы */
+    .firework {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0;
+    }
+    @keyframes fireworkFly {
+        0% { opacity: 1; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0.3); }
+    }
+
+    /* 🖥 На ПК подсказку не показываем */
+    @media (min-width: 769px) {
+        #swipeHint { display: none !important; }
+    }
+
+    /* Пульсация */
+    @keyframes pulse {
+        0%   { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6); }
+        70%  { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+    @keyframes pulseWhite {
+        0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9); }
+        70%  { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+    /* ⬆️ Кнопка Наверх */
+    #scrollTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        transition: all 0.3s ease;
+        animation: scrollBtnBounce 2s ease-in-out infinite;
+    }
+    #scrollTopBtn:hover {
+        transform: scale(1.1);
+    }
+    #scrollTopBtn:active {
+        transform: scale(0.9);
+    }
+    #scrollTopBtn.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    @keyframes scrollBtnBounce {
+        0%, 100% { box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+        50% { box-shadow: 0 6px 30px rgba(37, 99, 235, 0.9); }
+    }
+    /* ⬅️ Кнопка Назад */
+    #backBtn {
+        display: none !important;
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 9999;
+        padding: 10px 18px;
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        transition: all 0.2s;
+    }
+    #backBtn:active {
+        transform: scale(0.92);
+        background: var(--primary);
+        color: white;
+    }
+                    /* 🎉 ПОЛНОЭКРАННОЕ УВЕДОМЛЕНИЕ */
+#fullscreenNotify {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(37,99,235,0.97), rgba(30,64,175,0.97));
+    z-index: 99997;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+#fullscreenNotify.show { display: flex; }
+#fullscreenNotify .notify-icon { font-size: 6rem; margin-bottom: 1rem; }
+#fullscreenNotify .notify-title {
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    color: white; font-weight: 900; margin-bottom: 1rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+#fullscreenNotify .notify-text {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 2rem; max-width: 600px; line-height: 1.5;
+}
+#fullscreenNotify .notify-btn {
+    background: white; color: #2563eb; border: none;
+    padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700;
+    border-radius: 50px; cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+                    /* 📱 ФИКС поздравительного окна на телефоне */
+@media (max-width: 768px) {
+    #congratsModal {
+        align-items: flex-start !important;
+        padding: 10px !important;
+    }
+    #congratsModal .modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 10px auto !important;
+        padding: 1.5rem 1rem !important;
+        max-height: 95vh !important;
+        overflow-y: auto !important;
+    }
+    #congratsModal h2 {
+        font-size: 1.3rem !important;
+        line-height: 1.3 !important;
+    }
+    #congratsModal p {
+        font-size: 0.9rem !important;
+    }
+    #congratsModal input {
+        font-size: 1rem !important;
+        padding: 0.8rem !important;
+    }
+    /* Убираем большие декоративные эмодзи по углам (они вылезают) */
+    #congratsModal .modal-content > div[style*="position: absolute"] {
+        font-size: 3rem !important;
+        opacity: 0.1 !important;
+    }
+}
+                    /* 🎨 КРАСИВАЯ АНИМАЦИЯ КАРТОЧЕК ТОВАРОВ */
+
+/* Карточки появляются плавно по очереди */
+#productGrid .card,
+#verifiedProductGrid .card {
+    animation: cardAppear 0.5s ease backwards;
+}
+#productGrid .card:nth-child(1), #verifiedProductGrid .card:nth-child(1) { animation-delay: 0.05s; }
+#productGrid .card:nth-child(2), #verifiedProductGrid .card:nth-child(2) { animation-delay: 0.1s; }
+#productGrid .card:nth-child(3), #verifiedProductGrid .card:nth-child(3) { animation-delay: 0.15s; }
+#productGrid .card:nth-child(4), #verifiedProductGrid .card:nth-child(4) { animation-delay: 0.2s; }
+#productGrid .card:nth-child(5), #verifiedProductGrid .card:nth-child(5) { animation-delay: 0.25s; }
+#productGrid .card:nth-child(6), #verifiedProductGrid .card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes cardAppear {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Картинка "оживает" при наведении */
+#productGrid .card .verified-image img,
+#verifiedProductGrid .card .verified-image img {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+#productGrid .card:hover .verified-image img,
+#verifiedProductGrid .card:hover .verified-image img {
+    transform: scale(1.12);
+}
+
+/* На телефоне — реакция на нажатие */
+@media (max-width: 768px) {
+    #productGrid .card:active,
+    #verifiedProductGrid .card:active {
+        transform: scale(0.97);
+    }
+}
+</style>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon" style="background: #2563eb; padding: 4px;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#ff3300">
+                        <path d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+                    </svg>
+                </div>
+                <span>Честный Отзыв</span>
+            </div>
+            <!-- 🇷🇺 Народный проект (только на телефоне) -->
+            <div class="folk-project">
+                <div class="flag-ru">
+                    <span class="flag-stripe white"></span>
+                    <span class="flag-stripe blue"></span>
+                    <span class="flag-stripe red"></span>
+                </div>
+                <span class="folk-text">Народный проект<br>Оздоровления нации</span>
+            </div>
+            <!-- 🍔 Кнопка бургер (видна только на телефоне) -->
+            <button class="burger-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="mainNav">
+                <a onclick="showSection('verified'); closeMobileMenu()">Каталог</a>
+                <a onclick="openPartnerModal(); closeMobileMenu()">Сотрудничество</a>
+                <a onclick="showSection('about-page'); closeMobileMenu()">О проекте</a>
+                <a id="adminNavLink" onclick="showSection('admin'); closeMobileMenu()" style="display: none;">Админ</a>
+            </nav>
+            <div class="auth-buttons"></div>
+        </div>
+    </header>
+    <!-- 🖥️ Умная панель быстрой навигации (ПК) -->
+    <div id="quickNav">
+        <button onclick="showSection('verified')" title="Каталог">🏠</button>
+        <button onclick="openPartnerModal()" title="Сотрудничество">🤝</button>
+        <button onclick="scrollToTop()" title="Наверх">⬆️</button>
+    </div>
+
+    <!-- Плавающая кнопка Сотрудничество -->
+    <button onclick="openPartnerModal()" id="partnerFloatBtn" style="
+    position: absolute;
+    top: 372px;
+    right: max(20px, calc((100vw - 1200px) / 2 + 32px));
+    z-index: 90;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulse 1.8s infinite;
+    transition: transform 0.2s;
+" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff3300">
+        <path d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+    </svg>
+    Сотрудничество
+</button>
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- 🛍 ГЛАВНАЯ = КАТАЛОГ -->
+        <section id="verified" class="section active">
+            <div style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: #fff; border-radius: 20px; padding: 1.8rem 1.2rem; text-align: center; margin-bottom: 1.8rem;">
+                <div class="desktop-only-title" style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 0.6rem;">🇷🇺 Народный проект Оздоровления нации</div>
+                <h1 style="color: #fff; font-size: 1.8rem; line-height: 1.25; margin: 0 0 0.8rem;">Качественные товары российских производителей</h1>
+                <p style="color: rgba(255,255,255,0.95); max-width: 640px; margin: 0 auto 1.2rem; font-size: 1.05rem;">
+                    Мы сами приезжаем на производство, снимаем репортаж и подтверждаем качество. Выбирайте лучшее — поддерживайте своё.
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a class="btn btn-secondary" href="https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8" target="_blank" rel="noopener" style="text-decoration: none;">💬 Мы в MAX</a>
+                    <a class="btn btn-secondary" href="https://vk.ru/club225906966" target="_blank" rel="noopener" style="text-decoration: none;">🔵 Мы ВКонтакте</a>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            </div>
+            <div id="verifiedCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
+            <div class="grid grid-3" id="verifiedProductGrid">
+                <!-- Товары добавляются сюда -->
+            </div>
+
+            <!-- 🎠 КАРУСЕЛЬ БЛОГГЕРОВ И АМБАССАДОРОВ -->
+            <div class="bloggers-section" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: 20px; padding: 1.5rem 0.5rem 0.5rem;">
+                <h2 class="bloggers-title" style="color: #fff;">⭐ Наши Амбассадоры</h2>
+                <div class="bloggers-carousel" id="bloggersCarousel">
+                    <!-- Блоггеры добавляются сюда -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 🛍 СТРАНИЦА ОДНОГО ТОВАРА -->
+        <section id="product-page" class="section" style="display: none;">
+            <div class="container">
+                <button class="btn btn-secondary mb-3" onclick="goBack()">⬅️ Назад к каталогу</button>
+                <div id="productPageContent"></div>
+            </div>
+        </section>
+
+        <!-- ℹ️ О ПРОЕКТЕ -->
+        <section id="about-page" class="section" style="display: none;">
+            <div class="container">
+                <button class="btn btn-secondary mb-3" onclick="goBack()">⬅️ Назад</button>
+                <div class="legal-content card">
+                    <h2>🇷🇺 О проекте «Честный Отзыв»</h2>
+                    <h3>Что мы делаем</h3>
+                    <p>Мы находим российских производителей, приезжаем к ним, снимаем репортаж о том, как и из чего делается продукт, и публикуем товары в этом каталоге. Главное, что мы показываем, — видео с места: вы сами видите, откуда берётся товар.</p>
+                    <h3>Как купить</h3>
+                    <p>Мы сами ничего не продаём. Кнопки «Ozon» и «WB» ведут на страницу товара на маркетплейсе, где вы оформляете заказ.</p>
+                    <h3>Ваши данные</h3>
+                    <p>Для просмотра каталога регистрация не нужна. Сайт не собирает ваши имя, телефон и e-mail. Если вы напишете нам в MAX или ВКонтакте, переписка проходит внутри этих сервисов по их правилам.</p>
+                    <h3>Важно знать</h3>
+                    <div class="legal-warn"><strong>⚠️</strong> Информация на сайте носит ознакомительный характер и не является медицинской рекомендацией. БАДы не являются лекарственным средством — перед применением проконсультируйтесь со специалистом. Отметка «Проверено» отражает мнение авторов проекта по итогам визита на производство и не заменяет сертификацию.</div>
+                    <h3>Связаться с нами</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a class="btn btn-primary" href="https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8" target="_blank" rel="noopener" style="text-decoration: none;">💬 Написать в MAX</a>
+                        <a class="btn btn-secondary" href="https://vk.ru/club225906966" target="_blank" rel="noopener" style="text-decoration: none;">🔵 ВКонтакте</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⚙️ АДМИН-ПАНЕЛЬ (виден только администратору) -->
+        <section id="admin" class="section">
+            <h1 style="margin-bottom: 2rem;">⚙️ Админ панель</h1>
+
+            <div id="adminNotification" class="alert alert-info">
+                <span>Только администраторы могут получить доступ к этому разделу</span>
+            </div>
+
+            <div id="adminContent" style="display: none;">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchAdminTab('verified')">Проверенные товары</button>
+                    <button class="tab" onclick="switchAdminTab('bloggers')">🎬 Блоггеры</button>
+                </div>
+
+                <!-- Verified Products Tab -->
+                <div id="verified-admin" class="tab-content active">
+                    <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
+                    <div class="card">
+                        <h3 class="card-title mb-2">Проверенные товары</h3>
+                        <div id="adminVerifiedProductsList">
+                            <p class="text-muted">Нет проверенных товаров</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloggers Tab -->
+                <div id="bloggers-admin" class="tab-content">
+                    <button class="btn btn-primary mb-2" onclick="toggleAddBloggerModal()">+ Добавить блоггера</button>
+                    <div class="card">
+                        <h3 class="card-title mb-2">🎬 Блоггеры на главной</h3>
+                        <button class="btn btn-primary btn-small" style="margin-bottom:12px;" onclick="fixBloggersOrder()">🔧 Исправить порядок</button>
+                        <div id="adminBloggersList">
+                            <p class="text-muted">Нет блоггеров</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Blogger Modal -->
+<div id="addBloggerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">🎬 Добавить блоггера</h2>
+            <button class="close-btn" onclick="toggleAddBloggerModal()">×</button>
+        </div>
+        <form onsubmit="handleAddBlogger(event)">
+            <div class="form-group">
+                <label>Имя блоггера</label>
+                <input type="text" id="bloggerName" placeholder="Например: Иван Петров" required>
+            </div>
+            <div class="form-group">
+                <label>Роль / Платформа</label>
+                <input type="text" id="bloggerRole" placeholder="Например: YouTube канал" required>
+            </div>
+            <div class="form-group">
+                <label>Ссылка на канал/блог</label>
+                <input type="url" id="bloggerLink" placeholder="https://youtube.com/..." required>
+            </div>
+            <div class="form-group">
+                <label>Фото блоггера</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="bloggerPhoto" accept="image/*" required>
+                    <label for="bloggerPhoto" class="file-input-label">
+                        📸 Нажмите для загрузки фото
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+        </form>
+    </div>
+</div>
+    <!-- Edit Blogger Modal -->
+    <div class="modal" id="editBloggerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleEditBloggerModal()">×</button>
+            <h2 class="modal-title">✏️ Редактировать блоггера</h2>
+            <form onsubmit="handleEditBlogger(event)">
+                <input type="hidden" id="editBloggerId">
+                <div class="form-group">
+                    <label class="form-label">Имя / Никнейм</label>
+                    <input type="text" id="editBloggerName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Описание / Роль</label>
+                    <input type="text" id="editBloggerRole" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ссылка на обзор</label>
+                    <input type="url" id="editBloggerLink" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Новое фото (оставь пустым — не менять)</label>
+                    <input type="file" id="editBloggerPhoto" class="form-input" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">💾 Сохранить</button>
+            </form>
+        </div>
+    </div>
+    <!-- Add Verified Product Modal -->
+    <div id="addVerifiedProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить проверенный товар</h2>
+                <button class="close-btn" onclick="toggleAddVerifiedProductModal()">×</button>
+            </div>
+           <form onsubmit="handleAddVerifiedProduct(event)">
+    <div class="form-group">
+        <label>Название товара</label>
+        <input type="text" id="verifiedProductName">
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea id="verifiedProductDescription"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Категория (пишите любую)</label>
+        <input type="text" id="verifiedProductCategory" placeholder="Например: Электроника, Игрушки...">
+    </div>
+    <div class="form-group">
+        <label>Цена ($)</label>
+        <input type="number" id="verifiedProductPrice" step="0.01">
+    </div>
+    <div class="form-group">
+        <label>Остаток на складе (шт.)</label>
+        <input type="number" id="verifiedProductStock" min="0">
+    </div>
+    <div class="form-group">
+        <label>🟦 Ссылка на Ozon (необязательно)</label>
+        <input type="url" id="verifiedProductOzon" placeholder="https://ozon.ru/...">
+    </div>
+    <div class="form-group">
+        <label>🟪 Ссылка на Wildberries (необязательно)</label>
+        <input type="url" id="verifiedProductWb" placeholder="https://wildberries.ru/...">
+    </div>
+                <div class="form-group">
+    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+    <input type="url" id="verifiedProductVideo" placeholder="https://youtube.com/...">
+</div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="verifiedProductImage" accept="image/*">
+                        <label for="verifiedProductImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Verified Product Modal -->
+    <div id="editVerifiedProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактировать проверенный товар</h2>
+                <button class="close-btn" onclick="closeEditVerifiedProductModal()">×</button>
+            </div>
+            <form onsubmit="handleEditVerifiedProduct(event)">
+                <input type="hidden" id="editVerifiedProductId">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" id="editVerifiedProductName" >
+                </div>
+                                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="editVerifiedProductDescription"></textarea>
+                </div>
+                                               <div class="form-group">
+                    <label>Категория (пишите любую)</label>
+                    <input type="text" id="editVerifiedProductCategory" placeholder="Например: Электроника, Игрушки...">
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе (шт.)</label>
+                    <input type="number" id="editVerifiedProductStock" min="0">
+                </div>
+<div class="form-group">
+    <label>💲 Цена (необязательно)</label>
+    <input type="number" id="editVerifiedProductPrice" step="0.01">
+</div>
+<div class="form-group">
+    <label>🟦 Ссылка на Ozon (необязательно)</label>
+    <input type="url" id="editVerifiedProductOzon" placeholder="https://ozon.ru/...">
+</div>
+<div class="form-group">
+    <label>🟪 Ссылка на Wildberries (необязательно)</label>
+    <input type="url" id="editVerifiedProductWb" placeholder="https://wildberries.ru/...">
+</div>
+                                <div class="form-group">
+                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
+                    <input type="url" id="editVerifiedProductVideo" placeholder="https://youtube.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Изображение товара</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="editVerifiedProductImage" accept="image/*">
+                        <label for="editVerifiedProductImage" class="file-input-label">
+                            📸 Нажмите для загрузки изображения
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
+            </form>
+        </div>
+    </div>
+    <!-- 🤝 Сотрудничество: без форм и без сбора данных — пишут нам сами -->
+    <div id="partnerModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff3300" style="vertical-align: middle;">
+                        <path d="M12 2l2.9 6.9 7.1.5-5.4 4.6 1.7 7-6.3-4-6.3 4 1.7-7L2 9.4l7.1-.5z"/>
+                    </svg>
+                    Сотрудничество
+                </h2>
+                <button class="close-btn" onclick="closePartnerModal()">×</button>
+            </div>
+            <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text);">
+                🤝 Вы <strong>производитель</strong> или <strong>блоггер</strong>? Напишите нам в удобном мессенджере — расскажем, как попасть в каталог.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a class="btn btn-primary" href="https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8" target="_blank" rel="noopener" style="text-decoration: none; font-size: 1.05rem; padding: 1rem;">💬 Написать в MAX</a>
+                <a class="btn btn-secondary" href="https://vk.ru/club225906966" target="_blank" rel="noopener" style="text-decoration: none; font-size: 1.05rem; padding: 1rem;">🔵 Написать ВКонтакте</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔑 Вход для администратора -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Вход для администратора</h2>
+                <button class="close-btn" onclick="toggleLoginModal()">×</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div style="position: relative;">
+                        <input type="password" id="loginPassword" required style="padding-right: 45px;">
+                        <span onclick="togglePassword('loginPassword', this)"
+                              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.3rem; user-select: none;">👁️</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                <button type="button" onclick="handleResetPassword()" style="background: none; border: none; color: #888; cursor: pointer; text-decoration: underline; margin-top: 10px;">
+                    Забыли пароль?
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    /* Нижняя панель на телефоне: общее правило "nav" ставило кнопки в столбик */
+    @media (max-width: 768px) {
+        #bottomNav { flex-direction: row !important; gap: 0 !important; margin-top: 0 !important; }
+        #bottomNav .bottom-nav-item .bn-label { white-space: nowrap; }
+        main { padding-bottom: 5.5rem; }
+        .folk-project { background: rgba(255,255,255,0.92); border-radius: 12px; padding: 4px 10px; }
+    }
+    </style>
+    <!-- 📱 НИЖНЕЕ МЕНЮ-НАВИГАЦИЯ (только телефон) -->
+    <nav id="bottomNav">
+        <button class="bottom-nav-item" data-section="verified" onclick="bottomNavGo('verified')">
+            <span class="bn-icon">🏠</span>
+            <span class="bn-label">Каталог</span>
+        </button>
+        <button class="bottom-nav-item" onclick="openPartnerModal()">
+            <span class="bn-icon">🤝</span>
+            <span class="bn-label">Сотрудничество</span>
+        </button>
+        <button class="bottom-nav-item" onclick="openLink('max')">
+            <span class="bn-icon">💬</span>
+            <span class="bn-label">MAX</span>
+        </button>
+        <button class="bottom-nav-item" onclick="openLink('vk')">
+            <span class="bn-icon">🔵</span>
+            <span class="bn-label">ВКонтакте</span>
+        </button>
+    </nav>
+    <!-- Footer -->
+    <footer>
+        <div style="max-width:1200px; margin:0 auto;">
+            <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:16px;">
+                <a onclick="showSection('about-page')" style="color:rgba(255,255,255,0.9); cursor:pointer; text-decoration:underline; font-size:0.85rem;">ℹ️ О проекте</a>
+                <a href="https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.9); text-decoration:underline; font-size:0.85rem;">💬 MAX</a>
+                <a href="https://vk.ru/club225906966" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.9); text-decoration:underline; font-size:0.85rem;">🔵 ВКонтакте</a>
+            </div>
+            <p style="font-size:0.85rem; opacity:0.8;">&copy; 2026 Честный Отзыв. Все права защищены.</p>
+            <p style="font-size:0.75rem; opacity:0.6; margin-top:8px;">Мы не продавец: покупка проходит на Ozon и Wildberries.</p>
+            <p style="font-size:0.7rem; opacity:0.35; margin-top:10px;"><a onclick="toggleLoginModal()" style="color:#fff; cursor:pointer;">Вход для администратора</a></p>
+        </div>
+    </footer>
+
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+            apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
+            authDomain: "saintmarketology.firebaseapp.com",
+            projectId: "saintmarketology",
+            storageBucket: "saintmarketology.firebasestorage.app",
+            messagingSenderId: "1098681326401",
+            appId: "1:1098681326401:web:3a28423a30b92be88d1fc0",
+            measurementId: "G-S52HDR9550"
+        };
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+window.db = db;
+
+// ───────── Данные ─────────
+window.currentUser = null;          // заполняется только для администратора
+window.verifiedProducts = [];
+window.bloggers = [];
+window.activeVerifiedCategory = 'all';
+window.navHistory = [];
+
+const LINKS = {
+    max: 'https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8',
+    vk: 'https://vk.ru/club225906966'
+};
+window.openLink = (key) => window.open(LINKS[key], '_blank', 'noopener');
+
+// ───────── Загрузчик ─────────
+let loaderHidden = false;
+function hideLoader() {
+    if (loaderHidden) return;
+    loaderHidden = true;
+    const loader = document.getElementById('appLoader');
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 500);
+    }
+}
+setTimeout(hideLoader, 2000);
+
+// ───────── Блоггеры (перенесено без изменений) ─────────
+              window.renderBloggers = function() {
+            const carousel = document.getElementById('bloggersCarousel');
+            if (!carousel) return;
+            if (window.bloggers.length === 0) {
+                carousel.innerHTML = '<p class="text-muted" style="margin:0 auto;">Блоггеры скоро появятся ⭐</p>';
+                return;
+            }
+            // Сортируем по порядку
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            carousel.innerHTML = sorted.map(b => `
+                <a href="${b.link}" target="_blank" rel="noopener" class="blogger-card">
+                    <img src="${b.photo}" alt="${b.name}" class="blogger-photo">
+                    <div class="blogger-info">
+                        <div class="blogger-name">${b.name}</div>
+                        <div class="blogger-role">${b.role}</div>
+                        <span class="blogger-btn">▶️ Смотреть обзор</span>
+                    </div>
+                </a>
+            `).join('');
+        };
+
+// ───────── Подписки на базу: только то, что видят посетители ─────────
+onSnapshot(collection(db, "verifiedProducts"), (snapshot) => {
+    window.verifiedProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderVerifiedProducts();
+    updateAdmin();
+    hideLoader();
+}, (err) => { console.error('verifiedProducts:', err); hideLoader(); });
+
+onSnapshot(collection(db, "bloggers"), (snapshot) => {
+    window.bloggers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderBloggers();
+    renderAdminBloggers();
+}, (err) => console.error('bloggers:', err));
+
+// ───────── Вход администратора ─────────
+async function resolveAdmin(authUser) {
+    if (!authUser) return null;
+    let snap = await getDocs(query(collection(db, "users"), where("authUid", "==", authUser.uid)));
+    if (snap.empty && authUser.email) {
+        snap = await getDocs(query(collection(db, "users"), where("email", "==", authUser.email)));
+    }
+    if (snap.empty) return null;
+    const d = snap.docs[0];
+    return { id: d.id, ...d.data() };
+}
+
+onAuthStateChanged(auth, async (authUser) => {
+    let user = null;
+    try { user = await resolveAdmin(authUser); } catch (e) { console.error('auth:', e); }
+    window.currentUser = (user && user.role === 'admin') ? user : null;
+    updateHeader();
+    updateAdmin();
+    const adminOpen = document.getElementById('admin').classList.contains('active');
+    if (!window.currentUser && adminOpen) showSection('verified');
+});
+
+window.handleLogin = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const user = await resolveAdmin(cred.user);
+        if (!user || user.role !== 'admin') {
+            await signOut(auth);
+            showErrorMessage('Вход только для администратора');
+            return;
+        }
+        window.currentUser = user;
+        toggleLoginModal();
+        updateHeader();
+        updateAdmin();
+        showSection('admin');
+        showSuccessMessage('Вы вошли как администратор');
+        document.querySelector('#loginModal form').reset();
+    } catch (error) {
+        console.error('Ошибка входа:', error);
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+            showErrorMessage('❌ Неверный email или пароль');
+        } else if (error.code === 'auth/user-not-found') {
+            showErrorMessage('❌ Пользователь не найден');
+        } else {
+            showErrorMessage('Ошибка: ' + error.message);
+        }
+    }
+};
+
+window.handleResetPassword = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) { showErrorMessage('Введите email'); return; }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showSuccessMessage('Письмо для сброса пароля отправлено');
+    } catch (err) {
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+
+window.logout = async function() {
+    try { await signOut(auth); } catch (e) { console.error(e); }
+    window.currentUser = null;
+    updateHeader();
+    showSection('verified');
+    showSuccessMessage('Вы вышли');
+};
+
+window.togglePassword = function(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';      // показываем пароль
+        icon.textContent = '🙈';  // меняем значок
+    } else {
+        input.type = 'password';  // скрываем пароль
+        icon.textContent = '👁️';  // возвращаем значок
+    }
+};
+
+// ───────── Каталог ─────────
+function compressImage(file) {
+    return new Promise((resolve) => {
+        if (!file) { resolve(null); return; }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const MAX = 800;
+                if (w > h && w > MAX) { h = h * (MAX / w); w = MAX; }
+                else if (h > MAX) { w = w * (MAX / h); h = MAX; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+window.renderVerifiedProducts = function() {
+    const grid = document.getElementById('verifiedProductGrid');
+    if (!grid) return;
+    const searchEl = document.getElementById('verifiedSearchInput');
+    const search = searchEl ? searchEl.value.toLowerCase() : '';
+
+    renderCategoryButtons();
+
+    const filtered = window.verifiedProducts.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const matchSearch = name.includes(search) || desc.includes(search);
+        const matchCat = window.activeVerifiedCategory === 'all' || p.category === window.activeVerifiedCategory;
+        return matchSearch && matchCat;
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">Товаров не найдено</p>';
+        return;
+    }
+
+    grid.innerHTML = filtered.map(p => {
+        const ozon = p.ozonLink || '';
+        const wb = p.wbLink || '';
+        const oldUrl = (!ozon && !wb && p.url) ? p.url : '';
+
+        let buttons = '';
+        if (p.videoUrl) buttons += `<a href="${p.videoUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">▶️ Репортаж</a>`;
+        if (ozon) buttons += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon btn-small" style="text-decoration:none;">🟦 Ozon</a>`;
+        if (wb) buttons += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb btn-small" style="text-decoration:none;">🟪 WB</a>`;
+        if (oldUrl) buttons += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>`;
+        if (!buttons) buttons = `<span class="text-muted" style="font-size:0.8rem;">Ссылка скоро будет</span>`;
+
+        return `
+        <div class="card position-relative">
+            <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}')">${p.image ? `<img src="${p.image}">` : '✅'}</div>
+            <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}')">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
+            ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
+            <div class="card-footer" style="display:flex; gap:6px; flex-wrap:wrap;">
+                ${buttons}
+            </div>
+        </div>`;
+    }).join('');
+};
+
+window.renderCategoryButtons = function() {
+    const container = document.getElementById('verifiedCategoryFilter');
+    if (!container) return;
+    const activeCat = window.activeVerifiedCategory;
+    const categories = [...new Set(window.verifiedProducts.map(p => p.category).filter(c => c && c.trim()))];
+
+    let html = `<button class="cat-filter-btn ${activeCat === 'all' ? 'active' : ''}" onclick="setCategory('verified', 'all')">Все</button>`;
+    html += categories.map(cat =>
+        `<button class="cat-filter-btn ${activeCat === cat ? 'active' : ''}" onclick="setCategory('verified', '${cat.replace(/'/g, "\\'")}')">🏷️ ${cat}</button>`
+    ).join('');
+    container.innerHTML = html;
+};
+
+window.setCategory = function(type, cat) {
+    window.activeVerifiedCategory = cat;
+    renderVerifiedProducts();
+};
+
+// ───────── Страница товара ─────────
+window.openProductPage = function(productId) {
+    const product = window.verifiedProducts.find(p => p.id === productId);
+    if (!product) { showErrorMessage('Товар не найден'); return; }
+
+    const ozon = product.ozonLink || '';
+    const wb = product.wbLink || '';
+    const oldUrl = (!ozon && !wb && product.url) ? product.url : '';
+    let btns = '';
+    if (ozon) btns += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟦 Купить на Ozon</a>`;
+    if (wb) btns += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟪 Купить на WB</a>`;
+    if (oldUrl) btns += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">Купить →</a>`;
+    if (!btns) btns = `<span class="text-muted">Ссылка скоро будет добавлена</span>`;
+
+    let videoBlock = '';
+    if (product.videoUrl) {
+        const isYouTube = /youtu/i.test(product.videoUrl);
+        const vpnTip = isYouTube ? `
+                <div class="video-vpn-tip">
+                    <div style="font-size:2rem; margin-bottom:8px;">🎬</div>
+                    <p style="font-size:0.95rem; font-weight:600; margin:0 0 6px;">Может потребоваться VPN</p>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 14px; line-height:1.5;">Видео на YouTube. Если не открывается — включите VPN или расширение.</p>
+                    <div class="video-vpn-tip-arrow"></div>
+                </div>` : '';
+        videoBlock = `
+        <div class="card mt-3">
+            <h3 class="card-title mb-2">🎬 Репортаж с производства</h3>
+            <div style="position:relative; display:inline-block;" class="${isYouTube ? 'video-btn-wrap' : ''}">
+                <a href="${product.videoUrl}" target="_blank" rel="noopener" class="btn btn-primary video-trigger"
+                   style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">▶️ Смотреть репортаж</a>
+                ${vpnTip}
+            </div>
+        </div>`;
+    }
+
+    const imageHtml = product.image
+        ? `<img src="${product.image}" style="width:100%; max-height:400px; object-fit:contain; border-radius:16px;">`
+        : `<div style="height:300px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:5rem;">✅</div>`;
+
+    document.getElementById('productPageContent').innerHTML = `
+        <div class="grid grid-2" style="align-items:start;">
+            <div>${imageHtml}</div>
+            <div>
+                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'} <span class="verified-badge">Проверено</span></h1>
+                ${product.category ? `<span class="badge badge-primary" style="margin-bottom:0.5rem; display:inline-block;">🏷️ ${product.category}</span>` : ''}
+                ${product.price ? `<div style="font-size:2rem; font-weight:700; color:var(--primary); margin:0.5rem 0 1rem;">$${product.price}</div>` : ''}
+                <p class="card-content" style="font-size:1.05rem; margin-bottom:1.5rem;">${product.description || ''}</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">${btns}</div>
+            </div>
+        </div>
+        ${videoBlock}
+    `;
+    showSection('product-page');
+};
+
+// ───────── Навигация ─────────
+function activateSection(id) {
+    document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
+    const target = document.getElementById(id);
+    target.classList.add('active');
+    target.style.display = 'block';
+
+    document.querySelectorAll('#mainNav a').forEach(a => a.classList.remove('nav-active'));
+    const activeLink = document.querySelector(`#mainNav a[onclick*="'${id}'"]`);
+    if (activeLink) activeLink.classList.add('nav-active');
+
+    const partnerBtn = document.getElementById('partnerFloatBtn');
+    if (partnerBtn) partnerBtn.style.display = (id === 'verified') ? 'flex' : 'none';
+
+    updateBottomNav();
+    updateBackButton();
+}
+
+window.showSection = function(sectionId) {
+    if (sectionId === 'home') sectionId = 'verified';
+    if (sectionId === 'admin' && !(window.currentUser && window.currentUser.role === 'admin')) {
+        toggleLoginModal();
+        return;
+    }
+    const current = document.querySelector('.section.active');
+    if (current && current.id !== sectionId) {
+        window.navHistory.push(current.id);
+        if (window.navHistory.length > 30) window.navHistory.shift();
+    }
+    activateSection(sectionId);
+    if (sectionId === 'verified') renderVerifiedProducts();
+    if (sectionId === 'admin') updateAdmin();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.goBack = function() {
+    if (window.navHistory.length === 0) return;
+    const prev = window.navHistory.pop();
+    activateSection(prev);
+    if (prev === 'verified') renderVerifiedProducts();
+    if (prev === 'admin') updateAdmin();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.updateBackButton = function() {
+    const backBtn = document.getElementById('backBtn');
+    const active = document.querySelector('.section.active');
+    if (backBtn) {
+        backBtn.style.display = (active && active.id !== 'verified' && window.navHistory.length > 0) ? 'block' : 'none';
+    }
+};
+
+window.bottomNavGo = function(sectionId) { showSection(sectionId); };
+
+window.updateBottomNav = function() {
+    const active = document.querySelector('.section.active');
+    const id = active ? active.id : 'verified';
+    document.querySelectorAll('#bottomNav .bottom-nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === id);
+    });
+};
+
+window.scrollToTop = function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (navigator.vibrate) navigator.vibrate(20);
+};
+
+window.toggleMobileMenu = function() {
+    const nav = document.getElementById('mainNav');
+    const fixedBurger = document.getElementById('fixedBurger');
+    const overlay = document.getElementById('menuOverlay');
+    nav.classList.toggle('mobile-open');
+    fixedBurger.classList.toggle('open');
+    overlay.classList.toggle('active');
+    if (nav.classList.contains('mobile-open')) {
+        document.querySelector('header').classList.remove('header-hidden');
+    }
+};
+
+window.closeMobileMenu = function() {
+    document.getElementById('mainNav').classList.remove('mobile-open');
+    document.getElementById('fixedBurger').classList.remove('open');
+    document.getElementById('menuOverlay').classList.remove('active');
+};
+
+// 🔼🔽 Шапка прячется при прокрутке вниз и появляется при прокрутке вверх
+let lastScrollTop = 0;
+const headerEl = document.querySelector('header');
+window.addEventListener('scroll', () => {
+    const current = window.pageYOffset || document.documentElement.scrollTop;
+    const btn = document.getElementById('scrollTopBtn');
+    const quickNav = document.getElementById('quickNav');
+
+    if (btn) btn.classList.toggle('show', current > 400);
+
+    if (current < 100) {
+        headerEl.classList.remove('header-hidden');
+    } else if (current > lastScrollTop) {
+        headerEl.classList.add('header-hidden');
+    } else {
+        headerEl.classList.remove('header-hidden');
+    }
+
+    if (quickNav) {
+        if (current > 300 && current < lastScrollTop) quickNav.classList.add('show');
+        else if (current > lastScrollTop || current < 200) quickNav.classList.remove('show');
+    }
+    lastScrollTop = current;
+});
+
+// ───────── Шапка ─────────
+window.updateHeader = function() {
+    const authButtons = document.querySelector('.auth-buttons');
+    const adminNavLink = document.getElementById('adminNavLink');
+    const social = `
+        <button class="btn btn-secondary btn-small" onclick="openLink('max')">💬 MAX</button>
+        <button class="btn btn-secondary btn-small" onclick="openLink('vk')">🔵 ВК</button>`;
+    if (window.currentUser && window.currentUser.role === 'admin') {
+        authButtons.innerHTML = social + `<button class="btn btn-secondary btn-small" onclick="logout()">Выйти</button>`;
+        adminNavLink.style.display = 'block';
+    } else {
+        authButtons.innerHTML = social;
+        adminNavLink.style.display = 'none';
+    }
+};
+
+// ───────── Окна ─────────
+window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
+window.toggleAddVerifiedProductModal = () => document.getElementById('addVerifiedProductModal').classList.toggle('active');
+window.closeEditVerifiedProductModal = () => document.getElementById('editVerifiedProductModal').classList.remove('active');
+window.openPartnerModal = () => document.getElementById('partnerModal').classList.add('active');
+window.closePartnerModal = () => document.getElementById('partnerModal').classList.remove('active');
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList && e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+    }
+});
+
+// ───────── Админка ─────────
+window.updateAdmin = function() {
+    const isAdmin = !!(window.currentUser && window.currentUser.role === 'admin');
+    const note = document.getElementById('adminNotification');
+    const content = document.getElementById('adminContent');
+    if (note) note.style.display = isAdmin ? 'none' : 'block';
+    if (content) content.style.display = isAdmin ? 'block' : 'none';
+    if (!isAdmin) return;
+
+    const list = document.getElementById('adminVerifiedProductsList');
+    if (list) {
+        list.innerHTML = window.verifiedProducts.length === 0
+            ? '<p class="text-muted">Нет проверенных товаров</p>'
+            : window.verifiedProducts.map(p => `
+                <div class="card mb-2 flex-between">
+                    <div><h4 class="card-title">${p.name}</h4><p class="text-muted">Склад: ${p.stock ?? 0} | ${p.category || '—'}</p></div>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning btn-small" onclick="openEditVerifiedProductModal('${p.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteVerifiedProduct('${p.id}')">🗑️</button>
+                    </div>
+                </div>`).join('');
+    }
+    renderAdminBloggers();
+};
+
+window.switchAdminTab = (name) => {
+    document.querySelectorAll('#admin .tab, #admin .tab-content').forEach(x => x.classList.remove('active'));
+    const clickedTab = Array.from(document.querySelectorAll('#admin .tab')).find(t =>
+        t.getAttribute('onclick')?.includes(`'${name}'`)
+    );
+    if (clickedTab) clickedTab.classList.add('active');
+    const content = document.getElementById(name + '-admin');
+    if (content) content.classList.add('active');
+};
+
+               window.openEditVerifiedProductModal = (id) => {
+    const p = window.verifiedProducts.find(x => x.id === id);
+    document.getElementById('editVerifiedProductId').value = p.id;
+    document.getElementById('editVerifiedProductName').value = p.name || '';
+    document.getElementById('editVerifiedProductDescription').value = p.description || '';
+    document.getElementById('editVerifiedProductCategory').value = p.category || '';
+    document.getElementById('editVerifiedProductStock').value = p.stock ?? '';
+    document.getElementById('editVerifiedProductPrice').value = p.price ?? '';
+    // 🔗 Ссылки: если новых нет — подставляем старую url в Ozon (для совместимости)
+    document.getElementById('editVerifiedProductOzon').value = p.ozonLink || p.url || '';
+    document.getElementById('editVerifiedProductWb').value = p.wbLink || '';
+    document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
+    document.getElementById('editVerifiedProductModal').classList.add('active');
+};
+
+window.handleEditVerifiedProduct = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editVerifiedProductId').value;
+    const imageFile = document.getElementById('editVerifiedProductImage').files[0];
+    try {
+        // 🔓 Сохраняем только заполненные поля
+        const updateData = {};
+        
+       const name = document.getElementById('editVerifiedProductName').value.trim();
+const desc = document.getElementById('editVerifiedProductDescription').value.trim();
+const cat = document.getElementById('editVerifiedProductCategory').value.trim();
+const video = document.getElementById('editVerifiedProductVideo').value.trim();
+const stock = document.getElementById('editVerifiedProductStock').value;
+const price = document.getElementById('editVerifiedProductPrice').value;
+const ozon = document.getElementById('editVerifiedProductOzon').value.trim();
+const wb = document.getElementById('editVerifiedProductWb').value.trim();
+
+if (name) updateData.name = name;
+if (desc) updateData.description = desc;
+if (cat) updateData.category = cat;
+updateData.videoUrl = video || null;
+if (stock !== '') updateData.stock = parseInt(stock);
+if (price !== '') updateData.price = parseFloat(price);
+// Ссылки сохраняем всегда (даже пустые — чтобы можно было очистить)
+updateData.ozonLink = ozon;
+updateData.wbLink = wb;
+        
+        if (imageFile) updateData.image = await compressImage(imageFile);
+        
+        await updateDoc(doc(db, "verifiedProducts", id), updateData);
+        closeEditVerifiedProductModal();
+        showSuccessMessage('✅ Проверенный товар обновлён!');
+    } catch (err) {
+        console.error('❌ ОШИБКА:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+};
+     window.handleAddVerifiedProduct = async function(e) {
+    e.preventDefault();
+    const imageFile = document.getElementById('verifiedProductImage').files[0];
+
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                const MAX = 800;
+                if (w > h && w > MAX) { h = h * (MAX / w); w = MAX; }
+                else if (h > MAX) { w = w * (MAX / h); h = MAX; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                console.log('📦 Размер сжатой картинки:', compressed.length, 'байт');
+                await saveProduct(compressed);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        await saveProduct(null);
+    }
+
+    async function saveProduct(image) {
+        try {
+            console.log('1️⃣ Старт');
+           const priceVal = document.getElementById('verifiedProductPrice').value;
+const stockVal = document.getElementById('verifiedProductStock').value;
+const newProduct = {
+    name: document.getElementById('verifiedProductName').value.trim() || 'Без названия',
+    category: document.getElementById('verifiedProductCategory').value.trim() || '',
+    description: document.getElementById('verifiedProductDescription').value.trim() || '',
+    price: priceVal !== '' ? parseFloat(priceVal) : 0,
+    stock: stockVal !== '' ? parseInt(stockVal) : 0,
+    ozonLink: document.getElementById('verifiedProductOzon').value.trim() || '',
+    wbLink: document.getElementById('verifiedProductWb').value.trim() || '',
+    videoUrl: document.getElementById('verifiedProductVideo').value || null,
+    image: image,
+    rating: 0,
+    reviews: 0
+};
+            const docRef = await addDoc(collection(db, "verifiedProducts"), newProduct);
+            console.log('3️⃣ ✅ СОХРАНЕНО, ID:', docRef.id);
+            toggleAddVerifiedProductModal();
+            showSuccessMessage('Товар добавлен!');
+            document.querySelector('#addVerifiedProductModal form').reset();
+        } catch (err) {
+            console.error('❌ ОШИБКА:', err);
+            showErrorMessage('Ошибка: ' + err.message);
+        }
+    }
+};
+        window.deleteVerifiedProduct = async function(id) {
+    if (!confirm("Удалить проверенный товар?")) return;
+    try {
+        await deleteDoc(doc(db, "verifiedProducts", id));
+        showSuccessMessage('Товар удалён!');
+    } catch (err) {
+        console.error('❌ ОШИБКА удаления:', err);
+        showErrorMessage('Ошибка: ' + err.message);
+    }
+}
+
+        window.toggleAddBloggerModal = function() {
+            document.getElementById('addBloggerModal').classList.toggle('active');
+        };
+
+        window.handleAddBlogger = async function(e) {
+            e.preventDefault();
+            const photoFile = document.getElementById('bloggerPhoto').files[0];
+            const photo = await compressImage(photoFile);
+            try {
+                                await addDoc(collection(db, "bloggers"), {
+                    name: document.getElementById('bloggerName').value,
+                    role: document.getElementById('bloggerRole').value,
+                    link: document.getElementById('bloggerLink').value,
+                    photo: photo,
+                    order: window.bloggers.length,
+                    date: new Date().toLocaleString('ru-RU')
+                });
+                toggleAddBloggerModal();
+                showSuccessMessage('✅ Блоггер добавлен!');
+                document.querySelector('#addBloggerModal form').reset();
+            } catch (err) {
+                console.error('❌ Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+        window.deleteBlogger = async function(id) {
+            if (!confirm("Удалить этого блоггера?")) return;
+            try {
+                await deleteDoc(doc(db, "bloggers", id));
+                showSuccessMessage('Блоггер удалён!');
+            } catch (err) {
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+
+                window.renderAdminBloggers = function() {
+            const list = document.getElementById('adminBloggersList');
+            if (!list) return;
+            if (!window.bloggers || window.bloggers.length === 0) {
+                list.innerHTML = '<p class="text-muted">Нет блоггеров</p>';
+                return;
+            }
+            // Сортируем по порядку (order). Если нет — по дате
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            list.innerHTML = sorted.map((b, index) => `
+                <div class="card mb-2 flex-between">
+                    <div class="flex gap-2" style="align-items:center;">
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <button class="btn btn-small" 
+                                style="padding:4px 10px; background:var(--primary); color:white; ${index === 0 ? 'opacity:0.3; pointer-events:none;' : ''}"
+                                onclick="moveBlogger('${b.id}', 'up')" title="Поднять">⬆️</button>
+                            <button class="btn btn-small" 
+                                style="padding:4px 10px; background:var(--primary); color:white; ${index === sorted.length - 1 ? 'opacity:0.3; pointer-events:none;' : ''}"
+                                onclick="moveBlogger('${b.id}', 'down')" title="Опустить">⬇️</button>
+                        </div>
+                        <img src="${b.photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <h4 class="card-title">${b.name}</h4>
+                            <p class="text-muted">${b.role}</p>
+                        </div>
+                    </div>
+                                        <div style="display:flex; gap:6px;">
+                        <button class="btn btn-small" style="background:#3498db; color:white;" onclick="openEditBlogger('${b.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteBlogger('${b.id}')">🗑️</button>
+                    </div>
+            `).join('');
+        };
+
+                // ✏️ ОТКРЫТЬ РЕДАКТИРОВАНИЕ
+        window.toggleEditBloggerModal = function() {
+            document.getElementById('editBloggerModal').classList.toggle('active');
+        };
+
+        window.openEditBlogger = function(id) {
+            const blogger = window.bloggers.find(b => b.id === id);
+            if (!blogger) return;
+            document.getElementById('editBloggerId').value = blogger.id;
+            document.getElementById('editBloggerName').value = blogger.name;
+            document.getElementById('editBloggerRole').value = blogger.role;
+            document.getElementById('editBloggerLink').value = blogger.link;
+            document.getElementById('editBloggerPhoto').value = '';
+            toggleEditBloggerModal();
+        };
+
+        window.handleEditBlogger = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editBloggerId').value;
+            const updateData = {
+                name: document.getElementById('editBloggerName').value,
+                role: document.getElementById('editBloggerRole').value,
+                link: document.getElementById('editBloggerLink').value
+            };
+            // Если выбрали новое фото — обновляем
+            const photoFile = document.getElementById('editBloggerPhoto').files[0];
+            if (photoFile) {
+                updateData.photo = await compressImage(photoFile);
+            }
+            try {
+                await updateDoc(doc(db, "bloggers", id), updateData);
+                toggleEditBloggerModal();
+                showSuccessMessage('✅ Блоггер обновлён!');
+            } catch (err) {
+                console.error('❌ Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+        // 🔧 ИСПРАВИТЬ ПОРЯДОК (проставить order всем)
+        window.fixBloggersOrder = async function() {
+            try {
+                const sorted = [...window.bloggers].sort((a, b) => {
+                    const oa = a.order ?? 9999;
+                    const ob = b.order ?? 9999;
+                    return oa - ob;
+                });
+                for (let i = 0; i < sorted.length; i++) {
+                    await updateDoc(doc(db, "bloggers", sorted[i].id), { order: i });
+                }
+                showSuccessMessage('✅ Порядок исправлен! Теперь стрелки работают');
+            } catch (err) {
+                console.error('Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+        
+               // 🔼🔽 ПЕРЕМЕЩЕНИЕ БЛОГГЕРА
+        window.moveBlogger = async function(id, direction) {
+            // Сортируем по order
+            const sorted = [...window.bloggers].sort((a, b) => {
+                const oa = a.order ?? 9999;
+                const ob = b.order ?? 9999;
+                return oa - ob;
+            });
+            const index = sorted.findIndex(b => b.id === id);
+            if (index === -1) return;
+            const swapIndex = direction === 'up' ? index - 1 : index + 1;
+            if (swapIndex < 0 || swapIndex >= sorted.length) return;
+
+            const current = sorted[index];
+            const swap = sorted[swapIndex];
+
+            // Используем ИНДЕКСЫ как новый порядок (надёжно!)
+            try {
+                await updateDoc(doc(db, "bloggers", current.id), { order: swapIndex });
+                await updateDoc(doc(db, "bloggers", swap.id), { order: index });
+                showSuccessMessage('✅ Перемещено!');
+            } catch (err) {
+                console.error('Ошибка:', err);
+                showErrorMessage('Ошибка: ' + err.message);
+            }
+        };
+        
+
+// ───────── Сообщения «успех / ошибка» (перенесено без изменений) ─────────
+       window.showSuccessMessage = (msg) => {
+    const a = document.createElement('div');
+    a.textContent = msg;
+    a.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 2000;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 360px;
+        animation: slideInRight 0.4s ease, fadeOutToast 0.4s ease 2.6s;
+    `;
+    a.innerHTML = `<span style="font-size:1.3rem;">✅</span><span>${msg}</span>`;
+    document.body.appendChild(a);
+    setTimeout(() => a.remove(), 3000);
+};
+
+window.showErrorMessage = (msg) => {
+    const a = document.createElement('div');
+    a.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 2000;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 360px;
+        animation: slideInRight 0.4s ease, fadeOutToast 0.4s ease 2.6s;
+    `;
+    a.innerHTML = `<span style="font-size:1.3rem;">⚠️</span><span>${msg}</span>`;
+    document.body.appendChild(a);
+    setTimeout(() => a.remove(), 3000);
+};
+
+// ───────── Старт ─────────
+document.getElementById('verifiedSearchInput')?.addEventListener('input', renderVerifiedProducts);
+updateHeader();
+updateBottomNav();
+renderBloggers();
+
+    </script>
+    <script>
+        // 🧹 ВРЕМЕННО: отключаем Service Worker и чистим кэш
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.unregister());
+      console.log('🧹 Service Worker отключён');
+    });
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+      console.log('🧹 Кэш очищен');
+    }
+  }
+
+  // Проверка интернета
+  window.addEventListener('offline', () => {
+    if (window.showErrorMessage) showErrorMessage('📡 Интернет пропал');
+  });
+  window.addEventListener('online', () => {
+    if (window.showSuccessMessage) showSuccessMessage('✅ Интернет восстановлен!');
+  });
+  window.addEventListener('load', () => {
+    if (!navigator.onLine && window.showErrorMessage) {
+      showErrorMessage('📡 Нет интернета! Проверьте подключение');
+    }
+  });
+</script>
+    <!-- Кнопка установки приложения -->
+<button id="installBtn" style="
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    cursor: pointer;
+    animation: pulse 2s infinite;
+">
+    📲 Установить приложение
+</button>
+
+<style>
+@keyframes pulse {
+    0%   { transform: translateX(-50%) scale(1); }
+    50%  { transform: translateX(-50%) scale(1.05); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+    /* ════════ 🛠️ ФЭНШУЙ-АДМИНКА НА ТЕЛЕФОНЕ ════════ */
+@media (max-width: 768px) {
+    /* 📦 Карточки в админке — компактные плитки */
+    #admin .card {
+        padding: 0.8rem !important;
+        border-radius: 14px !important;
+        margin-bottom: 0.7rem !important;
+    }
+
+    /* Заголовки карточек-секций — с подложкой */
+    #admin .card > .card-title {
+        background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(37,99,235,0.08));
+        padding: 8px 12px;
+        border-radius: 10px;
+        margin: -0.3rem -0.3rem 0.8rem -0.3rem;
+        font-size: 0.95rem !important;
+    }
+
+    /* 🧩 Карточки списков (юзеры, товары, запросы) — компактнее */
+    #admin .card .card.mb-2 {
+        padding: 0.7rem !important;
+        margin-bottom: 0.6rem !important;
+        border-radius: 12px !important;
+        background: var(--surface) !important;
+        border: 1px solid var(--border);
+    }
+
+    /* Внутри карточки — flex в столбик, чтобы не сжималось */
+    #admin .card .card.flex-between {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px;
+    }
+
+    /* Кнопки действий — в ряд, на всю ширину */
+    #admin .action-buttons,
+    #admin .card-footer {
+        display: flex !important;
+        gap: 6px !important;
+        width: 100%;
+    }
+    #admin .action-buttons .btn,
+    #admin .card-footer .btn {
+        flex: 1;
+        font-size: 0.78rem !important;
+        padding: 8px 4px !important;
+        text-align: center;
+    }
+
+    /* Бейджи статусов — крупнее и читаемее */
+    #admin .request-status,
+    #admin .badge {
+        align-self: flex-start;
+        font-size: 0.72rem !important;
+    }
+
+    /* Имена/email в карточках — компактно */
+    #admin .card-title {
+        font-size: 0.9rem !important;
+        margin-bottom: 2px;
+    }
+    #admin .text-muted {
+        font-size: 0.78rem !important;
+    }
+
+    /* 📊 Статистика комиссий — 3 в ряд маленькие */
+    #admin .stats {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+    }
+    #admin .stats .stat-card {
+        padding: 0.7rem 0.4rem !important;
+    }
+    #admin .stats .stat-value {
+        font-size: 1.1rem !important;
+    }
+    #admin .stats .stat-label {
+        font-size: 0.58rem !important;
+    }
+
+    /* 🖼️ Картинки чеков/отзывов — рядом, мельче */
+    #admin .card img {
+        max-width: 80px !important;
+        border-radius: 8px;
+    }
+
+    /* Кнопка "+Добавить" — крупная, заметная */
+    #products-admin > .btn,
+    #verified-admin > .btn {
+        width: 100% !important;
+        padding: 12px !important;
+        font-size: 0.95rem !important;
+        border-radius: 14px !important;
+        margin-bottom: 1rem !important;
+        background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+        box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+    }
+
+    /* 📋 Список внутри карточки — добавим отступ */
+    #admin #usersList,
+    #admin #adminRequestsList,
+    #admin #adminProductsList,
+    #admin #adminVerifiedProductsList,
+    #admin #adminReviewsList,
+    #admin #adminCommissionsList,
+    #admin #adminPartnersList {
+        margin-top: 0.5rem;
+    }
+}
+    /* 🎠 КАРУСЕЛЬ БЛОГГЕРОВ */
+.bloggers-section {
+    margin: 3rem 0;
+}
+.bloggers-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+.bloggers-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 10px 16px 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.bloggers-carousel::-webkit-scrollbar {
+    display: none;
+}
+.blogger-card {
+    flex: 0 0 auto;
+    width: 200px;
+    scroll-snap-align: center;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+.blogger-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(37,99,235,0.25);
+}
+.blogger-photo {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+.blogger-info {
+    padding: 12px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    flex: 1; /* растягиваем на всю высоту */
+}
+.blogger-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text, #1a1a1a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.blogger-role {
+    font-size: 0.78rem;
+    color: var(--text-muted, #888);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* ФИКСИРОВАННАЯ высота — всегда место под 2 строки */
+    height: 2.1em;
+}
+.blogger-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    color: white;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 9px 8px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+    white-space: nowrap;
+    margin-top: auto; /* ПРИЖИМАЕМ КНОПКУ К НИЗУ! */
+}
+.blogger-card:hover .blogger-btn {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+}
+@keyframes bloggerBtnPulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(255, 0, 0, 0.4); }
+    50% { box-shadow: 0 4px 22px rgba(255, 0, 0, 0.8); }
+}
+/* Подсказка свайпа */
+.bloggers-hint {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    animation: swipeMove 1.5s ease-in-out infinite;
+}
+@media (max-width: 768px) {
+    .blogger-card { width: 160px; }
+    .blogger-photo { height: 200px; }
+    .bloggers-title { color: white !important; }
+    .bloggers-hint { color: rgba(255,255,255,0.8); }
+}
+</style>
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Ловим событие, когда установка доступна
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block'; // показываем кнопку
+    console.log('✅ Установка доступна — кнопка показана');
+});
+
+// Когда пользователь нажал кнопку
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('Результат установки:', outcome);
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// Когда приложение установлено — прячем кнопку
+window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+    console.log('🎉 Приложение установлено!');
+});
+</script>
+    <script>
+// 🎬 VPN тултип для видеообзора — через JS (работает с динамическим контентом)
+document.addEventListener('mouseover', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    const tip = wrap.querySelector('.video-vpn-tip');
+    if (tip) tip.style.display = 'block';
+});
+
+document.addEventListener('mouseout', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    // Проверяем — не уходим ли внутрь самого тултипа
+    if (!wrap.contains(e.relatedTarget)) {
+        const tip = wrap.querySelector('.video-vpn-tip');
+        if (tip) tip.style.display = 'none';
+    }
+});
+
+// 📱 На телефоне — тап по кнопке показывает тултип на 3 секунды
+document.addEventListener('touchstart', function(e) {
+    const wrap = e.target.closest('.video-btn-wrap');
+    if (!wrap) return;
+    const tip = wrap.querySelector('.video-vpn-tip');
+    if (!tip) return;
+    
+    e.preventDefault();
+    tip.style.display = 'block';
+    
+    setTimeout(() => {
+        tip.style.display = 'none';
+        // После закрытия тултипа — открываем ссылку
+        const link = wrap.querySelector('a[href]');
+        if (link) window.open(link.href, '_blank');
+    }, 3000);
+}, { passive: false });
+</script>
+</body>
+</html>
