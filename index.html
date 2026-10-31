@@ -3477,6 +3477,52 @@ main, .section, .card, .btn, button, a {
     }
 }
 </style>
+    <style>
+    /* ═══ Цифры в баннере ═══ */
+    .stat-box { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.3); border-radius: 14px; padding: 0.55rem 1.2rem; min-width: 120px; }
+    .stat-box b { display: block; font-size: 1.7rem; line-height: 1.1; color: #fff; }
+    .stat-box span { font-size: 0.8rem; color: rgba(255,255,255,0.9); }
+
+    /* ═══ ПК: сайт шире, фон не пустой ═══ */
+    @media (min-width: 1024px) {
+        .container { max-width: 1560px; }
+        .header-container { max-width: 1560px; }
+
+        body {
+            background:
+                radial-gradient(circle at 6% 10%,  rgba(37,99,235,0.20), transparent 34%),
+                radial-gradient(circle at 94% 14%, rgba(213,43,30,0.14), transparent 32%),
+                radial-gradient(circle at 10% 88%, rgba(0,57,166,0.16),  transparent 36%),
+                radial-gradient(circle at 92% 92%, rgba(37,99,235,0.18), transparent 38%),
+                linear-gradient(180deg, #eef4ff 0%, #ffffff 45%, #f1f5fd 100%);
+            background-attachment: fixed;
+        }
+        /* Лёгкий узор из звёзд по бокам */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.55;
+            background-image:
+                url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><path d='M30 22l3.6 8.4 9 .8-6.8 5.9 2 8.9-7.8-4.7-7.8 4.7 2-8.9-6.8-5.9 9-.8z' fill='%232563eb' fill-opacity='0.10'/><path d='M130 112l2.6 6 6.4.6-4.9 4.2 1.4 6.3-5.5-3.3-5.5 3.3 1.4-6.3-4.9-4.2 6.4-.6z' fill='%23d52b1e' fill-opacity='0.09'/><circle cx='110' cy='40' r='3' fill='%232563eb' fill-opacity='0.10'/><circle cx='50' cy='140' r='3' fill='%23d52b1e' fill-opacity='0.08'/></svg>");
+            background-size: 180px 180px;
+        }
+        /* Трёхцветные полосы по краям экрана */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; bottom: 0; left: 0; right: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                linear-gradient(180deg, #ffffff 0 33.3%, #0039a6 33.3% 66.6%, #d52b1e 66.6% 100%) left / 8px 100% no-repeat,
+                linear-gradient(180deg, #ffffff 0 33.3%, #0039a6 33.3% 66.6%, #d52b1e 66.6% 100%) right / 8px 100% no-repeat;
+        }
+    }
+    </style>
+
     <!-- Header -->
     <header>
         <div class="header-container">
@@ -3523,8 +3569,8 @@ main, .section, .card, .btn, button, a {
     <!-- Плавающая кнопка Сотрудничество -->
     <button onclick="openPartnerModal()" id="partnerFloatBtn" style="
     position: absolute;
-    top: 372px;
-    right: max(20px, calc((100vw - 1200px) / 2 + 32px));
+    top: 398px;
+    right: max(20px, calc((100vw - 1560px) / 2 + 32px));
     z-index: 90;
     background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
     color: white;
@@ -3557,14 +3603,22 @@ main, .section, .card, .btn, button, a {
                 <p style="color: rgba(255,255,255,0.95); max-width: 640px; margin: 0 auto 1.2rem; font-size: 1.05rem;">
                     Мы сами приезжаем на производство, снимаем репортаж и подтверждаем качество. Выбирайте лучшее — поддерживайте своё.
                 </p>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a class="btn btn-secondary" href="https://max.ru/u/f9LHodD0cOKn4NvdT9ebntfBv4W7qh_lgGDSj60RXYI1AqYz1oQt0tWw2k8" target="_blank" rel="noopener" style="text-decoration: none;">💬 Мы в MAX</a>
-                    <a class="btn btn-secondary" href="https://vk.ru/club225906966" target="_blank" rel="noopener" style="text-decoration: none;">🔵 Мы ВКонтакте</a>
+                <div id="statsStrip" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.1rem;">
+                    <div class="stat-box"><b id="statProducts">0</b><span>проверенных товаров</span></div>
+                    <div class="stat-box" id="statCategoriesBox"><b id="statCategories">0</b><span>категорий</span></div>
+                    <div class="stat-box" id="statReportsBox"><b id="statReports">0</b><span>репортажей с производств</span></div>
                 </div>
+                <button class="btn btn-secondary" onclick="randomProduct()" style="font-size: 1rem;">🎲 Удиви меня — случайный товар</button>
             </div>
 
-            <div style="margin-bottom: 1rem;">
-                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 1rem;">
+                <input type="text" id="verifiedSearchInput" placeholder="Поиск товаров..." style="max-width: 400px; flex: 1 1 240px;">
+                <select id="verifiedSort" onchange="renderVerifiedProducts()" style="max-width: 230px;">
+                    <option value="default">Сортировка: по умолчанию</option>
+                    <option value="video">Сначала с репортажем</option>
+                    <option value="name">По алфавиту</option>
+                </select>
+                <button class="btn btn-secondary btn-small" id="favToggle" onclick="toggleFavFilter()">🤍 Избранное</button>
             </div>
             <div id="verifiedCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
             <div class="grid grid-3" id="verifiedProductGrid">
@@ -3669,7 +3723,7 @@ main, .section, .card, .btn, button, a {
             </div>
             <div class="form-group">
                 <label>Ссылка на канал/блог</label>
-                <input type="url" id="bloggerLink" placeholder="https://youtube.com/..." required>
+                <input type="url" id="bloggerLink" placeholder="https://vk.ru/video... или https://youtube.com/..." required>
             </div>
             <div class="form-group">
                 <label>Фото блоггера</label>
@@ -3747,9 +3801,13 @@ main, .section, .card, .btn, button, a {
         <label>🟪 Ссылка на Wildberries (необязательно)</label>
         <input type="url" id="verifiedProductWb" placeholder="https://wildberries.ru/...">
     </div>
+    <div class="form-group">
+        <label>🌐 Сайт продавца (необязательно)</label>
+        <input type="url" id="verifiedProductSite" placeholder="https://сайт-производителя.рф">
+    </div>
                 <div class="form-group">
-    <label>🎬 Ссылка на видеообзор (необязательно)</label>
-    <input type="url" id="verifiedProductVideo" placeholder="https://youtube.com/...">
+    <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
+    <input type="url" id="verifiedProductVideo" placeholder="https://vk.ru/video... или https://youtube.com/...">
 </div>
                 <div class="form-group">
                     <label>Изображение товара</label>
@@ -3801,9 +3859,13 @@ main, .section, .card, .btn, button, a {
     <label>🟪 Ссылка на Wildberries (необязательно)</label>
     <input type="url" id="editVerifiedProductWb" placeholder="https://wildberries.ru/...">
 </div>
+    <div class="form-group">
+        <label>🌐 Сайт продавца (необязательно)</label>
+        <input type="url" id="editVerifiedProductSite" placeholder="https://сайт-производителя.рф">
+    </div>
                                 <div class="form-group">
-                    <label>🎬 Ссылка на видеообзор (необязательно)</label>
-                    <input type="url" id="editVerifiedProductVideo" placeholder="https://youtube.com/...">
+                    <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
+                    <input type="url" id="editVerifiedProductVideo" placeholder="https://vk.ru/video... или https://youtube.com/...">
                 </div>
                 <div class="form-group">
                     <label>Изображение товара</label>
@@ -3873,7 +3935,8 @@ main, .section, .card, .btn, button, a {
     @media (max-width: 768px) {
         #bottomNav { flex-direction: row !important; gap: 0 !important; margin-top: 0 !important; }
         #bottomNav .bottom-nav-item .bn-label { white-space: nowrap; }
-        main { padding-bottom: 5.5rem; }
+        main { padding-bottom: 2rem; }
+        footer { padding-bottom: 6rem; }
         .folk-project { background: rgba(255,255,255,0.92); border-radius: 12px; padding: 4px 10px; }
     }
     </style>
@@ -3906,7 +3969,7 @@ main, .section, .card, .btn, button, a {
             </div>
             <p style="font-size:0.85rem; opacity:0.8;">&copy; 2026 Честный Отзыв. Все права защищены.</p>
             <p style="font-size:0.75rem; opacity:0.6; margin-top:8px;">Мы не продавец: покупка проходит на Ozon и Wildberries.</p>
-            <p style="font-size:0.7rem; opacity:0.35; margin-top:10px;"><a onclick="toggleLoginModal()" style="color:#fff; cursor:pointer;">Вход для администратора</a></p>
+            <p style="font-size:0.85rem; opacity:0.8; margin-top:12px;"><a onclick="toggleLoginModal()" style="color:#fff; cursor:pointer; text-decoration:underline;">🔑 Вход для администратора</a></p>
         </div>
     </footer>
 
@@ -4102,7 +4165,62 @@ function compressImage(file) {
     });
 }
 
+// ❤️ Избранное: хранится только в браузере человека, ничего не отправляется
+try { window.favs = new Set(JSON.parse(localStorage.getItem('favs') || '[]')); } catch (e) { window.favs = new Set(); }
+window.onlyFavs = false;
+window.toggleFav = function(id, ev) {
+    if (ev) ev.stopPropagation();
+    if (window.favs.has(id)) window.favs.delete(id); else window.favs.add(id);
+    try { localStorage.setItem('favs', JSON.stringify([...window.favs])); } catch (e) {}
+    renderVerifiedProducts();
+};
+window.toggleFavFilter = function() {
+    window.onlyFavs = !window.onlyFavs;
+    const btn = document.getElementById('favToggle');
+    if (btn) btn.textContent = window.onlyFavs ? '❤️ Только избранное' : '🤍 Избранное';
+    renderVerifiedProducts();
+};
+window.shareProduct = async function(id) {
+    const p = window.verifiedProducts.find(x => x.id === id);
+    const url = location.origin + location.pathname;
+    const text = (p ? p.name + ' — ' : '') + 'проверено проектом «Честный Отзыв»';
+    try {
+        if (navigator.share) { await navigator.share({ title: 'Честный Отзыв', text: text, url: url }); return; }
+        await navigator.clipboard.writeText(text + ' ' + url);
+        showSuccessMessage('Ссылка скопирована');
+    } catch (e) { /* окно «Поделиться» закрыто */ }
+};
+
+window.catIcon = function(c) {
+    const t = (c || '').toLowerCase();
+    const map = [[/кофе|чай/, '☕'], [/мёд|мед/, '🍯'], [/бад|витамин|коллаген/, '💊'], [/куртк|одежд|плать|обув/, '👗'],
+                 [/декор|дизайн|интерьер/, '🎨'], [/падел|теннис|спорт/, '🎾'], [/кухн|посуд/, '🍳'], [/космет|крем|уход/, '💄']];
+    for (const [re, icon] of map) if (re.test(t)) return icon;
+    return '🏷️';
+};
+
+window.updateStats = function() {
+    const list = window.verifiedProducts;
+    const cats = new Set(list.map(p => (p.category || '').trim()).filter(Boolean));
+    const reports = list.filter(p => p.videoUrl).length;
+    const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+    set('statProducts', list.length);
+    set('statCategories', cats.size);
+    set('statReports', reports);
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+    show('statCategoriesBox', cats.size > 0);
+    show('statReportsBox', reports > 0);
+};
+
+window.randomProduct = function() {
+    const list = window.verifiedProducts;
+    if (!list.length) { showErrorMessage('Товаров пока нет'); return; }
+    const p = list[Math.floor(Math.random() * list.length)];
+    openProductPage(p.id);
+};
+
 window.renderVerifiedProducts = function() {
+    updateStats();
     const grid = document.getElementById('verifiedProductGrid');
     if (!grid) return;
     const searchEl = document.getElementById('verifiedSearchInput');
@@ -4115,21 +4233,25 @@ window.renderVerifiedProducts = function() {
         const desc = (p.description || '').toLowerCase();
         const matchSearch = name.includes(search) || desc.includes(search);
         const matchCat = window.activeVerifiedCategory === 'all' || p.category === window.activeVerifiedCategory;
-        return matchSearch && matchCat;
+        return matchSearch && matchCat && (!window.onlyFavs || window.favs.has(p.id));
     });
+    const sortMode = (document.getElementById('verifiedSort') || {}).value || 'default';
+    if (sortMode === 'video') filtered.sort((a, b) => (b.videoUrl ? 1 : 0) - (a.videoUrl ? 1 : 0));
+    else if (sortMode === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ru'));
 
     if (filtered.length === 0) {
         grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">Товаров не найдено</p>';
         return;
     }
 
-    grid.innerHTML = filtered.map(p => {
+    const cardHtml = (p) => {
         const ozon = p.ozonLink || '';
         const wb = p.wbLink || '';
         const oldUrl = (!ozon && !wb && p.url) ? p.url : '';
 
         let buttons = '';
         if (p.videoUrl) buttons += `<a href="${p.videoUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">▶️ Репортаж</a>`;
+        if (p.siteLink) buttons += `<a href="${p.siteLink}" target="_blank" rel="noopener" class="btn btn-secondary btn-small" style="text-decoration:none;">🌐 Сайт</a>`;
         if (ozon) buttons += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon btn-small" style="text-decoration:none;">🟦 Ozon</a>`;
         if (wb) buttons += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb btn-small" style="text-decoration:none;">🟪 WB</a>`;
         if (oldUrl) buttons += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-small" style="text-decoration:none;">Купить →</a>`;
@@ -4137,6 +4259,8 @@ window.renderVerifiedProducts = function() {
 
         return `
         <div class="card position-relative">
+            <button onclick="toggleFav('${p.id}', event)" title="В избранное" style="position:absolute; top:14px; right:14px; z-index:2; width:34px; height:34px; border:none; border-radius:50%; background:rgba(255,255,255,0.92); cursor:pointer; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,0.15);">${window.favs.has(p.id) ? '❤️' : '🤍'}</button>
+            ${p.videoUrl ? '<span style="position:absolute; top:14px; left:14px; z-index:2; background:#ef4444; color:#fff; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:700;">🎬 Есть репортаж</span>' : ''}
             <div class="verified-image" style="cursor:pointer;" onclick="openProductPage('${p.id}')">${p.image ? `<img src="${p.image}">` : '✅'}</div>
             <h3 class="card-title" style="cursor:pointer;" onclick="openProductPage('${p.id}')">${p.name || 'Без названия'}<span class="verified-badge">Проверено</span></h3>
             ${p.category ? `<span class="badge badge-primary">🏷️ ${p.category}</span>` : ''}
@@ -4144,18 +4268,33 @@ window.renderVerifiedProducts = function() {
                 ${buttons}
             </div>
         </div>`;
-    }).join('');
+    };
+
+    const grouped = window.activeVerifiedCategory === 'all' && !search && sortMode === 'default' && !window.onlyFavs;
+    if (grouped) {
+        const groups = {};
+        filtered.forEach(p => { const c = (p.category || '').trim() || 'Другое'; (groups[c] = groups[c] || []).push(p); });
+        grid.innerHTML = Object.keys(groups).map(c =>
+            `<h2 style="grid-column:1/-1; margin:1.4rem 0 0; font-size:1.4rem;">${catIcon(c)} ${c} <span style="font-size:0.95rem; color:var(--text-muted); font-weight:500;">· ${groups[c].length}</span></h2>`
+            + groups[c].map(cardHtml).join('')
+        ).join('');
+    } else {
+        grid.innerHTML = filtered.map(cardHtml).join('');
+    }
 };
 
 window.renderCategoryButtons = function() {
     const container = document.getElementById('verifiedCategoryFilter');
     if (!container) return;
     const activeCat = window.activeVerifiedCategory;
-    const categories = [...new Set(window.verifiedProducts.map(p => p.category).filter(c => c && c.trim()))];
+    const counts = {};
+    window.verifiedProducts.forEach(p => { const c = (p.category || '').trim(); if (c) counts[c] = (counts[c] || 0) + 1; });
+    const style = 'padding:10px 18px; font-size:1rem;';
+    const num = (n) => `<span style="opacity:0.65; font-weight:500; margin-left:4px;">${n}</span>`;
 
-    let html = `<button class="cat-filter-btn ${activeCat === 'all' ? 'active' : ''}" onclick="setCategory('verified', 'all')">Все</button>`;
-    html += categories.map(cat =>
-        `<button class="cat-filter-btn ${activeCat === cat ? 'active' : ''}" onclick="setCategory('verified', '${cat.replace(/'/g, "\\'")}')">🏷️ ${cat}</button>`
+    let html = `<button class="cat-filter-btn ${activeCat === 'all' ? 'active' : ''}" style="${style}" onclick="setCategory('verified', 'all')">🛍️ Все товары${num(window.verifiedProducts.length)}</button>`;
+    html += Object.keys(counts).map(cat =>
+        `<button class="cat-filter-btn ${activeCat === cat ? 'active' : ''}" style="${style}" onclick="setCategory('verified', '${cat.replace(/'/g, "\\'")}')">${catIcon(cat)} ${cat}${num(counts[cat])}</button>`
     ).join('');
     container.innerHTML = html;
 };
@@ -4174,6 +4313,7 @@ window.openProductPage = function(productId) {
     const wb = product.wbLink || '';
     const oldUrl = (!ozon && !wb && product.url) ? product.url : '';
     let btns = '';
+    if (product.siteLink) btns += `<a href="${product.siteLink}" target="_blank" rel="noopener" class="btn btn-secondary" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🌐 Сайт продавца</a>`;
     if (ozon) btns += `<a href="${ozon}" target="_blank" rel="noopener" class="btn btn-ozon" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟦 Купить на Ozon</a>`;
     if (wb) btns += `<a href="${wb}" target="_blank" rel="noopener" class="btn btn-wb" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">🟪 Купить на WB</a>`;
     if (oldUrl) btns += `<a href="${oldUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none; font-size:1.05rem; padding:0.9rem 1.8rem;">Купить →</a>`;
@@ -4212,7 +4352,7 @@ window.openProductPage = function(productId) {
                 ${product.category ? `<span class="badge badge-primary" style="margin-bottom:0.5rem; display:inline-block;">🏷️ ${product.category}</span>` : ''}
                 ${product.price ? `<div style="font-size:2rem; font-weight:700; color:var(--primary); margin:0.5rem 0 1rem;">$${product.price}</div>` : ''}
                 <p class="card-content" style="font-size:1.05rem; margin-bottom:1.5rem;">${product.description || ''}</p>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">${btns}</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">${btns}<button class="btn btn-secondary" onclick="shareProduct('${product.id}')" style="font-size:1.05rem; padding:0.9rem 1.4rem;">🔗 Поделиться</button></div>
             </div>
         </div>
         ${videoBlock}
@@ -4408,6 +4548,7 @@ window.switchAdminTab = (name) => {
     // 🔗 Ссылки: если новых нет — подставляем старую url в Ozon (для совместимости)
     document.getElementById('editVerifiedProductOzon').value = p.ozonLink || p.url || '';
     document.getElementById('editVerifiedProductWb').value = p.wbLink || '';
+    document.getElementById('editVerifiedProductSite').value = p.siteLink || '';
     document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
     document.getElementById('editVerifiedProductModal').classList.add('active');
 };
@@ -4438,6 +4579,7 @@ if (price !== '') updateData.price = parseFloat(price);
 // Ссылки сохраняем всегда (даже пустые — чтобы можно было очистить)
 updateData.ozonLink = ozon;
 updateData.wbLink = wb;
+updateData.siteLink = document.getElementById('editVerifiedProductSite').value.trim();
         
         if (imageFile) updateData.image = await compressImage(imageFile);
         
@@ -4489,6 +4631,7 @@ const newProduct = {
     stock: stockVal !== '' ? parseInt(stockVal) : 0,
     ozonLink: document.getElementById('verifiedProductOzon').value.trim() || '',
     wbLink: document.getElementById('verifiedProductWb').value.trim() || '',
+    siteLink: document.getElementById('verifiedProductSite').value.trim() || '',
     videoUrl: document.getElementById('verifiedProductVideo').value || null,
     image: image,
     rating: 0,
@@ -4730,6 +4873,9 @@ document.getElementById('verifiedSearchInput')?.addEventListener('input', render
 updateHeader();
 updateBottomNav();
 renderBloggers();
+
+// Вход для администратора: открыть сайт с #admin в конце адреса
+if (location.hash === '#admin') toggleLoginModal();
 
     </script>
     <script>
