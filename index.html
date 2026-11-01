@@ -3478,6 +3478,15 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    #adminFab { position: fixed; right: 20px; bottom: 22px; z-index: 950; flex-direction: column; align-items: flex-end; gap: 10px; }
+    #adminFabBtn { width: 54px; height: 54px; border: none; border-radius: 50%; cursor: pointer; font-size: 2rem; line-height: 1; color: #fff; background: linear-gradient(180deg, #2f66ec, #0b2a6f); box-shadow: 0 6px 18px rgba(11,42,111,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+    #adminFabMenu { flex-direction: column; gap: 8px; }
+    #adminFabMenu button { border: 1px solid #0b2a6f; background: #fff; color: #0b2a6f; font-weight: 700; padding: 0.6rem 1.1rem; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    @media (max-width: 768px) {
+        #adminFab { bottom: 86px; right: 16px; }
+        .hdr-coop { display: none !important; }
+        #verifiedCategoryFilter { display: none !important; }
+    }
     .header-search { display: flex; gap: 8px; }
     .header-search input { flex: 1; min-width: 0; }
     .search-go { flex: 0 0 auto; border: none; border-radius: 12px; padding: 0 1.3rem; font-weight: 700; font-size: 1rem; color: #fff; cursor: pointer; background: linear-gradient(180deg, #ef4444, #c81e1e); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
@@ -3970,6 +3979,14 @@ main, .section, .card, .btn, button, a {
         </div>
     </div>
 
+    <!-- Кнопка «+» для администратора (видна только владельцу) -->
+    <div id="adminFab" style="display: none;">
+        <div id="adminFabMenu" style="display: none;">
+            <button onclick="showSection('admin'); closeAdminFab()">Админ-панель</button>
+            <button onclick="logout(); closeAdminFab()">Выйти</button>
+        </div>
+        <button id="adminFabBtn" onclick="adminFabClick()" aria-label="Администратор">+</button>
+    </div>
     <style>
     /* Нижняя панель на телефоне: общее правило "nav" ставило кнопки в столбик */
     @media (max-width: 768px) {
@@ -4147,6 +4164,7 @@ window.handleLogin = async function(e) {
             return;
         }
         window.currentUser = user;
+        try { localStorage.setItem('owner', '1'); } catch (e) {}
         toggleLoginModal();
         updateHeader();
         updateAdmin();
@@ -4561,20 +4579,30 @@ window.addEventListener('scroll', () => {
 window.updateHeader = function() {
     const authButtons = document.querySelector('.auth-buttons');
     const adminNavLink = document.getElementById('adminNavLink');
-    const social = `
-        <button class="btn btn-secondary btn-small" onclick="openPartnerModal()">Сотрудничество</button>
+    authButtons.innerHTML = `
+        <button class="btn btn-secondary btn-small hdr-coop" onclick="openPartnerModal()">Сотрудничество</button>
         <button class="btn btn-secondary btn-small" onclick="openLink('max')">MAX</button>
         <button class="btn btn-secondary btn-small" onclick="openLink('vk')">ВК</button>`;
+    adminNavLink.style.display = 'none';
+
+    // «+» внизу экрана: виден только владельцу (на устройстве, где он открыл адрес с #admin) или вошедшему админу
+    const isAdmin = !!(window.currentUser && window.currentUser.role === 'admin');
     let isOwner = false;
     try { isOwner = localStorage.getItem('owner') === '1'; } catch (e) {}
+    const fab = document.getElementById('adminFab');
+    if (fab) fab.style.display = (isAdmin || isOwner) ? 'flex' : 'none';
+    if (!isAdmin) { const menu = document.getElementById('adminFabMenu'); if (menu) menu.style.display = 'none'; }
+};
+
+window.adminFabClick = function() {
     if (window.currentUser && window.currentUser.role === 'admin') {
-        authButtons.innerHTML = social + `<button class="btn btn-primary btn-small" onclick="showSection('admin')">Админ-панель</button><button class="btn btn-secondary btn-small" onclick="logout()">Выйти</button>`;
-        adminNavLink.style.display = 'block';
+        const menu = document.getElementById('adminFabMenu');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
     } else {
-        authButtons.innerHTML = social + (isOwner ? `<button class="btn btn-primary btn-small" onclick="toggleLoginModal()">Вход админа</button>` : '');
-        adminNavLink.style.display = 'none';
+        toggleLoginModal();
     }
 };
+window.closeAdminFab = () => { const m = document.getElementById('adminFabMenu'); if (m) m.style.display = 'none'; };
 
 // ───────── Окна ─────────
 window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
