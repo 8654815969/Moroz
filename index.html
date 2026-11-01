@@ -3141,7 +3141,7 @@ main, .section, .card, .btn, button, a {
         margin-top: 20px;
         font-size: 1.1rem;
         font-weight: 600;
-    ">⭐ Честный Отзыв</div>
+    ">Честный Отзыв</div>
 </div>
 
 <style>
@@ -4104,7 +4104,13 @@ function hideLoader() {
         setTimeout(() => loader.style.display = 'none', 500);
     }
 }
-setTimeout(hideLoader, 2000);
+// Экран загрузки закрывается, когда пришли каталог и блоггеры (или через 12 секунд, если связи нет)
+const ready = { products: false, bloggers: false };
+function markReady(key) {
+    ready[key] = true;
+    if (ready.products && ready.bloggers) hideLoader();
+}
+setTimeout(hideLoader, 12000);
 
 // ───────── Блоггеры (перенесено без изменений) ─────────
               window.renderBloggers = function() {
@@ -4142,12 +4148,12 @@ onSnapshot(collection(db, "verifiedProducts"), (snapshot) => {
     if (window.productsLoaded) window.productsError = '';
     renderVerifiedProducts();
     updateAdmin();
-    hideLoader();
+    if (window.productsLoaded) markReady('products');
 }, (err) => {
     console.error('verifiedProducts:', err);
     window.productsError = err.code || err.message || 'ошибка';
     renderVerifiedProducts();
-    hideLoader();
+    markReady('products');
 });
 setTimeout(() => {
     if (!window.productsLoaded && !window.productsError) { window.productsError = 'нет ответа от базы'; renderVerifiedProducts(); }
@@ -4157,7 +4163,8 @@ onSnapshot(collection(db, "bloggers"), (snapshot) => {
     window.bloggers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderBloggers();
     renderAdminBloggers();
-}, (err) => console.error('bloggers:', err));
+    if (!(snapshot.metadata && snapshot.metadata.fromCache && snapshot.empty)) markReady('bloggers');
+}, (err) => { console.error('bloggers:', err); markReady('bloggers'); });
 
 // ───────── Вход администратора ─────────
 async function resolveAdmin(authUser) {
