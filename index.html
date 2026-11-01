@@ -3478,6 +3478,12 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    .hdr-ico { display: none; }
+    @media (max-width: 768px) {
+        .hdr-social { padding: 0 !important; width: 44px; height: 44px; border-radius: 12px !important; background: #fff !important; border: 2px solid #fff !important; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.8); }
+        .hdr-social .hdr-text { display: none; }
+        .hdr-social .hdr-ico { display: block; width: 100%; height: 100%; }
+    }
     /* ═══ Глянцевые кнопки с бликом ═══ */
     .contact-dock { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
     .gloss-btn { position: relative; overflow: hidden; border: none; cursor: pointer; color: #fff; font-weight: 700; font-size: 0.9rem; padding: 0.55rem 1.3rem; border-radius: 12px;
@@ -3489,7 +3495,7 @@ main, .section, .card, .btn, button, a {
     .gloss-btn:hover { filter: brightness(1.1); }
     @keyframes glossSweep { 0% { left: -70%; } 55%, 100% { left: 140%; } }
     @media (min-width: 769px) { header .auth-buttons { display: none !important; } }
-    @media (max-width: 768px) { .contact-dock { display: none !important; } }
+    @media (max-width: 768px) { .contact-dock { display: none !important; } .logo span { -webkit-box-reflect: none; } }
 
     /* ═══ Зеркальный лоск: отражения и блики ═══ */
     .logo span, .sharp-title, .bloggers-title { -webkit-box-reflect: below -3px linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, transparent 55%); }
@@ -4600,13 +4606,17 @@ window.addEventListener('scroll', () => {
 });
 
 // ───────── Шапка ─────────
+// Значки мессенджеров для телефона (нарисованы в фирменных цветах)
+const VK_ICON = '<svg class="hdr-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="#0077FF" fill-rule="evenodd" d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.204.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z"/></svg>';
+const MAX_ICON = '<svg class="hdr-ico" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="maxg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2AA9FF"/><stop offset="1" stop-color="#8A3FFC"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#maxg)"/><path d="M24 10.5c-7.9 0-14.3 5.700-14.300 12.800 0 4 1.900 7.500 5.100 9.900V38.500l5.200-3c1.300.3 2.700.5 4 .5 7.900 0 14.300-5.700 14.300-12.800S31.900 10.500 24 10.500z" fill="#fff"/><path d="M17.500 28.500v-9.500l6.500 6.300 6.500-6.300v9.500" fill="none" stroke="#5B5BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 window.updateHeader = function() {
     const authButtons = document.querySelector('.auth-buttons');
     const adminNavLink = document.getElementById('adminNavLink');
     authButtons.innerHTML = `
         <button class="btn btn-secondary btn-small hdr-coop" onclick="openPartnerModal()">Сотрудничество</button>
-        <button class="btn btn-secondary btn-small" onclick="openLink('max')">MAX</button>
-        <button class="btn btn-secondary btn-small" onclick="openLink('vk')">ВК</button>`;
+        <button class="btn btn-secondary btn-small hdr-social" onclick="openLink('max')" aria-label="MAX"><span class="hdr-text">MAX</span>${MAX_ICON}</button>
+        <button class="btn btn-secondary btn-small hdr-social" onclick="openLink('vk')" aria-label="ВКонтакте"><span class="hdr-text">ВК</span>${VK_ICON}</button>`;
     adminNavLink.style.display = 'none';
 
     // «+» внизу экрана: виден только владельцу (на устройстве, где он открыл адрес с #admin) или вошедшему админу
