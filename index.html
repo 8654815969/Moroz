@@ -3478,6 +3478,18 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    .header-search { display: flex; gap: 8px; }
+    .header-search input { flex: 1; min-width: 0; }
+    .search-go { flex: 0 0 auto; border: none; border-radius: 12px; padding: 0 1.3rem; font-weight: 700; font-size: 1rem; color: #fff; cursor: pointer; background: linear-gradient(180deg, #ef4444, #c81e1e); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+    @media (max-width: 768px) {
+        /* Телефон: «поиск + Найти» и каталог, без лишних кнопок */
+        #favToggle { display: none !important; }
+        #verifiedCategoryFilter button[onclick*="'all'"] { display: none !important; }
+        .folk-project { display: none !important; }
+        .header-search { width: 100%; margin: 8px 0 4px; }
+        .header-search input { padding: 0.7rem 1rem; }
+        .search-go { padding: 0 1.1rem; }
+    }
     /* ═══ Карточки как на маркетплейсе ═══ */
     #verifiedProductGrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; }
     @media (min-width: 700px) { #verifiedProductGrid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 18px !important; } }
@@ -3582,7 +3594,7 @@ main, .section, .card, .btn, button, a {
                 <span></span>
             </button>
 
-            <div class="header-search"><input type="search" id="verifiedSearchInput" placeholder="Найти товары" autocomplete="off"></div>
+            <div class="header-search"><input type="search" id="verifiedSearchInput" placeholder="Найти товары" autocomplete="off"><button type="button" class="search-go" onclick="doSearch()">Найти</button></div>
             <nav id="mainNav">
                 <a onclick="showSection('verified'); closeMobileMenu()">Каталог</a>
                 <a onclick="scrollToReports(); closeMobileMenu()">Репортажи</a>
@@ -4074,12 +4086,25 @@ setTimeout(hideLoader, 2000);
         };
 
 // ───────── Подписки на базу: только то, что видят посетители ─────────
+window.productsLoaded = false;
+window.productsError = '';
 onSnapshot(collection(db, "verifiedProducts"), (snapshot) => {
     window.verifiedProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // пустой ответ из локального кэша = связи с базой ещё нет, это не «товаров нет»
+    window.productsLoaded = !(snapshot.metadata && snapshot.metadata.fromCache && snapshot.empty);
+    if (window.productsLoaded) window.productsError = '';
     renderVerifiedProducts();
     updateAdmin();
     hideLoader();
-}, (err) => { console.error('verifiedProducts:', err); hideLoader(); });
+}, (err) => {
+    console.error('verifiedProducts:', err);
+    window.productsError = err.code || err.message || 'ошибка';
+    renderVerifiedProducts();
+    hideLoader();
+});
+setTimeout(() => {
+    if (!window.productsLoaded && !window.productsError) { window.productsError = 'нет ответа от базы'; renderVerifiedProducts(); }
+}, 10000);
 
 onSnapshot(collection(db, "bloggers"), (snapshot) => {
     window.bloggers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -4305,14 +4330,20 @@ window.renderVerifiedProducts = function() {
     else if (sortMode === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ru'));
 
     if (filtered.length === 0) {
-        grid.innerHTML = '<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">Товаров не найдено</p>';
+        let msg = 'Товаров не найдено';
+        if (!window.productsLoaded && window.verifiedProducts.length === 0) {
+            msg = window.productsError
+                ? `Не удалось загрузить товары (${window.productsError}). Проверьте интернет или VPN и обновите страницу.<br><button class="btn btn-primary btn-small" style="margin-top:12px;" onclick="location.reload()">Обновить</button>`
+                : 'Загружаем товары…';
+        }
+        grid.innerHTML = `<p class="text-muted" style="grid-column:1/-1; text-align:center; padding:2rem;">${msg}</p>`;
         return;
     }
 
     const cardHtml = (p) => {
         const fav = window.favs.has(p.id);
         return `
-        <div class="wb-card" onclick="openBuy('${p.id}')">
+        <div class="wb-card" onclick="openProductPage('${p.id}')">
             <div class="wb-img">
                 ${p.image ? `<img src="${p.image}" loading="lazy" alt="">` : '<div class="wb-noimg">Нет фото</div>'}
                 <button class="wb-fav" onclick="toggleFav('${p.id}', event)" aria-label="В избранное">${fav ? '♥' : '♡'}</button>
@@ -4344,7 +4375,7 @@ window.renderCategoryButtons = function() {
 };
 
 window.setCategory = function(type, cat) {
-    window.activeVerifiedCategory = cat;
+    window.activeVerifiedCategory = (cat !== 'all' && window.activeVerifiedCategory === cat) ? 'all' : cat;
     renderVerifiedProducts();
 };
 
@@ -4534,11 +4565,13 @@ window.updateHeader = function() {
         <button class="btn btn-secondary btn-small" onclick="openPartnerModal()">Сотрудничество</button>
         <button class="btn btn-secondary btn-small" onclick="openLink('max')">MAX</button>
         <button class="btn btn-secondary btn-small" onclick="openLink('vk')">ВК</button>`;
+    let isOwner = false;
+    try { isOwner = localStorage.getItem('owner') === '1'; } catch (e) {}
     if (window.currentUser && window.currentUser.role === 'admin') {
-        authButtons.innerHTML = social + `<button class="btn btn-secondary btn-small" onclick="logout()">Выйти</button>`;
+        authButtons.innerHTML = social + `<button class="btn btn-primary btn-small" onclick="showSection('admin')">Админ-панель</button><button class="btn btn-secondary btn-small" onclick="logout()">Выйти</button>`;
         adminNavLink.style.display = 'block';
     } else {
-        authButtons.innerHTML = social;
+        authButtons.innerHTML = social + (isOwner ? `<button class="btn btn-primary btn-small" onclick="toggleLoginModal()">Вход админа</button>` : '');
         adminNavLink.style.display = 'none';
     }
 };
@@ -4932,6 +4965,15 @@ window.showErrorMessage = (msg) => {
 };
 
 // ───────── Старт ─────────
+window.doSearch = function() {
+    if (!document.getElementById('verified').classList.contains('active')) showSection('verified');
+    renderVerifiedProducts();
+    const inp = document.getElementById('verifiedSearchInput');
+    if (inp) inp.blur();
+    const grid = document.getElementById('verifiedCategoryFilter');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+document.getElementById('verifiedSearchInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
 document.getElementById('verifiedSearchInput')?.addEventListener('input', () => {
     if (!document.getElementById('verified').classList.contains('active')) showSection('verified');
     renderVerifiedProducts();
@@ -4941,7 +4983,12 @@ updateBottomNav();
 renderBloggers();
 
 // Вход для администратора: открыть сайт с #admin в конце адреса
-const openAdminFromHash = () => { if (location.hash === '#admin') document.getElementById('loginModal').classList.add('active'); };
+const openAdminFromHash = () => {
+    if (location.hash !== '#admin') return;
+    try { localStorage.setItem('owner', '1'); } catch (e) {}   // на этом устройстве появится кнопка «Вход админа»
+    updateHeader();
+    document.getElementById('loginModal').classList.add('active');
+};
 openAdminFromHash();
 window.addEventListener('hashchange', openAdminFromHash);
 
