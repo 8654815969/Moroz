@@ -3114,6 +3114,10 @@ main, .section, .card, .btn, button, a {
     color: #1f2937;
 }
     </style>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js">
 </head>
 <body>
     <!-- ⏳ Экран загрузки (убирает "выкидывание") -->
@@ -3478,6 +3482,14 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    .header-search { position: relative; }
+    #searchSuggest { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 3000; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px rgba(11,42,111,0.28); overflow: hidden; text-align: left; }
+    .sg-item { display: flex; align-items: baseline; gap: 10px; padding: 0.7rem 1rem; cursor: pointer; color: #1f2937; border-bottom: 1px solid #eef1f8; }
+    .sg-item:hover { background: #eef4ff; }
+    .sg-ico { color: #2563eb; font-weight: 700; }
+    .sg-name { font-weight: 600; }
+    .sg-cat { margin-left: auto; font-size: 0.8rem; color: #6b7280; }
+    .sg-empty { padding: 0.9rem 1rem; color: #6b7280; font-size: 0.9rem; }
     .hdr-ico { display: none; }
     @media (max-width: 768px) {
         .hdr-social { padding: 0 !important; width: 44px; height: 44px; border-radius: 12px !important; background: #fff !important; border: 2px solid #fff !important; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.8); }
@@ -3630,7 +3642,7 @@ main, .section, .card, .btn, button, a {
                 <span></span>
             </button>
 
-            <div class="header-search"><input type="search" id="verifiedSearchInput" placeholder="Найти товары" autocomplete="off"><button type="button" class="search-go" onclick="doSearch()">Найти</button></div>
+            <div class="header-search"><input type="search" id="verifiedSearchInput" placeholder="Найти товары" autocomplete="off"><button type="button" class="search-go" onclick="doSearch()">Найти</button><div id="searchSuggest"></div></div>
             <nav id="mainNav">
                 <a onclick="showSection('verified'); closeMobileMenu()">Каталог</a>
                 <a onclick="scrollToReports(); closeMobileMenu()">Репортажи</a>
@@ -3726,6 +3738,7 @@ main, .section, .card, .btn, button, a {
                 <!-- Verified Products Tab -->
                 <div id="verified-admin" class="tab-content active">
                     <button class="btn btn-primary mb-2" onclick="toggleAddVerifiedProductModal()">+ Добавить проверенный товар</button>
+                    <button class="btn btn-secondary mb-2" onclick="optimizeImages()">Сжать фото (ускорить сайт)</button>
                     <div class="card">
                         <h3 class="card-title mb-2">Проверенные товары</h3>
                         <div id="adminVerifiedProductsList">
@@ -3861,6 +3874,19 @@ main, .section, .card, .btn, button, a {
         <label>💬 Цитата из интервью</label>
         <textarea id="verifiedProductQuote" rows="2" placeholder="Что сказал производитель на камеру"></textarea>
     </div>
+    <div class="form-group">
+        <label>Тип проверки (показывается на карточке)</label>
+        <select id="verifiedProductCheck">
+            <option value="onsite">Проверено на месте (приехали бесплатно)</option>
+            <option value="ordered">Репортаж по заказу производителя (выезд оплатил производитель)</option>
+            <option value="materials">Материалы производителя (на месте не были)</option>
+            <option value="">Не указывать (просто «Проверено»)</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Ключевые слова для поиска (через запятую)</label>
+        <input type="text" id="verifiedProductKeywords" placeholder="например: обувь, танцы, детская">
+    </div>
                 <div class="form-group">
     <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
     <input type="url" id="verifiedProductVideo" placeholder="https://vk.ru/video... или https://youtube.com/...">
@@ -3930,6 +3956,19 @@ main, .section, .card, .btn, button, a {
     <div class="form-group">
         <label>💬 Цитата из интервью</label>
         <textarea id="editVerifiedProductQuote" rows="2" placeholder="Что сказал производитель на камеру"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Тип проверки (показывается на карточке)</label>
+        <select id="editVerifiedProductCheck">
+            <option value="onsite">Проверено на месте (приехали бесплатно)</option>
+            <option value="ordered">Репортаж по заказу производителя (выезд оплатил производитель)</option>
+            <option value="materials">Материалы производителя (на месте не были)</option>
+            <option value="">Не указывать (просто «Проверено»)</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Ключевые слова для поиска (через запятую)</label>
+        <input type="text" id="editVerifiedProductKeywords" placeholder="например: обувь, танцы, детская">
     </div>
                                 <div class="form-group">
                     <label>🎬 Ссылка на репортаж (видео, необязательно)</label>
@@ -4062,8 +4101,7 @@ main, .section, .card, .btn, button, a {
 
     <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDocs, updateDoc, addDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
             apiKey: "AIzaSyAPaV-LlEBjl-alwt3mawWtAKYFF5uuyJg",
@@ -4076,8 +4114,10 @@ const firebaseConfig = {
         };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Постоянный кэш в браузере: при повторном заходе каталог открывается мгновенно, свежее подтягивается в фоне
+let db;
+try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch (e) { db = getFirestore(app); }
 window.db = db;
 
 // ───────── Данные ─────────
@@ -4178,25 +4218,35 @@ async function resolveAdmin(authUser) {
     return { id: d.id, ...d.data() };
 }
 
-onAuthStateChanged(auth, async (authUser) => {
-    let user = null;
-    try { user = await resolveAdmin(authUser); } catch (e) { console.error('auth:', e); }
-    window.currentUser = (user && user.role === 'admin') ? user : null;
-    updateHeader();
-    updateAdmin();
-    const adminOpen = document.getElementById('admin').classList.contains('active');
-    if (!window.currentUser && adminOpen) showSection('verified');
-});
+// Модуль входа грузится только владельцу или когда открывают окно входа (посетителям он не нужен)
+let authApi = null, auth = null;
+async function loadAuth() {
+    if (authApi) return authApi;
+    authApi = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+    auth = authApi.getAuth(app);
+    authApi.onAuthStateChanged(auth, async (authUser) => {
+        let user = null;
+        try { user = await resolveAdmin(authUser); } catch (e) { console.error('auth:', e); }
+        window.currentUser = (user && user.role === 'admin') ? user : null;
+        updateHeader();
+        updateAdmin();
+        const adminOpen = document.getElementById('admin').classList.contains('active');
+        if (!window.currentUser && adminOpen) showSection('verified');
+    });
+    return authApi;
+}
+try { if (localStorage.getItem('owner') === '1') loadAuth(); } catch (e) {}
 
 window.handleLogin = async function(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const api = await loadAuth();
+        const cred = await api.signInWithEmailAndPassword(auth, email, password);
         const user = await resolveAdmin(cred.user);
         if (!user || user.role !== 'admin') {
-            await signOut(auth);
+            await api.signOut(auth);
             showErrorMessage('Вход только для администратора');
             return;
         }
@@ -4224,7 +4274,8 @@ window.handleResetPassword = async function() {
     const email = document.getElementById('loginEmail').value.trim();
     if (!email) { showErrorMessage('Введите email'); return; }
     try {
-        await sendPasswordResetEmail(auth, email);
+        const api = await loadAuth();
+        await api.sendPasswordResetEmail(auth, email);
         showSuccessMessage('Письмо для сброса пароля отправлено');
     } catch (err) {
         showErrorMessage('Ошибка: ' + err.message);
@@ -4232,7 +4283,7 @@ window.handleResetPassword = async function() {
 };
 
 window.logout = async function() {
-    try { await signOut(auth); } catch (e) { console.error(e); }
+    try { const api = await loadAuth(); await api.signOut(auth); } catch (e) { console.error(e); }
     window.currentUser = null;
     updateHeader();
     showSection('verified');
@@ -4343,6 +4394,121 @@ window.openBuy = function(id) {
 };
 window.closeBuyModal = () => document.getElementById('buyModal').classList.remove('active');
 
+window.checkInfo = function(p) {
+    const t = p && p.checkType;
+    if (t === 'onsite') return { label: 'Проверено на месте', short: 'Проверено на месте', color: '#0b2a6f', note: 'Мы сами приехали на производство и сняли репортаж. Размещение на сайте бесплатное.' };
+    if (t === 'ordered') return { label: 'Репортаж по заказу производителя', short: 'По заказу производителя', color: '#b45309', note: 'Мы приезжали на производство и сняли репортаж. Выезд оплатил производитель; размещение на сайте бесплатное.' };
+    if (t === 'materials') return { label: 'Материалы производителя', short: 'Материалы производителя', color: '#6b7280', note: 'Видео и фото прислал сам производитель, мы на производстве не были.' };
+    return { label: 'Проверено', short: 'Проверено', color: '#0b2a6f', note: '' };
+};
+
+// ───────── Умный поиск: подсказки, основы слов, синонимы, ключевые слова ─────────
+const SYN = [
+    ['обувь','чешки','кроссовки','ботинки','туфли','сандалии','тапочки','сапоги','кеды','балетки','мокасины'],
+    ['бад','бады','добавка','витамины','коллаген','омега','минералы','протеин','комплекс'],
+    ['кофе','зерна','эспрессо','капучино','арабика','обжарка'],
+    ['мед','пчела','пасека','соты','нектар'],
+    ['одежда','куртка','платье','пальто','костюм','футболка','джинсы','свитер','кожа'],
+    ['спорт','теннис','падел','тренировка','фитнес','ракетка'],
+    ['кухня','посуда','сковорода','кастрюля','нож','доска'],
+    ['декор','дизайн','интерьер','дом','бамбук'],
+    ['косметика','крем','уход','маска','мыло','шампунь'],
+    ['чай','травы','сбор','чабрец'],
+    ['сладости','конфеты','шоколад','печенье','варенье','десерт']
+];
+const norm = (t) => (t || '').toLowerCase().replace(/ё/g, 'е').replace(/[^a-zа-я0-9\s]/g, ' ');
+const stem = (w) => w.length > 5 ? w.slice(0, -2) : (w.length > 3 ? w.slice(0, -1) : w);
+const tokens = (t) => norm(t).split(/\s+/).filter(Boolean);
+function related(token) {
+    const st = stem(token);
+    const out = new Set();
+    SYN.forEach(g => { if (g.some(w => { const sw = stem(norm(w)); return sw.startsWith(st) || (st.length > 3 && st.startsWith(sw)); })) g.forEach(w => out.add(stem(norm(w)))); });
+    return out;
+}
+// 0 — не подходит; 3 — название, 2 — раздел/ключевые слова, 1 — описание или «по теме»
+function fuzzyHas(hay, st) {
+    const lev = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+        for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+        return d[a.length][b.length]; };
+    return hay.split(/\s+/).some(w => w.length >= st.length && lev(w.slice(0, st.length), st) <= 1);
+}
+window.productScore = function(p, query) {
+    const qs = tokens(query);
+    if (!qs.length) return 1;
+    const name = norm(p.name), cat = norm(p.category), kw = norm(p.keywords), desc = norm(p.description);
+    let total = 0;
+    for (const q of qs) {
+        const st = stem(q); let best = 0;
+        if (name.includes(st)) best = 3;
+        else if (cat.includes(st) || kw.includes(st)) best = 2;
+        else if (desc.includes(st)) best = 1;
+        if (!best) {
+            const rel = [...related(q)];
+            if (rel.some(r => name.includes(r) || cat.includes(r) || kw.includes(r))) best = 1;
+        }
+        if (!best && st.length >= 3 && fuzzyHas(name + ' ' + cat + ' ' + kw, st)) best = 1;   // опечатка в одну букву
+        if (!best) return 0;
+        total += best;
+    }
+    return total;
+};
+window.productMatches = (p, query) => productScore(p, query) > 0;
+
+window.searchSuggest = function() {
+    const input = document.getElementById('verifiedSearchInput');
+    const box = document.getElementById('searchSuggest');
+    if (!input || !box) return;
+    const q = input.value.trim();
+    if (q.length < 1) { box.style.display = 'none'; return; }
+    const last = tokens(q).pop() || '';
+    const lastSt = stem(last);
+    // дополнение слов: названия, разделы, ключевые слова, начинающиеся на набранное
+    const words = new Set();
+    window.verifiedProducts.forEach(p => {
+        [p.name, p.category, p.keywords].forEach(txt => tokens(txt).forEach(w => { if (w.length > 2 && w.startsWith(last) && w !== last) words.add(w); }));
+    });
+    const completions = [...words].slice(0, 3);
+    const hits = window.verifiedProducts.map(p => ({ p, sc: productScore(p, q) })).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 5);
+    let html = completions.map(w => `<div class="sg-item" onmousedown="pickSuggest('${w.replace(/'/g, "")}')"><span class="sg-ico">⌕</span>${w}</div>`).join('');
+    html += hits.map(({ p, sc }) => {
+        const direct = sc >= 2 * Math.max(1, tokens(q).length) || norm(p.name).includes(lastSt);
+        return `<div class="sg-item" onmousedown="openProductPage('${p.id}'); hideSuggest()"><span class="sg-name">${p.name || ''}</span><span class="sg-cat">${p.category || ''}${direct ? '' : ' · по теме «' + q + '»'}</span></div>`;
+    }).join('');
+    if (!html) html = '<div class="sg-empty">Ничего не найдено. Попробуйте другое слово</div>';
+    box.innerHTML = html; box.style.display = 'block';
+};
+window.hideSuggest = () => { const b = document.getElementById('searchSuggest'); if (b) b.style.display = 'none'; };
+window.pickSuggest = function(word) {
+    const input = document.getElementById('verifiedSearchInput');
+    const parts = input.value.trim().split(/\s+/); parts[parts.length - 1] = word; input.value = parts.join(' ');
+    hideSuggest(); doSearch();
+};
+
+window.optimizeImages = async function() {
+    const shrink = (dataUrl) => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const MAX = 720; let w = img.width, h = img.height;
+            if (w > h && w > MAX) { h = h * (MAX / w); w = MAX; } else if (h > MAX) { w = w * (MAX / h); h = MAX; }
+            const c = document.createElement('canvas'); c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL('image/jpeg', 0.75));
+        };
+        img.onerror = () => resolve(null);
+        img.src = dataUrl;
+    });
+    let done = 0, saved = 0;
+    for (const p of window.verifiedProducts) {
+        if (!p.image || !p.image.startsWith('data:') || p.image.length < 120000) continue;
+        const small = await shrink(p.image);
+        if (small && small.length < p.image.length * 0.9) {
+            await updateDoc(doc(db, "verifiedProducts", p.id), { image: small });
+            saved += p.image.length - small.length; done++;
+        }
+    }
+    showSuccessMessage(done ? `Сжато фото: ${done}, сэкономлено ${(saved / 1048576).toFixed(1)} МБ` : 'Все фото уже небольшие');
+};
+
 window.updateStats = function() {
     const list = window.verifiedProducts;
     const cats = new Set(list.map(p => (p.category || '').trim()).filter(Boolean));
@@ -4376,7 +4542,7 @@ window.renderVerifiedProducts = function() {
     const filtered = window.verifiedProducts.filter(p => {
         const name = (p.name || '').toLowerCase();
         const desc = (p.description || '').toLowerCase();
-        const matchSearch = name.includes(search) || desc.includes(search);
+        const matchSearch = productMatches(p, search);
         const matchCat = window.activeVerifiedCategory === 'all' || p.category === window.activeVerifiedCategory;
         return matchSearch && matchCat && (!window.onlyFavs || window.favs.has(p.id));
     });
@@ -4400,9 +4566,9 @@ window.renderVerifiedProducts = function() {
         return `
         <div class="wb-card" onclick="openProductPage('${p.id}')">
             <div class="wb-img">
-                ${p.image ? `<img src="${p.image}" loading="lazy" alt="">` : '<div class="wb-noimg">Нет фото</div>'}
+                ${p.image ? `<img src="${p.image}" loading="lazy" decoding="async" alt="">` : '<div class="wb-noimg">Нет фото</div>'}
                 <button class="wb-fav" onclick="toggleFav('${p.id}', event)" aria-label="В избранное">${fav ? '♥' : '♡'}</button>
-                <span class="wb-badge">Проверено</span>
+                <span class="wb-badge" style="background:${checkInfo(p).color}">${checkInfo(p).short}</span>
             </div>
             <div class="wb-name">${p.name || 'Без названия'}</div>
             <div class="wb-meta">${p.category || ''}</div>
@@ -4486,9 +4652,11 @@ window.openProductPage = function(productId) {
         <div class="grid grid-2" style="align-items:start;">
             <div>${imageHtml}</div>
             <div>
-                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'} <span class="verified-badge">Проверено</span></h1>
+                <h1 style="margin-bottom:0.5rem;">${product.name || 'Товар'}</h1>
+                <span class="verified-badge" style="display:inline-block; margin-bottom:0.6rem; background:${checkInfo(product).color}; color:#fff;">${checkInfo(product).label}</span>
                 ${product.category ? `<span class="badge badge-primary" style="margin-bottom:0.5rem; display:inline-block;">${product.category}</span>` : ''}
                 ${product.price ? `<div style="font-size:2rem; font-weight:700; color:var(--primary); margin:0.5rem 0 1rem;">$${product.price}</div>` : ''}
+                ${checkInfo(product).note ? `<div style="border-left:4px solid ${checkInfo(product).color}; padding:0.5rem 0.9rem; margin:0.5rem 0 1rem; background:#f6f8fd; font-size:0.92rem;">${checkInfo(product).note}</div>` : ''}
                 <p class="card-content" style="font-size:1.05rem; margin-bottom:1.5rem;">${product.description || ''}</p>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">${btns}<button class="btn btn-secondary" onclick="shareProduct('${product.id}')" style="font-size:1.05rem; padding:0.9rem 1.4rem;">Поделиться</button></div>
             </div>
@@ -4647,7 +4815,7 @@ window.adminFabClick = function() {
 window.closeAdminFab = () => { const m = document.getElementById('adminFabMenu'); if (m) m.style.display = 'none'; };
 
 // ───────── Окна ─────────
-window.toggleLoginModal = () => document.getElementById('loginModal').classList.toggle('active');
+window.toggleLoginModal = () => { loadAuth(); document.getElementById('loginModal').classList.toggle('active'); };
 window.toggleAddVerifiedProductModal = () => document.getElementById('addVerifiedProductModal').classList.toggle('active');
 window.closeEditVerifiedProductModal = () => document.getElementById('editVerifiedProductModal').classList.remove('active');
 window.openPartnerModal = () => document.getElementById('partnerModal').classList.add('active');
@@ -4709,6 +4877,8 @@ window.switchAdminTab = (name) => {
     document.getElementById('editVerifiedProductProducer').value = p.producerName || '';
     document.getElementById('editVerifiedProductCity').value = p.producerCity || '';
     document.getElementById('editVerifiedProductQuote').value = p.producerQuote || '';
+    document.getElementById('editVerifiedProductCheck').value = p.checkType || '';
+    document.getElementById('editVerifiedProductKeywords').value = p.keywords || '';
     document.getElementById('editVerifiedProductVideo').value = p.videoUrl || '';
     document.getElementById('editVerifiedProductModal').classList.add('active');
 };
@@ -4743,6 +4913,8 @@ updateData.siteLink = document.getElementById('editVerifiedProductSite').value.t
 updateData.producerName = document.getElementById('editVerifiedProductProducer').value.trim();
 updateData.producerCity = document.getElementById('editVerifiedProductCity').value.trim();
 updateData.producerQuote = document.getElementById('editVerifiedProductQuote').value.trim();
+updateData.checkType = document.getElementById('editVerifiedProductCheck').value;
+updateData.keywords = document.getElementById('editVerifiedProductKeywords').value.trim();
         
         if (imageFile) updateData.image = await compressImage(imageFile);
         
@@ -4798,6 +4970,8 @@ const newProduct = {
     producerName: document.getElementById('verifiedProductProducer').value.trim(),
     producerCity: document.getElementById('verifiedProductCity').value.trim(),
     producerQuote: document.getElementById('verifiedProductQuote').value.trim(),
+    checkType: document.getElementById('verifiedProductCheck').value,
+    keywords: document.getElementById('verifiedProductKeywords').value.trim(),
     videoUrl: document.getElementById('verifiedProductVideo').value || null,
     image: image,
     rating: 0,
@@ -5036,6 +5210,7 @@ window.showErrorMessage = (msg) => {
 
 // ───────── Старт ─────────
 window.doSearch = function() {
+    hideSuggest();
     if (!document.getElementById('verified').classList.contains('active')) showSection('verified');
     renderVerifiedProducts();
     const inp = document.getElementById('verifiedSearchInput');
@@ -5043,7 +5218,9 @@ window.doSearch = function() {
     const grid = document.getElementById('verifiedCategoryFilter');
     if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
-document.getElementById('verifiedSearchInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+document.getElementById('verifiedSearchInput')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { hideSuggest(); doSearch(); } if (e.key === 'Escape') hideSuggest(); });
+document.getElementById('verifiedSearchInput')?.addEventListener('input', searchSuggest);
+document.getElementById('verifiedSearchInput')?.addEventListener('blur', () => setTimeout(hideSuggest, 150));
 document.getElementById('verifiedSearchInput')?.addEventListener('input', () => {
     if (!document.getElementById('verified').classList.contains('active')) showSection('verified');
     renderVerifiedProducts();
@@ -5055,6 +5232,7 @@ renderBloggers();
 // Вход для администратора: открыть сайт с #admin в конце адреса
 const openAdminFromHash = () => {
     if (location.hash !== '#admin') return;
+    loadAuth();
     document.getElementById('loginModal').classList.add('active');
 };
 openAdminFromHash();
