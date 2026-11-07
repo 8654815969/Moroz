@@ -3482,6 +3482,16 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    /* ═══ Репортажи: маленькие круглые аватарки ═══ */
+    #reportsBlock { margin-bottom: 1.2rem !important; }
+    #reportsBlock .sharp-title { font-size: 0.9rem; padding: 5px 18px 5px 12px; margin-bottom: 0.6rem; }
+    .reports-row { display: flex; gap: 16px; overflow-x: auto; padding: 6px 4px 12px; scrollbar-width: thin; }
+    .report-ava { flex: 0 0 auto; width: 84px; text-align: center; cursor: pointer; }
+    .report-ring { position: relative; width: 72px; height: 72px; margin: 0 auto 6px; padding: 3px; border-radius: 50%; background: conic-gradient(from 200deg, #d52b1e, #0b2a6f, #2563eb, #d52b1e); transition: transform 0.15s; box-shadow: 0 3px 10px rgba(11,42,111,0.25); }
+    .report-ava:hover .report-ring { transform: scale(1.07); }
+    .report-ring img, .report-ring .ph { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #fff; background: #0b2a6f; box-sizing: border-box; }
+    .report-play { position: absolute; right: -3px; bottom: -3px; width: 22px; height: 22px; border-radius: 50%; background: #d52b1e; color: #fff; font-size: 0.55rem; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; padding-left: 1px; }
+    .report-ava .nm { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.74rem; line-height: 1.2; font-weight: 600; color: #1f2937; }
     /* ═══ Категории: одна кнопка, список раскрывается ═══ */
     .cat-wrap { margin: 0.4rem 0 1.4rem; }
     .cat-toggle { display: inline-flex; align-items: center; gap: 10px; padding: 0.65rem 1.3rem; font-size: 0.95rem; letter-spacing: 0.03em; }
@@ -3694,7 +3704,7 @@ main, .section, .card, .btn, button, a {
 
                         <div id="reportsBlock" style="display: none; margin-bottom: 2rem;">
                 <h2 class="sharp-title">Репортажи с производств</h2>
-                <div id="reportsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.4rem;"></div>
+                <div id="reportsGrid" class="reports-row"></div>
             </div>
 
             <!-- 🎠 КАРУСЕЛЬ БЛОГГЕРОВ И АМБАССАДОРОВ -->
@@ -4370,22 +4380,16 @@ window.renderReports = function() {
     const block = document.getElementById('reportsBlock');
     const grid = document.getElementById('reportsGrid');
     if (!block || !grid) return;
-    const list = window.verifiedProducts.filter(p => p.videoUrl).slice(0, 6);
+    const list = window.verifiedProducts.filter(p => p.videoUrl).slice(0, 15);
     block.style.display = list.length ? 'block' : 'none';
-    grid.innerHTML = list.map(p => {
-        const who = [p.producerName, p.producerCity].filter(Boolean).join(', ');
-        return `
-        <div class="sharp report-card" style="overflow:hidden;">
-            <div onclick="window.open('${p.videoUrl}', '_blank', 'noopener')" style="position:relative; height:165px; background:#0b2a6f; cursor:pointer;">
-                ${p.image ? `<img src="${p.image}" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">` : ''}
-                <span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:3.2rem; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.6);">▶</span>
+    grid.innerHTML = list.map(p => `
+        <div class="report-ava" onclick="window.open('${p.videoUrl}', '_blank', 'noopener')" title="Смотреть репортаж: ${(p.name || '').replace(/"/g, '')}">
+            <div class="report-ring">
+                ${p.image ? `<img src="${p.image}" loading="lazy" decoding="async" alt="">` : '<div class="ph"></div>'}
+                <span class="report-play">&#9654;</span>
             </div>
-            <div style="padding:0.8rem 1rem;">
-                <div onclick="openProductPage('${p.id}')" style="font-weight:800; cursor:pointer;">${p.name || ''}</div>
-                ${who ? `<div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">${who}</div>` : ''}
-            </div>
-        </div>`;
-    }).join('');
+            <span class="nm">${p.name || ''}</span>
+        </div>`).join('');
 };
 
 window.scrollToReports = function() {
