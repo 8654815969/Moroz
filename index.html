@@ -3482,6 +3482,20 @@ main, .section, .card, .btn, button, a {
 }
 </style>
     <style>
+    /* ═══ Категории: одна кнопка, список раскрывается ═══ */
+    .cat-wrap { margin: 0.4rem 0 1.4rem; }
+    .cat-toggle { display: inline-flex; align-items: center; gap: 10px; padding: 0.65rem 1.3rem; font-size: 0.95rem; letter-spacing: 0.03em; }
+    .cat-lines { display: inline-flex; flex-direction: column; gap: 3px; }
+    .cat-lines i { display: block; width: 16px; height: 2px; background: #fff; border-radius: 2px; }
+    .cat-arrow { font-size: 0.8rem; transition: transform 0.2s; }
+    .cat-toggle[aria-expanded="true"] .cat-arrow { transform: rotate(180deg); }
+    #verifiedCategoryFilter.cat-panel { display: none !important; flex-wrap: wrap !important; overflow: visible !important; gap: 8px; margin: 12px 0 0 !important; padding: 16px; background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(11,42,111,0.14); border: 1px solid #e3e9f6; }
+    #verifiedCategoryFilter.cat-panel.open { display: flex !important; animation: catOpen 0.18s ease-out; }
+    @keyframes catOpen { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    #verifiedCategoryFilter .cat-filter-btn { background: transparent !important; color: #0b2a6f !important; border: 1px solid rgba(11,42,111,0.22) !important; border-radius: 8px !important; padding: 0.55rem 1rem !important; font: 600 0.78rem/1 "Segoe UI", "Helvetica Neue", Arial, sans-serif !important; letter-spacing: 0.09em; text-transform: uppercase; box-shadow: none !important; transition: all 0.15s; }
+    #verifiedCategoryFilter .cat-filter-btn:hover { border-color: #2563eb !important; background: #eef4ff !important; }
+    #verifiedCategoryFilter .cat-filter-btn.active { background: linear-gradient(180deg, #1d4ed8, #0b2a6f) !important; color: #fff !important; border-color: #0b2a6f !important; }
+    #verifiedCategoryFilter .cat-filter-btn span { font-weight: 500; opacity: 0.6; letter-spacing: 0; margin-left: 5px; }
     .header-search { position: relative; }
     #searchSuggest { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 3000; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px rgba(11,42,111,0.28); overflow: hidden; text-align: left; }
     .sg-item { display: flex; align-items: baseline; gap: 10px; padding: 0.7rem 1rem; cursor: pointer; color: #1f2937; border-bottom: 1px solid #eef1f8; }
@@ -3524,7 +3538,6 @@ main, .section, .card, .btn, button, a {
     @media (max-width: 768px) {
         #adminFab { bottom: 86px; right: 16px; }
         .hdr-coop { display: none !important; }
-        #verifiedCategoryFilter { display: none !important; }
     }
     .header-search { display: flex; gap: 8px; }
     .header-search input { flex: 1; min-width: 0; }
@@ -3532,7 +3545,6 @@ main, .section, .card, .btn, button, a {
     @media (max-width: 768px) {
         /* Телефон: «поиск + Найти» и каталог, без лишних кнопок */
         #favToggle { display: none !important; }
-        #verifiedCategoryFilter button[onclick*="'all'"] { display: none !important; }
         .folk-project { display: none !important; }
         .header-search { width: 100%; margin: 8px 0 4px; }
         .header-search input { padding: 0.7rem 1rem; }
@@ -3560,9 +3572,6 @@ main, .section, .card, .btn, button, a {
     header::after { content: ''; position: absolute; inset: 0 0 52% 0; background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0)); pointer-events: none; }
     @media (max-width: 768px) { .header-search { margin: 8px 0; max-width: none; width: 100%; } }
 
-    /* ═══ Категории одной строкой ═══ */
-    #verifiedCategoryFilter { flex-wrap: nowrap !important; overflow-x: auto; padding-bottom: 8px; margin-bottom: 1.4rem !important; scrollbar-width: thin; }
-    #verifiedCategoryFilter button { flex: 0 0 auto; white-space: nowrap; }
     /* ═══ Стиль «чёткие грани» ═══ */
     .sharp { background: #fff; border: 2px solid #0b2a6f; border-radius: 0; box-shadow: 6px 6px 0 #0b2a6f; }
     .sharp-title { display: inline-block; background: #0b2a6f; color: #fff !important; padding: 6px 22px 6px 14px; margin: 0 0 1.2rem; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.5px; clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
@@ -3671,7 +3680,14 @@ main, .section, .card, .btn, button, a {
                 <button class="gloss-btn" onclick="openLink('vk')">ВК</button>
                 <button class="gloss-btn" id="favToggle" onclick="toggleFavFilter()">♡ Избранное</button>
             </div>
-            <div id="verifiedCategoryFilter" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem;"></div>
+            <div class="cat-wrap">
+                <button type="button" id="catToggle" class="gloss-btn cat-toggle" onclick="toggleCategories()" aria-expanded="false">
+                    <span class="cat-lines"><i></i><i></i><i></i></span>
+                    <span id="catToggleText">Категории</span>
+                    <span class="cat-arrow">&#9662;</span>
+                </button>
+                <div id="verifiedCategoryFilter" class="cat-panel"></div>
+            </div>
             <div class="grid grid-3" id="verifiedProductGrid">
                 <!-- Товары добавляются сюда -->
             </div>
@@ -4585,7 +4601,7 @@ window.renderCategoryButtons = function() {
     const activeCat = window.activeVerifiedCategory;
     const counts = {};
     window.verifiedProducts.forEach(p => { const c = (p.category || '').trim(); if (c) counts[c] = (counts[c] || 0) + 1; });
-    const style = 'padding:10px 18px; font-size:1rem;';
+    const style = '';
     const num = (n) => `<span style="opacity:0.65; font-weight:500; margin-left:4px;">${n}</span>`;
 
     let html = `<button class="cat-filter-btn ${activeCat === 'all' ? 'active' : ''}" style="${style}" onclick="setCategory('verified', 'all')">Все товары${num(window.verifiedProducts.length)}</button>`;
@@ -4593,11 +4609,25 @@ window.renderCategoryButtons = function() {
         `<button class="cat-filter-btn ${activeCat === cat ? 'active' : ''}" style="${style}" onclick="setCategory('verified', '${cat.replace(/'/g, "\\'")}')">${cat}${num(counts[cat])}</button>`
     ).join('');
     container.innerHTML = html;
+    const t = document.getElementById('catToggleText');
+    if (t) t.textContent = activeCat === 'all' ? 'Категории' : 'Категории: ' + activeCat;
+};
+
+window.toggleCategories = function() {
+    const panel = document.getElementById('verifiedCategoryFilter');
+    const open = panel.classList.toggle('open');
+    document.getElementById('catToggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+window.closeCategories = function() {
+    const panel = document.getElementById('verifiedCategoryFilter');
+    if (panel) panel.classList.remove('open');
+    const b = document.getElementById('catToggle'); if (b) b.setAttribute('aria-expanded', 'false');
 };
 
 window.setCategory = function(type, cat) {
     window.activeVerifiedCategory = (cat !== 'all' && window.activeVerifiedCategory === cat) ? 'all' : cat;
     renderVerifiedProducts();
+    closeCategories();
 };
 
 // ───────── Страница товара ─────────
@@ -4816,8 +4846,15 @@ window.closeAdminFab = () => { const m = document.getElementById('adminFabMenu')
 
 // ───────── Окна ─────────
 window.toggleLoginModal = () => { loadAuth(); document.getElementById('loginModal').classList.toggle('active'); };
-window.toggleAddVerifiedProductModal = () => document.getElementById('addVerifiedProductModal').classList.toggle('active');
-window.closeEditVerifiedProductModal = () => document.getElementById('editVerifiedProductModal').classList.remove('active');
+window.toggleAddVerifiedProductModal = () => {
+    const m = document.getElementById('addVerifiedProductModal');
+    if (!m.classList.contains('active')) { const f = document.getElementById('verifiedProductImage'); if (f) f.value = ''; }
+    m.classList.toggle('active');
+};
+window.closeEditVerifiedProductModal = () => {
+    const f = document.getElementById('editVerifiedProductImage'); if (f) f.value = '';
+    document.getElementById('editVerifiedProductModal').classList.remove('active');
+};
 window.openPartnerModal = () => document.getElementById('partnerModal').classList.add('active');
 window.closePartnerModal = () => document.getElementById('partnerModal').classList.remove('active');
 
@@ -4865,6 +4902,7 @@ window.switchAdminTab = (name) => {
                window.openEditVerifiedProductModal = (id) => {
     const p = window.verifiedProducts.find(x => x.id === id);
     document.getElementById('editVerifiedProductId').value = p.id;
+    document.getElementById('editVerifiedProductImage').value = '';
     document.getElementById('editVerifiedProductName').value = p.name || '';
     document.getElementById('editVerifiedProductDescription').value = p.description || '';
     document.getElementById('editVerifiedProductCategory').value = p.category || '';
@@ -4919,6 +4957,7 @@ updateData.keywords = document.getElementById('editVerifiedProductKeywords').val
         if (imageFile) updateData.image = await compressImage(imageFile);
         
         await updateDoc(doc(db, "verifiedProducts", id), updateData);
+        document.getElementById('editVerifiedProductImage').value = '';
         closeEditVerifiedProductModal();
         showSuccessMessage('✅ Проверенный товар обновлён!');
     } catch (err) {
